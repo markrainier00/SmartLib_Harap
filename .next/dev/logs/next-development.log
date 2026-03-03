@@ -1,0 +1,2228 @@
+[00:00:02.190] Server  LOG     ✓ Ready in 1447ms
+[00:00:02.513] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "@/components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "@/components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "@/components/layout/Sidebar";
+> 5 | import Topbar from "@/components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:03.803] Browser ERROR   uncaughtError: Error: ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "@/components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "@/components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:04.714] Browser ERROR   ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "@/components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "@/components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.714] Browser ERROR   ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "@/components/layout/Sidebar";
+> 5 | import Topbar from "@/components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.714] Browser ERROR   ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "@/components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "@/components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.714] Browser ERROR   ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "@/components/layout/Sidebar";
+> 5 | import Topbar from "@/components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.714] Browser ERROR   ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "@/components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "@/components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:04.714] Browser ERROR   ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "@/components/layout/Sidebar";
+> 5 | import Topbar from "@/components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:31.070] Server  LOG     ✓ Compiled in 253ms
+[00:00:33.359] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:38.290] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:45.483] Server  LOG     ○ Compiling /dashboard/library ...
+[00:00:48.052] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:00:49.831] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:00:51.707] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:00:52.712] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:00:53.415] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:00:54.796] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:16.438] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.441] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.444] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.446] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.447] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.450] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.452] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.454] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.456] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.457] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.458] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.460] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.462] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.463] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.466] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.467] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.473] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.475] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.476] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.478] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.479] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.481] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.484] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.486] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.488] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.490] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.492] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.493] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.494] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.496] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.497] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.501] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.503] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.504] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.505] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.507] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.508] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.510] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.511] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.512] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.515] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.518] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.520] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.522] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.524] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.525] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.527] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.528] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.531] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.533] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.535] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.536] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.538] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.540] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.541] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.542] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.544] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.545] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.547] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.549] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.551] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.552] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.554] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.555] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.557] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.559] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.561] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.563] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.564] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.567] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.569] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.571] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.572] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.574] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.576] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.577] Server  ERROR   ⨯ ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.578] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.579] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.582] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.585] Server  ERROR   ⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:03:16.587] Server  LOG     ✓ Compiled in 160ms
+[00:03:17.707] Browser ERROR   ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:03:17.707] Browser ERROR   ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:05:32.710] Browser ERROR   ./src/app/layout.tsx:4:1
+Module not found: Can't resolve '../../components/layout/Sidebar'
+  2 |
+  3 | import React, { useState } from "react";
+> 4 | import Sidebar from "../../components/layout/Sidebar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Topbar from "../../components/layout/Topbar";
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:05:32.710] Browser ERROR   ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '../../components/layout/Topbar'
+  3 | import React, { useState } from "react";
+  4 | import Sidebar from "../../components/layout/Sidebar";
+> 5 | import Topbar from "../../components/layout/Topbar";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 |
+  7 | export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  8 |   const [collapsed, setCollapsed] = useState(false);
+
+Import traces:
+  Client Component Browser:
+    ./src/app/layout.tsx [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/layout.tsx [Client Component SSR]
+    ./src/app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:09:04.286] Server  LOG     ✓ Compiled in 159ms
+[00:09:04.832] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:10:42.205] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:10:42.978] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:10:43.803] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:10:45.316] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:10:46.994] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:10:47.649] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:10:48.303] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:10:48.837] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:10:49.525] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:10:50.102] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:10:50.977] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:11:11.302] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:11:22.580] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:11:23.480] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:11:24.601] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:11:25.872] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:11:26.822] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:11:27.469] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/recommendation/page"
+[00:11:27.896] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:11:28.548] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/history/page"
+[00:11:29.467] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/dashboard/history/page"
