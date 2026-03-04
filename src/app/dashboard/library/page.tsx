@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 
-// ── DINAGDAGAN NATIN NG "date" AT "desc" ANG MGA LIBRO ──
 const BOOKS = [
   { id: 1, title: "Introduction to Algorithms", author: "Cormen et al.", date: "2022", desc: "A comprehensive update of the leading algorithms text, with new material on matchings in bipartite graphs, online algorithms, machine learning, and other topics.", cat: "Computer Science", color: "#1e3a5f", spine: "#3d8bef", avail: true, pages: 1292, emoji: "📘" },
   { id: 2, title: "Calculus: Early Transcendentals", author: "James Stewart", date: "2020", desc: "Widely renowned for its mathematical precision and accuracy, clarity of exposition, and outstanding examples and problem sets.", cat: "Mathematics", color: "#3b1f6e", spine: "#7c3aed", avail: false, pages: 1368, emoji: "📙" },
@@ -19,7 +18,6 @@ export default function LibraryPage() {
   const [filterAvail, setFilterAvail] = useState("all");
   const [savedBooks, setSavedBooks] = useState<number[]>([]);
   
-  // State para sa Pop-up Modal
   const [selectedBook, setSelectedBook] = useState<any>(null);
 
   const toggleSave = (e: React.MouseEvent | null, id: number) => {
@@ -92,7 +90,6 @@ export default function LibraryPage() {
         <div className="hero-sub">Explore available books across different categories tailored for BSCS students.</div>
       </div>
 
-      {/* ── CURATED SECTION ── */}
       <div style={{ marginBottom: "30px" }}>
         <div className="section-head">
           <div>
@@ -123,7 +120,6 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* ── BROWSE GRID ── */}
       <div>
         <div className="section-head" style={{ marginBottom: "12px" }}>
           <div className="section-title">Browse by Category</div>
@@ -131,7 +127,12 @@ export default function LibraryPage() {
             <select className="filter-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
               <option value="title">A–Z Title</option>
               <option value="author">A–Z Author</option>
-              <option value="avail">Available First</option>
+            </select>
+            {/* IBINALIK NA ANG PANGALAWANG FILTER DITO! */}
+            <select className="filter-sel" value={filterAvail} onChange={e => setFilterAvail(e.target.value)}>
+              <option value="all">All Books</option>
+              <option value="yes">Available</option>
+              <option value="no">Unavailable</option>
             </select>
           </div>
         </div>
@@ -172,21 +173,19 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* ── ENHANCED BOOK DETAILS MODAL ── */}
+      {/* ── ENHANCED MODAL (WALA NANG BORROW BUTTON) ── */}
       {selectedBook && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(26,39,68,.6)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={() => setSelectedBook(null)}>
           <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", maxWidth: "520px", width: "100%", position: "relative", boxShadow: "0 24px 64px rgba(26,39,68,.18)", animation: "modalFadeUp .25s ease both" }} onClick={e => e.stopPropagation()}>
             <button onClick={() => setSelectedBook(null)} style={{ position: "absolute", top: "24px", right: "24px", background: "#f0ede5", border: "none", borderRadius: "50%", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#8a8ea8", fontSize: "16px", transition: "background 0.2s" }}>✕</button>
             
             <div style={{ display: "flex", gap: "24px", marginBottom: "24px", alignItems: "flex-start" }}>
-              {/* Bigger Cover in Modal */}
               <div className="bk-cover" style={{ width: 120, height: 160, background: `linear-gradient(150deg, ${selectedBook.color}, ${selectedBook.spine}88)` }}>
                 <div className="spine" style={{ background: selectedBook.spine }}></div>
                 <div className="lines"></div>
                 <span style={{ fontSize: "50px", position: "relative", zIndex: 1 }}>{selectedBook.emoji}</span>
               </div>
               
-              {/* Detailed Headers */}
               <div style={{ flex: 1, marginTop: "4px" }}>
                 <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "22px", color: "#1a2744", marginBottom: "6px", lineHeight: 1.2 }}>{selectedBook.title}</h3>
                 <p style={{ fontSize: "14px", color: "#3d8bef", fontWeight: 600, marginBottom: "12px" }}>{selectedBook.author}</p>
@@ -199,7 +198,6 @@ export default function LibraryPage() {
               </div>
             </div>
 
-            {/* Description / Synopsis Section */}
             <div style={{ marginBottom: "28px", background: "#f9f8f5", padding: "16px", borderRadius: "12px", border: "1px solid #e2dfd6" }}>
               <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#8a8ea8", marginBottom: "8px" }}>Synopsis / Description</h4>
               <p style={{ fontSize: "13.5px", color: "#475569", lineHeight: 1.6, margin: 0 }}>
@@ -207,15 +205,10 @@ export default function LibraryPage() {
               </p>
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: "flex", gap: "10px" }}>
-              {selectedBook.avail ? (
-                <button style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", color: "#fff", background: "#1a2744", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 4px 14px rgba(26,39,68,.25)" }} onClick={() => { alert('Book Borrowed! Please pick it up at the library.'); setSelectedBook(null); }}>📖 Borrow Book</button>
-              ) : (
-                <button style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", color: "#fff", background: "#3d8bef", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 4px 14px rgba(61,139,239,.3)" }} onClick={() => { alert('You will be notified via email when this book is returned!'); setSelectedBook(null); }}>🔔 Notify me when available</button>
-              )}
-              <button style={{ padding: "12px 20px", borderRadius: "12px", border: "2px solid #e2dfd6", background: "#f0ede5", color: "#1a2744", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }} onClick={() => toggleSave(null, selectedBook.id)}>
-                 {savedBooks.includes(selectedBook.id) ? '❤️ Saved' : '🤍 Wishlist'}
+            {/* WISHLIST BUTTON NALANG ANG NATIRA DITO */}
+            <div style={{ display: "flex" }}>
+              <button style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: savedBooks.includes(selectedBook.id) ? "#f0ede5" : "#1a2744", color: savedBooks.includes(selectedBook.id) ? "#1a2744" : "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", transition: "all 0.2s" }} onClick={() => toggleSave(null, selectedBook.id)}>
+                 {savedBooks.includes(selectedBook.id) ? '❤️ Saved to Wishlist' : '🤍 Add to Wishlist'}
               </button>
             </div>
           </div>

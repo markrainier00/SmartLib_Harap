@@ -11,8 +11,8 @@ const BOOKS = [
 ];
 
 export default function MyBooksPage() {
-  const [borrowed] = useState([2, 5]); // Walang return buttons kaya static for now
-  const [wishlist, setWishlist] = useState([1, 3]); // Pinagsamang saved at reserved logic
+  const [borrowed] = useState([2, 5]); 
+  const [wishlist, setWishlist] = useState([1, 3]); 
 
   const renderCover = (book: any, width: number, height: number, fontSize: number) => (
     <div style={{ width, height, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", flexShrink: 0, boxShadow: "3px 3px 12px rgba(0,0,0,.18)", background: `linear-gradient(150deg, ${book.color}, ${book.spine}88)` }}>
@@ -34,7 +34,7 @@ export default function MyBooksPage() {
         
         .list-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(26,39,68,.08); border: 1px solid #e2dfd6; padding: 16px 18px; margin-bottom: 10px; transition: transform .2s; }
         
-        .lc-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+        .lc-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         .lc-left { display: flex; gap: 14px; }
         .lc-title { font-size: 14px; font-weight: 700; color: #1a2744; margin-bottom: 2px; }
         .lc-author { font-size: 12px; color: #8a8ea8; }
@@ -52,7 +52,7 @@ export default function MyBooksPage() {
       <div className="ml-title">My List</div>
       <div className="ml-sub">Monitor your current borrowed items and your wishlist</div>
 
-      {/* ── BORROWED BOOKS (Wala nang Actions!) ── */}
+      {/* ── BORROWED BOOKS ── */}
       <div style={{ marginBottom: "32px" }}>
         <div className="section-head">
           <h3>📖 Borrowed Books</h3>
@@ -76,17 +76,14 @@ export default function MyBooksPage() {
                     </div>
                   </div>
                 </div>
-                {/* ACTIONS REMOVED BASED ON FEEDBACK */}
-                <div style={{ fontSize: "11px", color: "#8a8ea8", textAlign: "right" }}>
-                  For concerns or returns, please approach<br/>the library counter or use the Support tab.
-                </div>
+                {/* Tinanggal na yung mahabang text dito! */}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* ── WISHLIST (Pinalitan ang Reserved at Saved) ── */}
+      {/* ── WISHLIST ── */}
       <div>
         <div className="section-head">
           <h3>⭐ My Wishlist</h3>
@@ -114,7 +111,6 @@ export default function MyBooksPage() {
           })}
         </div>
       </div>
-      
     </div>
   );
 }

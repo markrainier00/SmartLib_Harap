@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("signin");
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -11,6 +13,12 @@ export default function AuthPage() {
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
     const value = e.target.value;
     setter(value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : "");
+  };
+
+  // Function para dumiretso sa Library Dashboard pagka-login
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push("/dashboard/library");
   };
 
   return (
@@ -29,7 +37,7 @@ export default function AuthPage() {
           font-family: 'DM Sans', sans-serif;
           position: fixed;
           inset: 0;
-          overflow-y: auto; /* Pinapayagan ang scroll kung maliit ang screen */
+          overflow-y: auto;
           padding: 40px 20px;
         }
 
@@ -48,7 +56,7 @@ export default function AuthPage() {
           z-index: 1; 
           display: flex;
           flex-direction: column;
-          height: auto; /* Awtomatikong mag-aadjust ang taas base sa fields */
+          height: auto;
           transition: all 0.3s ease-in-out;
         }
 
@@ -103,12 +111,13 @@ export default function AuthPage() {
           <button className={`tab ${activeTab === 'register' ? 'active' : ''}`} onClick={() => setActiveTab('register')}>Register</button>
         </div>
 
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={handleLogin}>
           {activeTab === 'signin' ? (
             <>
+              {/* BINAGO ANG LABEL AT PLACEHOLDER BASE SA PDF */}
               <div className="field">
-                <label>Email Address</label>
-                <input type="email" placeholder="student@university.edu" required />
+                <label>Email Address / Student ID</label>
+                <input type="text" placeholder="student@university.edu or 2024-00123" required />
               </div>
               <div className="field">
                 <label>Password</label>
@@ -147,12 +156,14 @@ export default function AuthPage() {
                 <input type="text" placeholder="2024-00123" required />
               </div>
               <div className="form-row">
+                {/* BINAGO ANG LABEL NA COURSE SA PROGRAM BASE SA PDF */}
                 <div className="field">
-                  <label>Course</label>
+                  <label>Program</label>
                   <select required defaultValue="">
                     <option value="" disabled>Select</option>
                     <option value="BSCS">BSCS</option>
                     <option value="BSIT">BSIT</option>
+                    <option value="BSCpE">BSCpE</option>
                   </select>
                 </div>
                 <div className="field">
@@ -161,6 +172,8 @@ export default function AuthPage() {
                     <option value="" disabled>Select</option>
                     <option value="1st">1st Year</option>
                     <option value="2nd">2nd Year</option>
+                    <option value="3rd">3rd Year</option>
+                    <option value="4th">4th Year</option>
                   </select>
                 </div>
               </div>
