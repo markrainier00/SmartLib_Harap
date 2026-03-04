@@ -18,11 +18,31 @@ export default function LibraryPage() {
   const [filterAvail, setFilterAvail] = useState("all");
   const [savedBooks, setSavedBooks] = useState<number[]>([]);
   
+  // States para sa Modal at Form
   const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [requestStep, setRequestStep] = useState<"details" | "form">("details");
+  const [pickupDate, setPickupDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
 
   const toggleSave = (e: React.MouseEvent | null, id: number) => {
     if (e) e.stopPropagation();
     setSavedBooks(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const closeModal = () => {
+    setSelectedBook(null);
+    setRequestStep("details");
+    setPickupDate("");
+    setReturnDate("");
+  };
+
+  const handleConfirmRequest = () => {
+    if (!pickupDate || !returnDate) {
+      alert("⚠️ Please select both pickup and return dates.");
+      return;
+    }
+    alert(`✅ Request submitted! \nPickup: ${pickupDate}\nReturn: ${returnDate}\n\nPlease proceed to the library on your pickup date.`);
+    closeModal();
   };
 
   let filteredBooks = BOOKS.filter(b => {
@@ -128,7 +148,6 @@ export default function LibraryPage() {
               <option value="title">A–Z Title</option>
               <option value="author">A–Z Author</option>
             </select>
-            {/* IBINALIK NA ANG PANGALAWANG FILTER DITO! */}
             <select className="filter-sel" value={filterAvail} onChange={e => setFilterAvail(e.target.value)}>
               <option value="all">All Books</option>
               <option value="yes">Available</option>
@@ -173,11 +192,11 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* ── ENHANCED MODAL (WALA NANG BORROW BUTTON) ── */}
+      {/* ── ENHANCED MODAL WITH DATE PICKER FORM ── */}
       {selectedBook && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(26,39,68,.6)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={() => setSelectedBook(null)}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(26,39,68,.6)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={closeModal}>
           <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", maxWidth: "520px", width: "100%", position: "relative", boxShadow: "0 24px 64px rgba(26,39,68,.18)", animation: "modalFadeUp .25s ease both" }} onClick={e => e.stopPropagation()}>
-            <button onClick={() => setSelectedBook(null)} style={{ position: "absolute", top: "24px", right: "24px", background: "#f0ede5", border: "none", borderRadius: "50%", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#8a8ea8", fontSize: "16px", transition: "background 0.2s" }}>✕</button>
+            <button onClick={closeModal} style={{ position: "absolute", top: "24px", right: "24px", background: "#f0ede5", border: "none", borderRadius: "50%", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#8a8ea8", fontSize: "16px", transition: "background 0.2s" }}>✕</button>
             
             <div style={{ display: "flex", gap: "24px", marginBottom: "24px", alignItems: "flex-start" }}>
               <div className="bk-cover" style={{ width: 120, height: 160, background: `linear-gradient(150deg, ${selectedBook.color}, ${selectedBook.spine}88)` }}>
@@ -198,19 +217,70 @@ export default function LibraryPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: "28px", background: "#f9f8f5", padding: "16px", borderRadius: "12px", border: "1px solid #e2dfd6" }}>
-              <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#8a8ea8", marginBottom: "8px" }}>Synopsis / Description</h4>
-              <p style={{ fontSize: "13.5px", color: "#475569", lineHeight: 1.6, margin: 0 }}>
-                {selectedBook.desc}
-              </p>
+            {/* STEP 1: Ipakita ang Synopsis kung details view */}
+            {requestStep === "details" && (
+              <div style={{ marginBottom: "28px", background: "#f9f8f5", padding: "16px", borderRadius: "12px", border: "1px solid #e2dfd6", animation: "modalFadeUp .2s ease" }}>
+                <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#8a8ea8", marginBottom: "8px" }}>Synopsis / Description</h4>
+                <p style={{ fontSize: "13.5px", color: "#475569", lineHeight: 1.6, margin: 0 }}>
+                  {selectedBook.desc}
+                </p>
+              </div>
+            )}
+
+            {/* STEP 2: Ipakita ang Date Form kung form view */}
+            {requestStep === "form" && (
+              <div style={{ background: "#f0f6ff", padding: "20px", borderRadius: "16px", border: "1px solid #c9e0ff", marginBottom: "24px", animation: "modalFadeUp .2s ease" }}>
+                <h4 style={{ fontSize: "15px", fontWeight: 700, color: "#1a2744", marginBottom: "14px" }}>📅 Schedule your Borrow Request</h4>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "14px" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", color: "#8a8ea8", marginBottom: "6px" }}>Pickup Date</label>
+                    <input type="date" value={pickupDate} onChange={e => setPickupDate(e.target.value)} style={{ width: "100%", background: "#fff", border: "2px solid #e2dfd6", borderRadius: "10px", padding: "10px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#1a2744", outline: "none" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", color: "#8a8ea8", marginBottom: "6px" }}>Return Date</label>
+                    <input type="date" value={returnDate} onChange={e => setReturnDate(e.target.value)} style={{ width: "100%", background: "#fff", border: "2px solid #e2dfd6", borderRadius: "10px", padding: "10px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "#1a2744", outline: "none" }} />
+                  </div>
+                </div>
+                <div style={{ fontSize: "11px", color: "#64748b", lineHeight: 1.5 }}>
+                  <span style={{color: "#e05c5c", fontWeight: 600}}>Note:</span> Unclaimed books after the pickup date will be automatically canceled. Standard borrow duration is max 7 days.
+                </div>
+              </div>
+            )}
+
+            {/* BUTTONS LOGIC */}
+            <div style={{ display: "flex", gap: "10px" }}>
+              {requestStep === "details" ? (
+                <>
+                  {selectedBook.avail ? (
+                    <button style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: "#3d8bef", color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", boxShadow: "0 4px 14px rgba(61,139,239,.3)", transition: "all 0.2s" }} 
+                            onClick={() => setRequestStep("form")}>
+                      ✋ Request to Borrow
+                    </button>
+                  ) : (
+                    <button style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: "#e89940", color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", boxShadow: "0 4px 14px rgba(232,153,64,.3)", transition: "all 0.2s" }} 
+                            onClick={() => { alert('You are now in queue! You will receive an email once this book is returned.'); closeModal(); }}>
+                      🔔 Notify When Available
+                    </button>
+                  )}
+                  <button style={{ padding: "14px 20px", borderRadius: "12px", border: "2px solid #e2dfd6", background: savedBooks.includes(selectedBook.id) ? "#1a2744" : "#f0ede5", color: savedBooks.includes(selectedBook.id) ? "#fff" : "#1a2744", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", transition: "all 0.2s" }} 
+                          onClick={() => toggleSave(null, selectedBook.id)}>
+                     {savedBooks.includes(selectedBook.id) ? '❤️ Saved' : '🤍 Wishlist'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: "#1a2744", color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", boxShadow: "0 4px 14px rgba(26,39,68,.25)" }} 
+                          onClick={handleConfirmRequest}>
+                    ✅ Confirm Request
+                  </button>
+                  <button style={{ padding: "14px 20px", borderRadius: "12px", border: "2px solid #e2dfd6", background: "#fff", color: "#1a2744", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px" }} 
+                          onClick={() => setRequestStep("details")}>
+                    Cancel
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* WISHLIST BUTTON NALANG ANG NATIRA DITO */}
-            <div style={{ display: "flex" }}>
-              <button style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: savedBooks.includes(selectedBook.id) ? "#f0ede5" : "#1a2744", color: savedBooks.includes(selectedBook.id) ? "#1a2744" : "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", transition: "all 0.2s" }} onClick={() => toggleSave(null, selectedBook.id)}>
-                 {savedBooks.includes(selectedBook.id) ? '❤️ Saved to Wishlist' : '🤍 Add to Wishlist'}
-              </button>
-            </div>
           </div>
         </div>
       )}

@@ -25,7 +25,7 @@ export default function Sidebar() {
           <rect x="14" y="17" width="2" height="28" rx="1" fill="rgba(255,255,255,0.4)"/>
         </svg>
         <div className="logo-text">
-          <div className="logo-name">LibraSync</div>
+          <div className="logo-name">SmartLib</div>
           <div className="logo-sub">Student Portal</div>
         </div>
       </div>
@@ -56,9 +56,9 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar-user">
-        <div className="user-avatar">J</div>
+        <div className="user-avatar">B</div>
         <div style={{ overflow: "hidden" }}>
-          <div className="user-name">Juan dela Cruz</div>
+          <div className="user-name">Bryan Lumangaya</div>
           <div className="user-course">{program}</div>
         </div>
       </div>

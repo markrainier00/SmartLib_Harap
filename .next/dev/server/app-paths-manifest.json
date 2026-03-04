@@ -3,6 +3,5 @@
   "/dashboard/history/page": "app/dashboard/history/page.js",
   "/dashboard/library/page": "app/dashboard/library/page.js",
   "/dashboard/mybooks/page": "app/dashboard/mybooks/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/support/page": "app/dashboard/support/page.js"
 }

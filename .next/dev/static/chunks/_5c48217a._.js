@@ -215,7 +215,7 @@ function Sidebar() {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "logo-name",
-                                children: "LibraSync"
+                                children: "SmartLib"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/layout/Sidebar.tsx",
                                 lineNumber: 28,
@@ -332,7 +332,7 @@ function Sidebar() {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "user-avatar",
-                        children: "J"
+                        children: "B"
                     }, void 0, false, {
                         fileName: "[project]/src/components/layout/Sidebar.tsx",
                         lineNumber: 59,
@@ -345,7 +345,7 @@ function Sidebar() {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "user-name",
-                                children: "Juan dela Cruz"
+                                children: "Bryan Lumangaya"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/layout/Sidebar.tsx",
                                 lineNumber: 61,
