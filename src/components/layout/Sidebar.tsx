@@ -4,80 +4,62 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navItems = [
-  { path: "/dashboard", label: "Dashboard", emoji: "▣" },
-  { path: "/dashboard/library", label: "Library", emoji: "◫" },
-  { path: "/dashboard/mybooks", label: "My Books", emoji: "◈" },
-  { path: "/dashboard/history", label: "History", emoji: "◷" },
-  { path: "/dashboard/recommendation", label: "For You", emoji: "◆" },
-];
-
-const courses = ["BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE"];
-
-export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolean, setCollapsed: (val: boolean) => void }) {
+export default function Sidebar() {
   const pathname = usePathname();
   const [course, setCourse] = useState("BSCS");
-  const SW = collapsed ? 64 : 220;
+
+  const NAV_ITEMS = [
+    { id: "/dashboard/library", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>, label: "Recommendations" },
+    { id: "/dashboard/mybooks", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: "My List" },
+    { id: "/dashboard/history", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, label: "History" },
+    { id: "/dashboard/support", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: "Support" },
+  ];
 
   return (
-    <aside style={{
-      width: SW, flexShrink: 0, background: "#0f0f1d", borderRight: "1px solid rgba(255,255,255,.07)",
-      display: "flex", flexDirection: "column", transition: "width .22s ease", overflow: "hidden", zIndex: 20,
-    }}>
-      {/* Logo */}
-      <div style={{ padding: "18px 14px 14px", borderBottom: "1px solid rgba(255,255,255,.06)", display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
-        <div style={{ width: 34, height: 34, background: "#c9a84c", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>📚</div>
-        {!collapsed && (
-          <div>
-            <div className="np" style={{ fontSize: 16, fontWeight: 700, color: "#c9a84c", lineHeight: 1 }}>Athenaeum</div>
-            <div style={{ fontSize: 10, color: "rgba(226,226,238,.28)", marginTop: 3, letterSpacing: .5 }}>STUDENT PORTAL</div>
-          </div>
-        )}
+    <aside className="sidebar">
+      <div className="sidebar-logo">
+        <svg width="36" height="36" viewBox="0 0 56 56" fill="none">
+          <rect x="20" y="8" width="26" height="34" rx="4" fill="#e8528a" transform="rotate(6 33 25)"/>
+          <rect x="8" y="12" width="26" height="34" rx="4" fill="#3d8bef" transform="rotate(-4 21 29)"/>
+          <rect x="13" y="16" width="24" height="30" rx="4" fill="#4caf6e"/>
+          <rect x="14" y="17" width="2" height="28" rx="1" fill="rgba(255,255,255,0.4)"/>
+        </svg>
+        <div className="logo-text">
+          <div className="logo-name">SmartLib</div>
+          <div className="logo-sub">Student Portal</div>
+        </div>
       </div>
 
-      {/* Nav items */}
-      <nav style={{ flex: 1, padding: "12px 8px", display: "flex", flexDirection: "column", gap: 3 }}>
-        {navItems.map(n => (
-          <Link
-            key={n.path}
-            href={n.path}
-            className={`nav-btn ${pathname === n.path ? "nav-active" : ""}`}
-            title={collapsed ? n.label : ""}
-            style={{ justifyContent: collapsed ? "center" : "flex-start" }}
-          >
-            <span className="nav-icon">{n.emoji}</span>
-            {!collapsed && <span>{n.label}</span>}
-          </Link>
-        ))}
+      <div className="sidebar-course">
+        <label>My Course</label>
+        <select value={course} onChange={(e) => setCourse(e.target.value)}>
+          {["BSCS", "BSIT", "BSCED", "BSE", "BSBA", "BSA", "BSECE", "BSCHE", "BSN", "BSCE", "BSIS", "BSP"].map(c => <option key={c}>{c}</option>)}
+        </select>
+      </div>
+
+      <nav className="sidebar-nav">
+        {NAV_ITEMS.map((item) => {
+          const isActive = pathname?.includes(item.id);
+          return (
+            <Link key={item.id} href={item.id} className={`nav-item ${isActive ? "active" : ""}`}>
+              {item.icon}
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* Course selector */}
-      {!collapsed && (
-        <div style={{ padding: "0 12px 12px" }}>
-          <p style={{ fontSize: 10, color: "rgba(226,226,238,.28)", letterSpacing: .6, marginBottom: 6, paddingLeft: 2 }}>MY COURSE</p>
-          <select className="sel" value={course} onChange={e => setCourse(e.target.value)} style={{ width: "100%", fontSize: 12, padding: "7px 10px" }}>
-            {courses.map(c => <option key={c}>{c}</option>)}
-          </select>
-        </div>
-      )}
-
-      {/* Collapse toggle */}
-      <div style={{ padding: "10px 8px", borderTop: "1px solid rgba(255,255,255,.06)" }}>
-        <button className="nav-btn" style={{ justifyContent: collapsed ? "center" : "flex-start" }} onClick={() => setCollapsed(!collapsed)}>
-          <span className="nav-icon" style={{ transform: collapsed ? "scaleX(-1)" : "scaleX(1)", transition: "transform .22s", display: "inline-block" }}>◀</span>
-          {!collapsed && <span style={{ fontSize: 12 }}>Collapse</span>}
-        </button>
+      <div className="sidebar-status">
+        <span className="st-dot"></span><span className="st-label">Account Active</span>
+        <div className="st-sub">Email alerts enabled for all library updates</div>
       </div>
 
-      {/* User */}
-      <div style={{ padding: "10px 10px 14px", borderTop: "1px solid rgba(255,255,255,.06)", display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
-        <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#c9a84c,#6b4c10)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, flexShrink: 0 }}>J</div>
-        {!collapsed && (
-          <div style={{ overflow: "hidden" }}>
-            <p style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Juan dela Cruz</p>
-            <p style={{ fontSize: 11, color: "rgba(226,226,238,.38)" }}>{course}</p>
-          </div>
-        )}
+      <div className="sidebar-user">
+        <div className="user-avatar">J</div>
+        <div style={{ overflow: "hidden" }}>
+          <div className="user-name">Bryan Lumangaya</div>
+          <div className="user-course">{course}</div>
+        </div>
       </div>
     </aside>
   );

@@ -7,7 +7,7 @@ export default function DashboardHome() {
   return (
     <div>
       <div style={{ marginBottom: 22 }}>
-        <h1 className="np" style={{ fontSize: 26 }}>Welcome back, Juan 👋</h1>
+        <h1 className="np" style={{ fontSize: 26 }}>Welcome back, Bryan 👋</h1>
         <p style={{ color: "rgba(226,226,238,.38)", fontSize: 13, marginTop: 5 }}>Library overview — March 2026</p>
       </div>
 

@@ -1,61 +1,84 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
-
-const initNotifs = [
-  { id: 1, message: "Your library account has been approved!", time: "2 hours ago", read: false },
-  { id: 2, message: "Introduction to Algorithms due in 2 days", time: "1 day ago", read: false },
-  { id: 3, message: "Your reserved book is ready for pickup", time: "3 days ago", read: true },
-];
-
-const navLabels: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/dashboard/library": "Library",
-  "/dashboard/mybooks": "My Books",
-  "/dashboard/history": "History",
-  "/dashboard/recommendation": "For You",
-};
+import Link from "next/link";
 
 export default function Topbar() {
-  const pathname = usePathname();
-  const [notifs, setNotifs] = useState(initNotifs);
   const [showNotifs, setShowNotifs] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
-  const unread = notifs.filter(n => !n.read).length;
-  const currentLabel = navLabels[pathname] || "Dashboard";
+  const notifs = [
+    { id: 1, icon: "✅", msg: "Your library account has been approved!", time: "2h ago", read: false },
+    { id: 2, icon: "⏰", msg: "Calculus: Early Transcendentals due in 2 days", time: "1d ago", read: false },
+  ];
+  const unread = notifs.filter((n) => !n.read).length;
 
   return (
-    <header style={{ height: 56, background: "rgba(12,12,20,.97)", borderBottom: "1px solid rgba(255,255,255,.07)", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, position: "relative", zIndex: 30 }}>
-      <h2 className="np" style={{ fontSize: 18 }}>{currentLabel}</h2>
-      
-      <div style={{ position: "relative" }}>
-        <button className="btn btn-ghost" style={{ padding: "6px 11px", fontSize: 17, position: "relative" }} onClick={() => setShowNotifs(!showNotifs)}>
-          🔔
-          {unread > 0 && <span style={{ position: "absolute", top: 3, right: 3, width: 15, height: 15, background: "#e74c3c", borderRadius: 8, fontSize: 9, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{unread}</span>}
-        </button>
-        
-        {showNotifs && (
-          <div className="np-panel" style={{ right: 0 }}>
-            <div style={{ padding: "13px 18px", borderBottom: "1px solid rgba(255,255,255,.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontWeight: 600, fontSize: 14 }}>Notifications</span>
-              <button className="btn btn-ghost" style={{ padding: "4px 9px", fontSize: 11 }} onClick={() => setNotifs(notifs.map(n => ({ ...n, read: true })))}>Mark all read</button>
-            </div>
-            {notifs.map(n => (
-              <div key={n.id} style={{ padding: "12px 18px", borderBottom: "1px solid rgba(255,255,255,.05)", background: n.read ? "transparent" : "rgba(201,168,76,.04)", display: "flex", gap: 10, alignItems: "flex-start" }}>
-                <div style={{ width: 7, height: 7, borderRadius: 4, background: n.read ? "transparent" : "#c9a84c", marginTop: 5, flexShrink: 0 }} />
-                <div>
-                  <p style={{ fontSize: 13, color: n.read ? "rgba(226,226,238,.5)" : "#e2e2ee" }}>{n.message}</p>
-                  <p style={{ fontSize: 11, color: "rgba(226,226,238,.3)", marginTop: 3 }}>{n.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+    <>
+      <header className="topbar">
+        <div className="search-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search books, authors…" />
+        </div>
 
-      {/* Click-away overlay for notifs */}
-      {showNotifs && <div style={{ position: "fixed", inset: 0, zIndex: -1 }} onClick={() => setShowNotifs(false)} />}
-    </header>
+        <div className="topbar-actions">
+          {/* Notif Button */}
+          <div style={{ position: "relative" }}>
+            <button className="notif-btn" onClick={() => { setShowNotifs(!showNotifs); setShowProfile(false); }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5a6070" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              {unread > 0 && <span className="notif-badge">{unread}</span>}
+            </button>
+            {showNotifs && (
+              <div className="dropdown notif-panel open">
+                <div className="notif-head">
+                  <h4>Notifications</h4>
+                  <button>Mark all read</button>
+                </div>
+                {notifs.map(n => (
+                  <div key={n.id} className={`notif-item ${n.read ? '' : 'unread'}`}>
+                    <span className="ni-icon">{n.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <p className="ni-msg">{n.msg}</p>
+                      <div className="ni-time">{n.time}</div>
+                    </div>
+                    {!n.read && <div className="ni-dot"></div>}
+                  </div>
+                ))}
+                <div className="notif-footer">📧 Email alerts sent to bryan@cmdi.edu.ph</div>
+              </div>
+            )}
+          </div>
+
+          {/* Profile Pill */}
+          <div style={{ position: "relative" }}>
+            <button className="profile-pill" onClick={() => { setShowProfile(!showProfile); setShowNotifs(false); }}>
+              <div className="pa">J</div>
+              <span>bryan</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8a8ea8" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            {showProfile && (
+              <div className="dropdown profile-panel open">
+                <div className="pp-head">
+                  <div className="pp-avatar">J</div>
+                  <div className="pp-name">bryan Lumangaya</div>
+                  <div className="pp-email">Bryan@cmdi.edu</div>
+                  <div className="pp-badge">✓ Account Active</div>
+                </div>
+                <button className="pp-item" onClick={() => setShowProfile(false)}>👤 View Profile</button>
+                <button className="pp-item" onClick={() => setShowProfile(false)}>🔑 Change Password</button>
+                <Link href="/login" style={{ textDecoration: "none" }}>
+                  <button className="pp-item">🚪 Logout</button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Invisible overlay pampasara ng dropdown kapag clinick sa labas */}
+      {(showNotifs || showProfile) && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 40 }} onClick={() => { setShowNotifs(false); setShowProfile(false); }} />
+      )}
+    </>
   );
 }

@@ -1,8 +1,9 @@
 {
   "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/dashboard/history/page": "app/dashboard/history/page.js",
   "/dashboard/library/page": "app/dashboard/library/page.js",
   "/dashboard/mybooks/page": "app/dashboard/mybooks/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/recommendation/page": "app/dashboard/recommendation/page.js"
+  "/dashboard/support/page": "app/dashboard/support/page.js"
 }
