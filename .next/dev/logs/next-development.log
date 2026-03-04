@@ -1,29 +1,8 @@
-[00:00:01.941] Server  LOG     ✓ Ready in 1314ms
-[00:00:02.848] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:26.124] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:39.056] Server  LOG     ✓ Compiled in 185ms
-[00:03:44.159] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:51.102] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:04:04.646] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:04:12.677] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:06:26.886] Server  LOG     ✓ Compiled in 44ms
-[00:07:56.350] Server  LOG     ✓ Compiled in 24ms
-[00:08:27.768] Server  LOG     ✓ Compiled in 96ms
-[00:09:01.781] Server  LOG     ✓ Compiled in 25ms
-[00:11:45.179] Server  LOG     ✓ Compiled in 19ms
-[00:11:55.014] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:12:46.289] Server  LOG     ✓ Compiled in 30ms
-[00:13:21.089] Server  LOG     ✓ Compiled in 44ms
-[00:16:15.374] Server  LOG     ✓ Compiled in 198ms
-[00:16:15.850] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:16:18.471] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/mybooks/page"
-[00:16:18.790] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/mybooks/page"
-[00:16:21.505] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/mybooks/page"
-[00:16:22.491] Server  ERROR   ⨯ Error: The default export is not a React Component in "/dashboard/mybooks/page"
-[00:16:22.787] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/dashboard/mybooks/page"
-[00:16:32.988] Server  LOG     ✓ Compiled in 346ms
-[00:16:34.053] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:18:53.186] Server  LOG     ✓ Compiled in 54ms
-[00:20:08.538] Server  LOG     ✓ Compiled in 71ms
-[00:21:22.423] Server  LOG     ✓ Compiled in 49ms
-[00:24:00.573] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:02.118] Server  LOG     ✓ Ready in 1444ms
+[00:00:19.563] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:27.475] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:07:00.164] Server  LOG     ✓ Compiled in 280ms
+[00:07:00.579] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:07:34.217] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:17:14.911] Server  LOG     ✓ Compiled in 218ms
+[00:17:19.823] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 
-// ── MOCK DATA BASE SA IYONG HTML ──
+// ── DINAGDAGAN NATIN NG "date" AT "desc" ANG MGA LIBRO ──
 const BOOKS = [
-  { id: 1, title: "Introduction to Algorithms", author: "Cormen et al.", cat: "Computer Science", color: "#1e3a5f", spine: "#3d8bef", avail: true, rating: 4.8, pages: 1292, emoji: "📘" },
-  { id: 2, title: "Calculus: Early Transcendentals", author: "James Stewart", cat: "Mathematics", color: "#3b1f6e", spine: "#7c3aed", avail: false, rating: 4.5, pages: 1368, emoji: "📙" },
-  { id: 3, title: "Organic Chemistry", author: "Paula Bruice", cat: "Chemistry", color: "#1a4731", spine: "#4caf6e", avail: true, rating: 4.3, pages: 1440, emoji: "📗" },
-  { id: 4, title: "Principles of Economics", author: "N. Gregory Mankiw", cat: "Economics", color: "#7c2d12", spine: "#ea580c", avail: true, rating: 4.6, pages: 880, emoji: "📕" },
-  { id: 6, title: "Data Structures in Java", author: "Robert Lafore", cat: "Computer Science", color: "#1e1b4b", spine: "#4f46e5", avail: true, rating: 4.4, pages: 780, emoji: "📙" },
+  { id: 1, title: "Introduction to Algorithms", author: "Cormen et al.", date: "2022", desc: "A comprehensive update of the leading algorithms text, with new material on matchings in bipartite graphs, online algorithms, machine learning, and other topics.", cat: "Computer Science", color: "#1e3a5f", spine: "#3d8bef", avail: true, pages: 1292, emoji: "📘" },
+  { id: 2, title: "Calculus: Early Transcendentals", author: "James Stewart", date: "2020", desc: "Widely renowned for its mathematical precision and accuracy, clarity of exposition, and outstanding examples and problem sets.", cat: "Mathematics", color: "#3b1f6e", spine: "#7c3aed", avail: false, pages: 1368, emoji: "📙" },
+  { id: 3, title: "Organic Chemistry", author: "Paula Bruice", date: "2019", desc: "Provides a framework for understanding the fundamental principles of organic chemistry, focusing on mechanisms and conceptual understanding.", cat: "Chemistry", color: "#1a4731", spine: "#4caf6e", avail: true, pages: 1440, emoji: "📗" },
+  { id: 4, title: "Principles of Economics", author: "N. Gregory Mankiw", date: "2023", desc: "The most widely-used text in economics classrooms worldwide, providing a clear, engaging, and highly accessible introduction to economics.", cat: "Economics", color: "#7c2d12", spine: "#ea580c", avail: true, pages: 880, emoji: "📕" },
+  { id: 6, title: "Data Structures in Java", author: "Robert Lafore", date: "2017", desc: "A practical introduction to data structures and algorithms in Java, featuring clear explanations and visual examples.", cat: "Computer Science", color: "#1e1b4b", spine: "#4f46e5", avail: false, pages: 780, emoji: "📙" },
 ];
 
 const CATS = ["All", "Computer Science", "Mathematics", "Chemistry", "Economics", "Medicine", "Engineering"];
@@ -18,13 +18,15 @@ export default function LibraryPage() {
   const [sortBy, setSortBy] = useState("title");
   const [filterAvail, setFilterAvail] = useState("all");
   const [savedBooks, setSavedBooks] = useState<number[]>([]);
+  
+  // State para sa Pop-up Modal
+  const [selectedBook, setSelectedBook] = useState<any>(null);
 
-  const toggleSave = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation();
+  const toggleSave = (e: React.MouseEvent | null, id: number) => {
+    if (e) e.stopPropagation();
     setSavedBooks(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
-  // Filter Logic
   let filteredBooks = BOOKS.filter(b => {
     const matchCat = activeCat === "All" || b.cat === activeCat;
     const matchAvail = filterAvail === "all" || (filterAvail === "yes" ? b.avail : !b.avail);
@@ -37,7 +39,6 @@ export default function LibraryPage() {
 
   return (
     <div className="page-discover">
-      {/* ── EKSAKTONG CSS PARA SA PAGE NA ITO ── */}
       <style>{`
         .hero { background: linear-gradient(135deg, #1a2744 0%, #2a3d6e 55%, #1e4a8c 100%); border-radius: 20px; padding: 26px 30px; margin-bottom: 28px; position: relative; overflow: hidden; }
         .hero::before { content: ''; position: absolute; right: -20px; top: -40px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(61,139,239,.3) 0%, transparent 70%); }
@@ -45,13 +46,7 @@ export default function LibraryPage() {
         .hero-eyebrow { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.5); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 8px; }
         .hero-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: #fff; margin-bottom: 8px; position: relative; z-index: 2; }
         .hero-sub { font-size: 13px; color: rgba(255,255,255,.6); margin-bottom: 20px; max-width: 420px; position: relative; z-index: 2; }
-        .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; position: relative; z-index: 2; }
-        .hero-btn { border: none; border-radius: 50px; padding: 9px 22px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .18s; }
-        .hero-btn-white { background: #fff; color: #1a2744; }
-        .hero-btn-white:hover { background: #f5f3ee; }
-        .hero-btn-ghost { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
-        .hero-btn-ghost:hover { background: rgba(255,255,255,.2); }
-
+        
         .section-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; }
         .section-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: #1a2744; }
         .section-sub { font-size: 12px; color: #8a8ea8; margin-top: 2px; }
@@ -87,39 +82,32 @@ export default function LibraryPage() {
         .badge-red { background: #fdeaea; color: #c94040; }
         
         .filter-sel { background: #fff; border: 2px solid #e2dfd6; border-radius: 10px; color: #1a2744; padding: 7px 12px; font-family: 'DM Sans', sans-serif; font-size: 12.5px; outline: none; cursor: pointer; }
+        
+        @keyframes modalFadeUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: none; } }
       `}</style>
 
-      {/* ── HERO SECTION ── */}
       <div className="hero">
-        <div className="hero-eyebrow">Good Morning nandito ka para mag basa</div>
+        <div className="hero-eyebrow">Good Morning</div>
         <div className="hero-title">What will you learn today?</div>
-        <div className="hero-sub">Kung ako sayo mag basa ka ng libro BSCS students ka pa naman boss.</div>
-        <div className="hero-actions">
-          <button className="hero-btn hero-btn-white">Browse All Books</button>
-          <button className="hero-btn hero-btn-ghost">My List</button>
-        </div>
+        <div className="hero-sub">Explore available books across different categories tailored for BSCS students.</div>
       </div>
 
-      {/* ── RECOMMENDED SECTION ── */}
+      {/* ── CURATED SECTION ── */}
       <div style={{ marginBottom: "30px" }}>
         <div className="section-head">
           <div>
-            <div className="section-title">Recommended for You</div>
-            <div className="section-sub">Based on your BSCS curriculum</div>
+            <div className="section-title">Curated for You</div>
+            <div className="section-sub">Based on your enrolled program</div>
           </div>
-          <button className="hero-btn hero-btn-white" style={{ border: "2px solid #e2dfd6", padding: "6px 16px", fontSize: "12px" }}>See All →</button>
         </div>
         <div className="rec-scroll">
           {BOOKS.slice(0, 4).map(b => (
-            <div key={b.id} className="rec-book">
+            <div key={b.id} className="rec-book" onClick={() => setSelectedBook(b)}>
               <div style={{ position: "relative" }}>
                 <div className="bk-cover" style={{ width: 130, height: 175, background: `linear-gradient(150deg, ${b.color}, ${b.spine}88)` }}>
                   <div className="spine" style={{ background: b.spine }}></div>
                   <div className="lines"></div>
                   <span style={{ fontSize: "54px", position: "relative", zIndex: 1 }}>{b.emoji}</span>
-                  <div style={{ position: "absolute", bottom: 6, left: 7, right: 7, fontSize: 10, fontWeight: 700, color: "#fff", zIndex: 1, textShadow: "0 1px 3px rgba(0,0,0,.5)" }}>
-                    {b.title}
-                  </div>
                 </div>
                 <button className="heart-btn" onClick={(e) => toggleSave(e, b.id)}>
                   {savedBooks.includes(b.id) ? '❤️' : '🤍'}
@@ -127,16 +115,15 @@ export default function LibraryPage() {
               </div>
               <div className="rb-title">{b.title.length > 24 ? b.title.slice(0, 24) + '…' : b.title}</div>
               <div className="rb-author">{b.author}</div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, alignItems: "center" }}>
-                <span style={{ color: "#e8a020", fontSize: 12 }}>★ {b.rating}</span>
-                <span className={`badge ${b.avail ? 'badge-green' : 'badge-red'}`}>{b.avail ? 'Free' : 'Taken'}</span>
+              <div style={{ marginTop: 6 }}>
+                <span className={`badge ${b.avail ? 'badge-green' : 'badge-red'}`}>{b.avail ? 'Available' : 'Unavailable'}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── BROWSE BY CATEGORY ── */}
+      {/* ── BROWSE GRID ── */}
       <div>
         <div className="section-head" style={{ marginBottom: "12px" }}>
           <div className="section-title">Browse by Category</div>
@@ -146,25 +133,18 @@ export default function LibraryPage() {
               <option value="author">A–Z Author</option>
               <option value="avail">Available First</option>
             </select>
-            <select className="filter-sel" value={filterAvail} onChange={e => setFilterAvail(e.target.value)}>
-              <option value="all">All Books</option>
-              <option value="yes">Available</option>
-              <option value="no">Unavailable</option>
-            </select>
           </div>
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
           {CATS.map(c => (
-            <button key={c} className={`chip ${activeCat === c ? 'chip-on' : 'chip-off'}`} onClick={() => setActiveCat(c)}>
-              {c}
-            </button>
+            <button key={c} className={`chip ${activeCat === c ? 'chip-on' : 'chip-off'}`} onClick={() => setActiveCat(c)}>{c}</button>
           ))}
         </div>
 
         <div className="bk-grid">
           {filteredBooks.length > 0 ? filteredBooks.map(b => (
-            <div key={b.id} className="bk-card">
+            <div key={b.id} className="bk-card" onClick={() => setSelectedBook(b)}>
               <div className="bk-card-img">
                 <div className="bk-cover" style={{ width: 110, height: 148, background: `linear-gradient(150deg, ${b.color}, ${b.spine}88)` }}>
                   <div className="spine" style={{ background: b.spine }}></div>
@@ -180,7 +160,7 @@ export default function LibraryPage() {
                   {b.title.length > 28 ? b.title.slice(0, 28) + '…' : b.title}
                 </div>
                 <div style={{ fontSize: 11, color: "#8a8ea8", marginBottom: 8 }}>{b.author}</div>
-                <span className={`badge ${b.avail ? 'badge-green' : 'badge-red'}`}>{b.avail ? 'Available' : 'Borrowed'}</span>
+                <span className={`badge ${b.avail ? 'badge-green' : 'badge-red'}`}>{b.avail ? 'Available' : 'Unavailable'}</span>
               </div>
             </div>
           )) : (
@@ -192,6 +172,55 @@ export default function LibraryPage() {
         </div>
       </div>
 
+      {/* ── ENHANCED BOOK DETAILS MODAL ── */}
+      {selectedBook && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(26,39,68,.6)", backdropFilter: "blur(4px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={() => setSelectedBook(null)}>
+          <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", maxWidth: "520px", width: "100%", position: "relative", boxShadow: "0 24px 64px rgba(26,39,68,.18)", animation: "modalFadeUp .25s ease both" }} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelectedBook(null)} style={{ position: "absolute", top: "24px", right: "24px", background: "#f0ede5", border: "none", borderRadius: "50%", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#8a8ea8", fontSize: "16px", transition: "background 0.2s" }}>✕</button>
+            
+            <div style={{ display: "flex", gap: "24px", marginBottom: "24px", alignItems: "flex-start" }}>
+              {/* Bigger Cover in Modal */}
+              <div className="bk-cover" style={{ width: 120, height: 160, background: `linear-gradient(150deg, ${selectedBook.color}, ${selectedBook.spine}88)` }}>
+                <div className="spine" style={{ background: selectedBook.spine }}></div>
+                <div className="lines"></div>
+                <span style={{ fontSize: "50px", position: "relative", zIndex: 1 }}>{selectedBook.emoji}</span>
+              </div>
+              
+              {/* Detailed Headers */}
+              <div style={{ flex: 1, marginTop: "4px" }}>
+                <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "22px", color: "#1a2744", marginBottom: "6px", lineHeight: 1.2 }}>{selectedBook.title}</h3>
+                <p style={{ fontSize: "14px", color: "#3d8bef", fontWeight: 600, marginBottom: "12px" }}>{selectedBook.author}</p>
+                
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <span className={`badge ${selectedBook.avail ? 'badge-green' : 'badge-red'}`}>{selectedBook.avail ? 'Available' : 'Unavailable'}</span>
+                  <span className="badge" style={{ background: "#f0ede5", color: "#1a2744" }}>Published: {selectedBook.date}</span>
+                  <span className="badge" style={{ background: "#e8ecf5", color: "#1a2744" }}>{selectedBook.pages} Pages</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Description / Synopsis Section */}
+            <div style={{ marginBottom: "28px", background: "#f9f8f5", padding: "16px", borderRadius: "12px", border: "1px solid #e2dfd6" }}>
+              <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#8a8ea8", marginBottom: "8px" }}>Synopsis / Description</h4>
+              <p style={{ fontSize: "13.5px", color: "#475569", lineHeight: 1.6, margin: 0 }}>
+                {selectedBook.desc}
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: "flex", gap: "10px" }}>
+              {selectedBook.avail ? (
+                <button style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", color: "#fff", background: "#1a2744", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 4px 14px rgba(26,39,68,.25)" }} onClick={() => { alert('Book Borrowed! Please pick it up at the library.'); setSelectedBook(null); }}>📖 Borrow Book</button>
+              ) : (
+                <button style={{ flex: 1, padding: "12px", borderRadius: "12px", border: "none", color: "#fff", background: "#3d8bef", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 4px 14px rgba(61,139,239,.3)" }} onClick={() => { alert('You will be notified via email when this book is returned!'); setSelectedBook(null); }}>🔔 Notify me when available</button>
+              )}
+              <button style={{ padding: "12px 20px", borderRadius: "12px", border: "2px solid #e2dfd6", background: "#f0ede5", color: "#1a2744", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }} onClick={() => toggleSave(null, selectedBook.id)}>
+                 {savedBooks.includes(selectedBook.id) ? '❤️ Saved' : '🤍 Wishlist'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

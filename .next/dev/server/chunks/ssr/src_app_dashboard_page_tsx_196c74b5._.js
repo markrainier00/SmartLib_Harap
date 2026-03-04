@@ -24,7 +24,7 @@ function DashboardHome() {
                         style: {
                             fontSize: 26
                         },
-                        children: "Welcome back, Juan 👋"
+                        children: "Welcome back, Bryan 👋"
                     }, void 0, false, {
                         fileName: "[project]/src/app/dashboard/page.tsx",
                         lineNumber: 10,
