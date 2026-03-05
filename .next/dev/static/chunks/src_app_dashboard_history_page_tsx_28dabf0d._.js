@@ -12,97 +12,93 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var _s = __turbopack_context__.k.signature();
 "use client";
 ;
-// Mock Data mula sa iyong HTML
+// MOCK DATA PARA SA HISTORY
 const HISTORY_DATA = [
     {
         id: 1,
-        book: "Data Structures in Java",
+        title: "Data Structures in Java",
         action: "Returned",
         date: "Feb 28, 2026",
         due: "Mar 01, 2026",
-        status: "returned"
+        status: "Returned"
     },
     {
         id: 2,
-        book: "Calculus: Early Transcendentals",
+        title: "Calculus: Early Transcendentals",
         action: "Borrowed",
         date: "Feb 15, 2026",
         due: "Mar 15, 2026",
-        status: "borrowed"
+        status: "Borrowed"
     },
     {
         id: 3,
-        book: "Organic Chemistry",
+        title: "Organic Chemistry",
         action: "Reserved",
         date: "Feb 10, 2026",
         due: "—",
-        status: "returned"
+        status: "Returned"
     },
     {
         id: 4,
-        book: "Engineering Mechanics",
+        title: "Engineering Mechanics",
         action: "Borrowed",
         date: "Jan 30, 2026",
         due: "Feb 28, 2026",
-        status: "overdue"
+        status: "Overdue"
     },
     {
         id: 5,
-        book: "Physics for Scientists",
+        title: "Physics for Scientists",
         action: "Returned",
         date: "Jan 20, 2026",
         due: "Jan 22, 2026",
-        status: "returned"
-    },
-    {
-        id: 6,
-        book: "Business Law",
-        action: "Borrowed",
-        date: "Mar 01, 2026",
-        due: "Mar 22, 2026",
-        status: "borrowed"
+        status: "Returned"
     }
+];
+const TABS = [
+    "All",
+    "Borrowed",
+    "Returned",
+    "Overdue"
 ];
 function HistoryPage() {
     _s();
-    const [histTab, setHistTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("all");
-    const filteredHistory = histTab === "all" ? HISTORY_DATA : HISTORY_DATA.filter((h)=>h.status === histTab);
-    const stats = [
-        {
-            label: 'Total',
-            val: HISTORY_DATA.length,
-            color: '#2563eb'
-        },
-        {
-            label: 'Active',
-            val: HISTORY_DATA.filter((h)=>h.status === 'borrowed').length,
-            color: '#e8a020'
-        },
-        {
-            label: 'Returned',
-            val: HISTORY_DATA.filter((h)=>h.status === 'returned').length,
-            color: '#2d7a4f'
-        },
-        {
-            label: 'Overdue',
-            val: HISTORY_DATA.filter((h)=>h.status === 'overdue').length,
-            color: '#c94040'
-        }
-    ];
-    const icons = {
-        Returned: '↩️',
-        Borrowed: '📖',
-        Reserved: '🔖'
-    };
-    const bgMap = {
-        returned: '#f0fdf4',
-        borrowed: '#eff6ff',
-        overdue: '#fff1f0'
-    };
-    const badgeMap = {
-        returned: 'badge-green',
-        borrowed: 'badge-blue',
-        overdue: 'badge-red'
+    const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("All");
+    // Filter Logic
+    const filteredData = HISTORY_DATA.filter((item)=>{
+        if (activeTab === "All") return true;
+        if (activeTab === "Borrowed" && item.status === "Borrowed") return true;
+        if (activeTab === "Returned" && item.status === "Returned") return true;
+        if (activeTab === "Overdue" && item.status === "Overdue") return true;
+        return false;
+    });
+    // Summary Counts
+    const total = HISTORY_DATA.length;
+    const active = HISTORY_DATA.filter((i)=>i.status === "Borrowed").length;
+    const returned = HISTORY_DATA.filter((i)=>i.status === "Returned").length;
+    const overdue = HISTORY_DATA.filter((i)=>i.status === "Overdue").length;
+    // Helper para sa icons at kulay
+    const getIconAndColor = (status, action)=>{
+        if (status === "Overdue") return {
+            icon: "📖",
+            bg: "#fdeaea",
+            color: "#c94040"
+        };
+        if (status === "Borrowed") return {
+            icon: "📖",
+            bg: "#e8f1fd",
+            color: "#3d8bef"
+        };
+        if (action === "Reserved") return {
+            icon: "🎟️",
+            bg: "#fef5e6",
+            color: "#e89940"
+        };
+        return {
+            icon: "↩️",
+            bg: "#e6f7ec",
+            color: "#2d7a4f"
+        }; // Returned default
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "page-history",
@@ -112,234 +108,353 @@ function HistoryPage() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("style", {
                 children: `
-        .page-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: #1a2744; margin-bottom: 4px; }
-        .page-sub { font-size: 13px; color: #8a8ea8; margin-bottom: 24px; }
+        .page-history { width: 100%; max-width: 1200px; margin: 0 auto; padding-bottom: 40px; }
         
-        .tab-row { display: flex; border-bottom: 2px solid #e2dfd6; margin-bottom: 22px; }
-        .tab-btn { background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 10px 16px; cursor: pointer; color: #8a8ea8; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .18s; }
-        .tab-btn.on { color: #1a2744; border-bottom-color: #1a2744; }
+        .hist-header { font-family: 'DM Serif Display', serif; font-size: 32px; color: #1a2744; margin-bottom: 6px; }
+        .hist-sub { font-size: 15px; color: #8a8ea8; margin-bottom: 28px; }
 
-        .hist-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 22px; }
-        .hist-stat { background: #fff; border: 1px solid #e2dfd6; border-radius: 14px; padding: 14px 16px; text-align: center; }
-        .hs-val { font-family: 'DM Serif Display', serif; font-size: 30px; line-height: 1; margin-bottom: 4px; }
-        .hs-label { font-size: 12px; color: #8a8ea8; }
+        /* TABS */
+        .tabs-container { display: flex; border-bottom: 2px solid #f2efe8; margin-bottom: 24px; gap: 8px; }
+        .tab-btn { padding: 14px 20px; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 600; color: #8a8ea8; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; transition: all .2s; margin-bottom: -2px; }
+        .tab-btn:hover { color: #1a2744; }
+        .tab-btn.active { color: #1a2744; border-bottom-color: #1a2744; }
 
-        .card { background: #ffffff; border-radius: 16px; box-shadow: 0 2px 12px rgba(26,39,68,.08); border: 1px solid #e2dfd6; }
-        .h-row { padding: 14px 0; border-bottom: 1px solid #f2efe8; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .h-row:last-child { border-bottom: none; }
+        /* SUMMARY CARDS */
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        @media (max-width: 768px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
         
-        .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .badge-green { background: #e6f7ec; color: #2d7a4f; }
-        .badge-blue { background: #e8f1fd; color: #2563eb; }
-        .badge-red { background: #fdeaea; color: #c94040; }
+        .sum-card { background: #fff; border: 1px solid #e2dfd6; border-radius: 16px; padding: 24px 20px; text-align: center; box-shadow: 0 4px 12px rgba(26,39,68,.03); transition: transform .2s; }
+        .sum-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,39,68,.06); }
+        .sum-num { font-family: 'DM Serif Display', serif; font-size: 36px; line-height: 1; margin-bottom: 6px; }
+        .sum-label { font-size: 13px; font-weight: 600; color: #8a8ea8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* LIST CONTAINER */
+        .list-container { background: #fff; border: 1px solid #e2dfd6; border-radius: 20px; box-shadow: 0 6px 20px rgba(26,39,68,.04); overflow: hidden; padding: 8px 24px; }
+        
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid #f2efe8; }
+        .list-item:last-child { border-bottom: none; }
+        
+        .li-left { display: flex; align-items: center; gap: 16px; }
+        .li-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        
+        .li-title { font-size: 15px; font-weight: 700; color: #1a2744; margin-bottom: 4px; }
+        .li-details { font-size: 12.5px; color: #8a8ea8; display: flex; align-items: center; gap: 8px; }
+        
+        .badge { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
       `
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                lineNumber: 33,
+                lineNumber: 44,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "page-title",
+                className: "hist-header",
                 children: "Library History"
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                lineNumber: 58,
+                lineNumber: 82,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "page-sub",
+                className: "hist-sub",
                 children: "Your complete borrowing and return activity"
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                lineNumber: 59,
+                lineNumber: 83,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "tab-row",
-                children: [
-                    "all",
-                    "borrowed",
-                    "returned",
-                    "overdue"
-                ].map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        className: `tab-btn ${histTab === tab ? "on" : ""}`,
-                        onClick: ()=>setHistTab(tab),
-                        children: tab.charAt(0).toUpperCase() + tab.slice(1)
+                className: "tabs-container",
+                children: TABS.map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        className: `tab-btn ${activeTab === tab ? 'active' : ''}`,
+                        onClick: ()=>setActiveTab(tab),
+                        children: tab
                     }, tab, false, {
                         fileName: "[project]/src/app/dashboard/history/page.tsx",
-                        lineNumber: 63,
+                        lineNumber: 88,
                         columnNumber: 11
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                lineNumber: 61,
+                lineNumber: 86,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "hist-stats",
-                children: stats.map((s, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "hist-stat",
+                className: "summary-grid",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "sum-card",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "hs-val",
+                                className: "sum-num",
                                 style: {
-                                    color: s.color
+                                    color: "#3d8bef"
                                 },
-                                children: s.val
+                                children: total
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                lineNumber: 76,
-                                columnNumber: 13
+                                lineNumber: 101,
+                                columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "hs-label",
-                                children: s.label
+                                className: "sum-label",
+                                children: "Total"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                lineNumber: 77,
-                                columnNumber: 13
+                                lineNumber: 102,
+                                columnNumber: 11
                             }, this)
                         ]
-                    }, idx, true, {
+                    }, void 0, true, {
                         fileName: "[project]/src/app/dashboard/history/page.tsx",
-                        lineNumber: 75,
-                        columnNumber: 11
-                    }, this))
-            }, void 0, false, {
+                        lineNumber: 100,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "sum-card",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "sum-num",
+                                style: {
+                                    color: "#e89940"
+                                },
+                                children: active
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                lineNumber: 105,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "sum-label",
+                                children: "Active"
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                lineNumber: 106,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/app/dashboard/history/page.tsx",
+                        lineNumber: 104,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "sum-card",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "sum-num",
+                                style: {
+                                    color: "#2d7a4f"
+                                },
+                                children: returned
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                lineNumber: 109,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "sum-label",
+                                children: "Returned"
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                lineNumber: 110,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/app/dashboard/history/page.tsx",
+                        lineNumber: 108,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "sum-card",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "sum-num",
+                                style: {
+                                    color: "#c94040"
+                                },
+                                children: overdue
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                lineNumber: 113,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "sum-label",
+                                children: "Overdue"
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                lineNumber: 114,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/app/dashboard/history/page.tsx",
+                        lineNumber: 112,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                lineNumber: 73,
+                lineNumber: 99,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "card",
-                style: {
-                    padding: "4px 20px"
-                },
-                children: filteredHistory.length > 0 ? filteredHistory.map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "h-row",
+                className: "list-container",
+                children: filteredData.length > 0 ? filteredData.map((item)=>{
+                    const style = getIconAndColor(item.status, item.action);
+                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "list-item",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                style: {
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "13px"
-                                },
+                                className: "li-left",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "li-icon",
                                         style: {
-                                            width: "40px",
-                                            height: "40px",
-                                            borderRadius: "11px",
-                                            background: bgMap[h.status],
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontSize: "18px",
-                                            flexShrink: 0
+                                            background: style.bg,
+                                            color: style.color
                                         },
-                                        children: icons[h.action] || '📅'
+                                        children: style.icon
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                        lineNumber: 86,
-                                        columnNumber: 15
+                                        lineNumber: 127,
+                                        columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                style: {
-                                                    fontSize: "14px",
-                                                    fontWeight: 600,
-                                                    color: "#1a2744"
-                                                },
-                                                children: h.book
+                                                className: "li-title",
+                                                children: item.title
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                                lineNumber: 90,
-                                                columnNumber: 17
+                                                lineNumber: 131,
+                                                columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                style: {
-                                                    fontSize: "12px",
-                                                    color: "#8a8ea8",
-                                                    marginTop: "2px"
-                                                },
+                                                className: "li-details",
                                                 children: [
-                                                    h.action,
-                                                    " · ",
-                                                    h.date
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: [
+                                                            item.action,
+                                                            " • ",
+                                                            item.date
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                                        lineNumber: 133,
+                                                        columnNumber: 23
+                                                    }, this),
+                                                    item.due !== "—" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: "|"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                                                lineNumber: 136,
+                                                                columnNumber: 27
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: [
+                                                                    "Due: ",
+                                                                    item.due
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                                                lineNumber: 137,
+                                                                columnNumber: 27
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                                lineNumber: 91,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                style: {
-                                                    fontSize: "11px",
-                                                    color: "#c0bdb8",
-                                                    marginTop: "1px"
-                                                },
-                                                children: [
-                                                    "Due: ",
-                                                    h.due
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                                lineNumber: 92,
-                                                columnNumber: 17
+                                                lineNumber: 132,
+                                                columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                        lineNumber: 89,
-                                        columnNumber: 15
+                                        lineNumber: 130,
+                                        columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                lineNumber: 85,
-                                columnNumber: 13
+                                lineNumber: 126,
+                                columnNumber: 17
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                className: `badge ${badgeMap[h.status]}`,
-                                children: h.status.charAt(0).toUpperCase() + h.status.slice(1)
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "badge",
+                                    style: {
+                                        background: style.bg,
+                                        color: style.color
+                                    },
+                                    children: item.status
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/dashboard/history/page.tsx",
+                                    lineNumber: 145,
+                                    columnNumber: 19
+                                }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                                lineNumber: 95,
-                                columnNumber: 13
+                                lineNumber: 144,
+                                columnNumber: 17
                             }, this)
                         ]
-                    }, h.id, true, {
+                    }, item.id, true, {
                         fileName: "[project]/src/app/dashboard/history/page.tsx",
-                        lineNumber: 84,
-                        columnNumber: 11
-                    }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        lineNumber: 125,
+                        columnNumber: 15
+                    }, this);
+                }) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     style: {
-                        padding: "28px",
+                        padding: "40px 0",
                         textAlign: "center",
                         color: "#8a8ea8"
                     },
-                    children: "No records found"
-                }, void 0, false, {
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            style: {
+                                fontSize: "32px",
+                                marginBottom: "8px"
+                            },
+                            children: "📭"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/dashboard/history/page.tsx",
+                            lineNumber: 154,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            children: "No records found in this category."
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/dashboard/history/page.tsx",
+                            lineNumber: 155,
+                            columnNumber: 13
+                        }, this)
+                    ]
+                }, void 0, true, {
                     fileName: "[project]/src/app/dashboard/history/page.tsx",
-                    lineNumber: 100,
+                    lineNumber: 153,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/history/page.tsx",
-                lineNumber: 82,
+                lineNumber: 119,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/dashboard/history/page.tsx",
-        lineNumber: 32,
+        lineNumber: 43,
         columnNumber: 5
     }, this);
 }
-_s(HistoryPage, "BbKqgcM2j10w6DfiVeGWrtae0d8=");
+_s(HistoryPage, "q2+/MDPyg3h+XWrQG52Vm0D3zK0=");
 _c = HistoryPage;
 var _c;
 __turbopack_context__.k.register(_c, "HistoryPage");

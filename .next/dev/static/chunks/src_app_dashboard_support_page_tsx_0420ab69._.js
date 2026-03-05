@@ -120,7 +120,7 @@ function SupportPage() {
                                     color: "#8a8ea8",
                                     margin: "0 0 18px 0"
                                 },
-                                children: "Librarian will respond via email within 1–2 business days"
+                                children: "Librarian concern support "
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/support/page.tsx",
                                 lineNumber: 70,

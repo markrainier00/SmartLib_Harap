@@ -68,14 +68,14 @@ function MyBooksPage() {
             style: {
                 width,
                 height,
-                borderRadius: 7,
+                borderRadius: 8,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 position: "relative",
                 overflow: "hidden",
                 flexShrink: 0,
-                boxShadow: "3px 3px 12px rgba(0,0,0,.18)",
+                boxShadow: "4px 4px 15px rgba(0,0,0,.15), inset -3px 0 8px rgba(0,0,0,.2)",
                 background: `linear-gradient(150deg, ${book.color}, ${book.spine}88)`
             },
             children: [
@@ -85,7 +85,7 @@ function MyBooksPage() {
                         left: 0,
                         top: 0,
                         bottom: 0,
-                        width: 4,
+                        width: 5,
                         background: book.spine
                     }
                 }, void 0, false, {
@@ -123,32 +123,42 @@ function MyBooksPage() {
             columnNumber: 5
         }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "page-mylist",
         style: {
             animation: "fadeUp .3s ease both"
         },
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("style", {
                 children: `
-        .ml-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: #1a2744; margin-bottom: 4px; }
-        .ml-sub { font-size: 13px; color: #8a8ea8; margin-bottom: 24px; }
+        /* INAYOS ANG MAX-WIDTH AT MARGIN PARA PANTAY SA DISCOVER PAGE */
+        .page-mylist { width: 100%; max-width: 1400px; margin: 0 auto; }
         
-        .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-        .section-head h3 { font-size: 15px; font-weight: 700; color: #1a2744; margin: 0; }
-        .count-badge { padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .ml-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: #1a2744; margin-bottom: 6px; }
+        .ml-sub { font-size: 14px; color: #8a8ea8; margin-bottom: 28px; }
         
-        .list-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(26,39,68,.08); border: 1px solid #e2dfd6; padding: 16px 18px; margin-bottom: 10px; transition: transform .2s; }
+        .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .section-head h3 { font-size: 18px; font-weight: 700; color: #1a2744; margin: 0; }
+        .count-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
         
-        .lc-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .lc-left { display: flex; gap: 14px; }
-        .lc-title { font-size: 14px; font-weight: 700; color: #1a2744; margin-bottom: 2px; }
-        .lc-author { font-size: 12px; color: #8a8ea8; }
-        .lc-due { font-size: 12px; color: #e05c5c; font-weight: 600; margin-top: 7px; display: flex; align-items: center; gap: 5px; }
+        /* GINAWANG GRID ANG BORROWED BOOKS PARA HINDI HUMABA NANG SOBRA */
+        .borrowed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+        
+        .list-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 14px rgba(26,39,68,.05); border: 1px solid #e2dfd6; padding: 18px; transition: transform .25s ease; display: flex; align-items: center; }
+        .list-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(26,39,68,.1); }
+        
+        .lc-left { display: flex; gap: 16px; width: 100%; align-items: center; }
+        .lc-title { font-size: 15px; font-weight: 700; color: #1a2744; margin-bottom: 4px; line-height: 1.3; }
+        .lc-author { font-size: 13px; color: #8a8ea8; }
+        .lc-due { font-size: 12.5px; color: #e05c5c; font-weight: 600; margin-top: 10px; display: flex; align-items: center; gap: 6px; background: #fdeaea; padding: 4px 10px; border-radius: 8px; display: inline-flex; }
 
-        .saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
-        .sv-card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #e2dfd6; box-shadow: 0 2px 12px rgba(26,39,68,.08); cursor: pointer; transition: all .22s; }
-        .sv-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(26,39,68,.12); }
-        .heart-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 3px; transition: transform .15s; position: absolute; top: 8px; right: 8px; z-index: 10; }
-        .heart-btn:hover { transform: scale(1.3); }
+        .saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .sv-card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2dfd6; box-shadow: 0 4px 14px rgba(26,39,68,.05); cursor: pointer; transition: all .25s ease; display: flex; flex-direction: column; }
+        .sv-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(26,39,68,.12); border-color: rgba(26,39,68,.2); }
+        .sv-card-img { padding: 18px 18px 10px; display: flex; justify-content: center; position: relative; background: #faf9f6; }
+        
+        /* UNIFORM STAR BUTTON PARA SA WISHLIST */
+        .star-btn { background: none; border: none; cursor: pointer; font-size: 22px; padding: 4px; transition: transform .2s ease; position: absolute; top: 8px; right: 8px; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.3); color: #fff; }
+        .star-btn:hover { transform: scale(1.25); }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
       `
@@ -162,7 +172,7 @@ function MyBooksPage() {
                 children: "My List"
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                lineNumber: 52,
+                lineNumber: 61,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -170,12 +180,12 @@ function MyBooksPage() {
                 children: "Monitor your current borrowed items and your wishlist"
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                lineNumber: 53,
+                lineNumber: 62,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 style: {
-                    marginBottom: "32px"
+                    marginBottom: "36px"
                 },
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -185,7 +195,7 @@ function MyBooksPage() {
                                 children: "📖 Borrowed Books"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                lineNumber: 58,
+                                lineNumber: 67,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -197,34 +207,37 @@ function MyBooksPage() {
                                 children: borrowed.length
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                lineNumber: 59,
+                                lineNumber: 68,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                        lineNumber: 57,
+                        lineNumber: 66,
                         columnNumber: 9
                     }, this),
-                    borrowed.map((id)=>{
-                        const b = BOOKS.find((x)=>x.id === id);
-                        if (!b) return null;
-                        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "list-card",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "lc-row",
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "borrowed-grid",
+                        children: borrowed.map((id)=>{
+                            const b = BOOKS.find((x)=>x.id === id);
+                            if (!b) return null;
+                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "list-card",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "lc-left",
                                     children: [
-                                        renderCover(b, 66, 88, 24),
+                                        renderCover(b, 75, 100, 28),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            style: {
+                                                flex: 1
+                                            },
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "lc-title",
                                                     children: b.title
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                    lineNumber: 71,
+                                                    lineNumber: 80,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -232,15 +245,15 @@ function MyBooksPage() {
                                                     children: b.author
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                    lineNumber: 72,
+                                                    lineNumber: 81,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "lc-due",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                                                            width: "12",
-                                                            height: "12",
+                                                            width: "14",
+                                                            height: "14",
                                                             viewBox: "0 0 24 24",
                                                             fill: "none",
                                                             stroke: "currentColor",
@@ -254,7 +267,7 @@ function MyBooksPage() {
                                                                     rx: "2"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                                    lineNumber: 74,
+                                                                    lineNumber: 83,
                                                                     columnNumber: 123
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -264,7 +277,7 @@ function MyBooksPage() {
                                                                     y2: "6"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                                    lineNumber: 74,
+                                                                    lineNumber: 83,
                                                                     columnNumber: 172
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -274,7 +287,7 @@ function MyBooksPage() {
                                                                     y2: "6"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                                    lineNumber: 74,
+                                                                    lineNumber: 83,
                                                                     columnNumber: 209
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -284,49 +297,49 @@ function MyBooksPage() {
                                                                     y2: "10"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                                    lineNumber: 74,
+                                                                    lineNumber: 83,
                                                                     columnNumber: 244
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                            lineNumber: 74,
+                                                            lineNumber: 83,
                                                             columnNumber: 23
                                                         }, this),
                                                         "Due: March 16, 2026"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                    lineNumber: 73,
+                                                    lineNumber: 82,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                            lineNumber: 70,
+                                            lineNumber: 79,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                    lineNumber: 68,
+                                    lineNumber: 77,
                                     columnNumber: 17
                                 }, this)
-                            }, void 0, false, {
+                            }, b.id, false, {
                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                lineNumber: 67,
+                                lineNumber: 76,
                                 columnNumber: 15
-                            }, this)
-                        }, b.id, false, {
-                            fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                            lineNumber: 66,
-                            columnNumber: 13
-                        }, this);
-                    })
+                            }, this);
+                        })
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
+                        lineNumber: 71,
+                        columnNumber: 9
+                    }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                lineNumber: 56,
+                lineNumber: 65,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -338,7 +351,7 @@ function MyBooksPage() {
                                 children: "⭐ My Wishlist"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                lineNumber: 89,
+                                lineNumber: 97,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -350,13 +363,13 @@ function MyBooksPage() {
                                 children: wishlist.length
                             }, void 0, false, {
                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                lineNumber: 90,
+                                lineNumber: 98,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                        lineNumber: 88,
+                        lineNumber: 96,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -368,81 +381,90 @@ function MyBooksPage() {
                                 className: "sv-card",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        style: {
-                                            padding: "14px 14px 8px",
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            position: "relative"
-                                        },
+                                        className: "sv-card-img",
                                         children: [
-                                            renderCover(b, 110, 148, 36),
+                                            renderCover(b, 120, 165, 50),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                className: "heart-btn",
+                                                className: "star-btn",
                                                 onClick: ()=>setWishlist(wishlist.filter((x)=>x !== b.id)),
                                                 children: "⭐"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                lineNumber: 101,
+                                                lineNumber: 109,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                        lineNumber: 99,
+                                        lineNumber: 107,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         style: {
-                                            padding: "0 13px 13px"
+                                            padding: "12px 16px 16px",
+                                            flex: 1,
+                                            display: "flex",
+                                            flexDirection: "column"
                                         },
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 style: {
-                                                    fontSize: "13px",
+                                                    fontSize: "14px",
                                                     fontWeight: 700,
                                                     color: "#1a2744",
-                                                    lineHeight: 1.3,
-                                                    marginBottom: "3px"
+                                                    lineHeight: 1.4,
+                                                    marginBottom: "4px"
                                                 },
-                                                children: b.title.length > 24 ? b.title.slice(0, 24) + '…' : b.title
+                                                children: b.title.length > 28 ? b.title.slice(0, 28) + '…' : b.title
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                lineNumber: 104,
+                                                lineNumber: 112,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 style: {
-                                                    fontSize: "11px",
+                                                    fontSize: "12px",
                                                     color: "#8a8ea8"
                                                 },
                                                 children: b.author
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                                lineNumber: 107,
+                                                lineNumber: 115,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                        lineNumber: 103,
+                                        lineNumber: 111,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, b.id, true, {
                                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                                lineNumber: 98,
+                                lineNumber: 106,
                                 columnNumber: 15
                             }, this);
                         })
                     }, void 0, false, {
                         fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                        lineNumber: 93,
+                        lineNumber: 101,
                         columnNumber: 9
+                    }, this),
+                    wishlist.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            color: "#8a8ea8",
+                            padding: "20px 0"
+                        },
+                        children: "Your wishlist is empty."
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
+                        lineNumber: 121,
+                        columnNumber: 35
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/dashboard/mybooks/page.tsx",
-                lineNumber: 87,
+                lineNumber: 95,
                 columnNumber: 7
             }, this)
         ]

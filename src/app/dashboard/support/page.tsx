@@ -67,7 +67,7 @@ export default function SupportPage() {
         {/* FORM COLUMN */}
         <div className="sup-card">
           <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a2744", margin: "0 0 4px 0" }}>📋 Submit a Concern</h3>
-          <p style={{ fontSize: "12px", color: "#8a8ea8", margin: "0 0 18px 0" }}>Librarian will respond via email within 1–2 business days</p>
+          <p style={{ fontSize: "12px", color: "#8a8ea8", margin: "0 0 18px 0" }}>Librarian concern support </p>
           
           <form onSubmit={handleSubmit}>
             <div className="sup-field">
