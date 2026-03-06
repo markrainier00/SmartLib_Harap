@@ -3,22 +3,90 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function AuthPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("signin");
   const [showPassword, setShowPassword] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
+  // For sign in
+  const [identifier, setIdentifier] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+
+  // For registration
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [school_id, setSchoolID] = useState("");
+  const [program, setProgram] = useState("");
+  const [year, setYear] = useState("");
+  const [password, setPassword] = useState("");
+
+  // UI state
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Letter capitalization
+  const handleNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
     const value = e.target.value;
     setter(value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : "");
   };
 
-  // Function para dumiretso sa Library Dashboard pagka-login
-  const handleLogin = (e: React.FormEvent) => {
+  // Redirect to Library Dashboard after sign in
+  const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/dashboard/library");
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/signin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier, password: signinPassword }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Sign in failed");
+      router.push("/dashboard/library");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add new account
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstname,
+          lastname,
+          email,
+          school_id,
+          program,
+          year,
+          password,
+        }),
+      });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.message || "Registration Failed");
+      setSuccess("Account created! Wait for your account to be approved by the Head Librarian to sign in.");
+      setActiveTab("signin");
+    } catch (err: any){
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,10 +153,15 @@ export default function AuthPage() {
           box-shadow: 0 4px 16px rgba(26,39,68,0.2); transition: 0.2s;
         }
         .btn-signin:hover { background: #2a3d6e; transform: translateY(-1px); }
+        .btn-signin:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .forgot-link { display: block; margin-top: 4px; font-size: 11px; color: #8a8ea8; text-decoration: none; text-align: right; }
         
         .toggle-pw { position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #b0afc9; display: flex; align-items: center; }
+      
+        
+        .alert-error { background: #fff0f0; border: 1px solid #ffcccc; color: #cc0000; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
+        .alert-success { background: #f0fff4; border: 1px solid #c3e6cb; color: #155724; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
       `}</style>
 
       <div className="blob blob-1"></div>
@@ -111,18 +184,19 @@ export default function AuthPage() {
           <button className={`tab ${activeTab === 'register' ? 'active' : ''}`} onClick={() => setActiveTab('register')}>Register</button>
         </div>
 
-        <form onSubmit={handleLogin}>
-          {activeTab === 'signin' ? (
-            <>
-              {/* BINAGO ANG LABEL AT PLACEHOLDER BASE SA PDF */}
+        {error && <div className="alert-error">{error}</div>}
+        {success && <div className="alert-success">{success}</div>}
+
+        {activeTab === 'signin' ? (
+          <form onSubmit={handleSignin}>
               <div className="field">
-                <label>Email Address / Student ID</label>
-                <input type="text" placeholder="student@university.edu or 2024-00123" required />
+                <label>Email Address / School ID</label>
+                <input type="text" placeholder="student@university.edu or 2024-00123" value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
               </div>
               <div className="field">
                 <label>Password</label>
                 <div className="input-wrap">
-                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" required />
+                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" value={signinPassword} onChange={(e) => setSigninPassword(e.target.value)}required />
                   <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -133,33 +207,32 @@ export default function AuthPage() {
                 </div>
                 <a href="#" className="forgot-link">Forgot password?</a>
               </div>
-              <button type="submit" className="btn-signin">Sign In</button>
-            </>
+              <button type="submit" className="btn-signin" disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
+            </form>
           ) : (
-            <>
+            <form onSubmit={handleRegister}>
               <div className="form-row">
                 <div className="field">
                   <label>First Name</label>
-                  <input type="text" placeholder="Maria" value={firstName} onChange={(e) => handleNameChange(e, setFirstName)} required />
+                  <input type="text" value={firstname} onChange={(e) => handleNameChange(e, setFirstName)} required />
                 </div>
                 <div className="field">
                   <label>Last Name</label>
-                  <input type="text" placeholder="Santos" value={lastName} onChange={(e) => handleNameChange(e, setLastName)} required />
+                  <input type="text" value={lastname} onChange={(e) => handleNameChange(e, setLastName)} required />
                 </div>
               </div>
               <div className="field">
                 <label>Email Address</label>
-                <input type="email" placeholder="student@university.edu" required />
+                <input type="email" placeholder="student@university.edu" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
               <div className="field">
-                <label>Student ID</label>
-                <input type="text" placeholder="2024-00123" required />
+                <label>School ID</label>
+                <input type="text" placeholder="2024-00123" value={school_id} onChange={(e) => setSchoolID(e.target.value)} required />
               </div>
               <div className="form-row">
-                {/* BINAGO ANG LABEL NA COURSE SA PROGRAM BASE SA PDF */}
                 <div className="field">
                   <label>Program</label>
-                  <select required defaultValue="">
+                  <select value={program} onChange={(e) => setProgram(e.target.value)} required defaultValue="">
                     <option value="" disabled>Select</option>
                     <option value="BSCS">BSCS</option>
                     <option value="BSIT">BSIT</option>
@@ -168,9 +241,9 @@ export default function AuthPage() {
                 </div>
                 <div className="field">
                   <label>Year</label>
-                  <select required defaultValue="">
+                  <select value={year} onChange={(e) => setYear(e.target.value)} required>
                     <option value="" disabled>Select</option>
-                    <option value="1st">1st Year</option>
+                    <option value="1st">1st Year</option>                 
                     <option value="2nd">2nd Year</option>
                     <option value="3rd">3rd Year</option>
                     <option value="4th">4th Year</option>
@@ -180,7 +253,7 @@ export default function AuthPage() {
               <div className="field">
                 <label>Password</label>
                 <div className="input-wrap">
-                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" required />
+                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -190,10 +263,9 @@ export default function AuthPage() {
                   </button>
                 </div>
               </div>
-              <button type="submit" className="btn-signin">Create Account</button>
-            </>
+              <button type="submit" className="btn-signin">{loading ? "Creating Account..." : "Create Account"}</button>
+            </form>
           )}
-        </form>
       </div>
     </div>
   );
