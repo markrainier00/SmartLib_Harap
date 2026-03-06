@@ -1,9 +1,13 @@
 {
   "/(auth)/login/page": "app/(auth)/login/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/history/page": "app/dashboard/history/page.js",
-  "/dashboard/library/page": "app/dashboard/library/page.js",
-  "/dashboard/mybooks/page": "app/dashboard/mybooks/page.js",
-  "/dashboard/profile/page": "app/dashboard/profile/page.js",
-  "/dashboard/support/page": "app/dashboard/support/page.js"
+  "/admin/accounts/page": "app/admin/accounts/page.js",
+  "/admin/analytics/page": "app/admin/analytics/page.js",
+  "/admin/approvals/page": "app/admin/approvals/page.js",
+  "/admin/books/page": "app/admin/books/page.js",
+  "/admin/history/page": "app/admin/history/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/profile/page": "app/admin/profile/page.js",
+  "/admin/requests/page": "app/admin/requests/page.js",
+  "/admin/scanner/page": "app/admin/scanner/page.js",
+  "/dashboard/library/page": "app/dashboard/library/page.js"
 }
