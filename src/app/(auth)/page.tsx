@@ -2,23 +2,56 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link"; 
 
 export default function AuthPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("signin");
   const [showPassword, setShowPassword] = useState(false);
+  
+  // --- MGA NAWAWALANG VARIABLES NA IBINALIK NATIN ---
+  const [loading, setLoading] = useState(false);
+
+  // States para sa Sign In
+  const [identifier, setIdentifier] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+
+  // States para sa Register
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [school_id, setSchoolID] = useState("");
+  const [program, setProgram] = useState("");
+  const [year, setYear] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
 
+  // Letter capitalization
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
     const value = e.target.value;
     setter(value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : "");
   };
 
-  // Function para dumiretso sa Library Dashboard pagka-login
-  const handleLogin = (e: React.FormEvent) => {
+  // 🚦 PURE FRONTEND: Dumiretso sa Dashboard
+  const handleSignin = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/dashboard/library");
+    setLoading(true);
+    
+    // Fake loading effect na 0.8 seconds bago lumipat ng page
+    setTimeout(() => {
+      router.push("/dashboard/library");
+    }, 800);
+  };
+
+  // 🚦 PURE FRONTEND: Fake Register Logic
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    setTimeout(() => {
+      alert("Account created successfully! (Frontend Demo)");
+      setLoading(false);
+      setActiveTab("signin"); // Ibalik sa Sign In tab pagkatapos mag-register
+    }, 800);
   };
 
   return (
@@ -91,10 +124,6 @@ export default function AuthPage() {
         .forgot-link:hover { color: #1a2744; }
         
         .toggle-pw { position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #b0afc9; display: flex; align-items: center; }
-      
-        
-        .alert-error { background: #fff0f0; border: 1px solid #ffcccc; color: #cc0000; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
-        .alert-success { background: #f0fff4; border: 1px solid #c3e6cb; color: #155724; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
       `}</style>
 
       <div className="blob blob-1"></div>
@@ -117,92 +146,104 @@ export default function AuthPage() {
           <button className={`tab ${activeTab === 'register' ? 'active' : ''}`} onClick={() => setActiveTab('register')}>Register</button>
         </div>
 
-        <form onSubmit={handleLogin}>
-          {activeTab === 'signin' ? (
-            <>
-              {/* BINAGO ANG LABEL AT PLACEHOLDER BASE SA PDF */}
-              <div className="field">
-                <label>Email Address / Student ID</label>
-                <input type="text" placeholder="student@university.edu or 2024-00123" required />
-              </div>
-              <div className="field">
-                <label>Password</label>
-                <div className="input-wrap">
-                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" value={signinPassword} onChange={(e) => setSigninPassword(e.target.value)}required />
-                  <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                    ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    )}
-                  </button>
-                </div>
-                
-                {/* 🚨 DITO NA NATIN INILAGAY YUNG TULAY PAPUNTANG FORGOT PASSWORD 🚨 */}
-                <Link href="/forgot-password" className="forgot-link">
-                  Forgot password?
-                </Link>
-
-              </div>
-              <button type="submit" className="btn-signin">Sign In</button>
-            </>
-          ) : (
-            <form onSubmit={handleRegister}>
-              <div className="form-row">
-                <div className="field">
-                  <label>First Name</label>
-                  <input type="text" placeholder="Maria" value={firstName} onChange={(e) => handleNameChange(e, setFirstName)} required />
-                </div>
-                <div className="field">
-                  <label>Last Name</label>
-                  <input type="text" placeholder="Santos" value={lastName} onChange={(e) => handleNameChange(e, setLastName)} required />
-                </div>
-              </div>
-              <div className="field">
-                <label>Email Address</label>
-                <input type="email" placeholder="student@university.edu" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div className="field">
-                <label>School ID</label>
-                <input type="text" placeholder="2024-00123" value={school_id} onChange={(e) => setSchoolID(e.target.value)} required />
-              </div>
-              <div className="form-row">
-                <div className="field">
-                  <label>Program</label>
-                  <select required defaultValue="">
-                    <option value="" disabled>Select</option>
-                    <option value="BSCS">BSCS</option>
-                    <option value="BSIT">BSIT</option>
-                    <option value="BSCpE">BSCpE</option>
-                  </select>
-                </div>
-                <div className="field">
-                  <label>Year</label>
-                  <select required defaultValue="">
-                    <option value="" disabled>Select</option>
-                    <option value="1st">1st Year</option>
-                    <option value="2nd">2nd Year</option>
-                    <option value="3rd">3rd Year</option>
-                    <option value="4th">4th Year</option>
-                  </select>
-                </div>
-              </div>
-              <div className="field">
-                <label>Password</label>
-                <div className="input-wrap">
-                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" required />
+        {activeTab === 'signin' ? (
+          <form onSubmit={handleSignin}>
+            <div className="field">
+              <label>Email Address / Student ID</label>
+              <input 
+                type="text" 
+                placeholder="student@university.edu or 2024-00123" 
+                value={identifier} 
+                onChange={(e) => setIdentifier(e.target.value)} 
+                required 
+              />
+            </div>
+            <div className="field">
+              <label>Password</label>
+              <div className="input-wrap">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••" 
+                  value={signinPassword} 
+                  onChange={(e) => setSigninPassword(e.target.value)}
+                  required 
+                />
                 <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                    ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    )}
-                  </button>
-                </div>
+                  {showPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  )}
+                </button>
               </div>
-              <button type="submit" className="btn-signin">{loading ? "Creating Account..." : "Create Account"}</button>
-            </form>
-          )}
+              
+              <Link href="/forgot-password" className="forgot-link">
+                Forgot password?
+              </Link>
+            </div>
+            <button type="submit" className="btn-signin" disabled={loading}>
+              {loading ? "Signing In..." : "Sign In"}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleRegister}>
+            <div className="form-row">
+              <div className="field">
+                <label>First Name</label>
+                <input type="text" placeholder="Maria" value={firstName} onChange={(e) => handleNameChange(e, setFirstName)} required />
+              </div>
+              <div className="field">
+                <label>Last Name</label>
+                <input type="text" placeholder="Santos" value={lastName} onChange={(e) => handleNameChange(e, setLastName)} required />
+              </div>
+            </div>
+            <div className="field">
+              <label>Email Address</label>
+              <input type="email" placeholder="student@university.edu" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="field">
+              <label>School ID</label>
+              <input type="text" placeholder="2024-00123" value={school_id} onChange={(e) => setSchoolID(e.target.value)} required />
+            </div>
+            <div className="form-row">
+              <div className="field">
+                <label>Program</label>
+                <select value={program} onChange={(e) => setProgram(e.target.value)} required>
+                  <option value="" disabled>Select</option>
+                  <option value="BSCS">BSCS</option>
+                  <option value="BSIT">BSIT</option>
+                  <option value="BSCpE">BSCpE</option>
+                </select>
+              </div>
+              <div className="field">
+                <label>Year</label>
+                <select value={year} onChange={(e) => setYear(e.target.value)} required>
+                  <option value="" disabled>Select</option>
+                  <option value="1st">1st Year</option>
+                  <option value="2nd">2nd Year</option>
+                  <option value="3rd">3rd Year</option>
+                  <option value="4th">4th Year</option>
+                </select>
+              </div>
+            </div>
+            <div className="field">
+              <label>Password</label>
+              <div className="input-wrap">
+                <input type={showPassword ? "text" : "password"} placeholder="••••••••" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required />
+                <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  )}
+                </button>
+              </div>
+            </div>
+            <button type="submit" className="btn-signin" disabled={loading}>
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
