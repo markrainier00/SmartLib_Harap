@@ -1,70 +1,113 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function AdminDashboardPage() {
+/* ─── MINI COMPONENTS ─── */
+function StatCard({ label, count, color, icon }: any) {
+  return (
+    <div style={{ background: "#fff", borderRadius: 16, padding: "20px", border: "1px solid #e2dfd6", display: "flex", alignItems: "center", gap: 15, flex: 1 }}>
+      <div style={{ width: 48, height: 48, borderRadius: 12, background: `${color}15`, color: color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+        {icon}
+      </div>
+      <div>
+        <div style={{ fontSize: 24, fontWeight: 800, color: "#1a2744", lineHeight: 1 }}>{count}</div>
+        <div style={{ fontSize: 12, color: "#8a8ea8", marginTop: 4, fontWeight: 500 }}>{label}</div>
+      </div>
+    </div>
+  );
+}
+
+function ActionCard({ icon, title, desc, onClick }: any) {
+  return (
+    <div onClick={onClick} style={{ background: "#fff", borderRadius: 20, padding: "24px", border: "1px solid #e2dfd6", cursor: "pointer", transition: "all .2s", flex: 1, minWidth: 200 }}>
+      <div style={{ width: 40, height: 40, borderRadius: 10, background: "#f0ede5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, marginBottom: 16 }}>
+        {icon}
+      </div>
+      <div style={{ fontWeight: 700, fontSize: 15, color: "#1a2744", marginBottom: 4 }}>{title}</div>
+      <div style={{ fontSize: 12, color: "#8a8ea8", lineHeight: 1.5 }}>{desc}</div>
+    </div>
+  );
+}
+
+/* ─── MAIN DASHBOARD ─── */
+export default function StaffDashboard() {
+  const router = useRouter();
+
   return (
     <div style={{ animation: "fadeUp .4s ease" }}>
       <style>{`
         @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-        .hover-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(26,39,68,.1) !important; }
       `}</style>
 
-      {/* HEADER SECTION */}
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 36, color: "#1a2744", marginBottom: 6 }}>
+      {/* GREETING SECTION */}
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: "#1a2744", marginBottom: 4 }}>
           Welcome back, Bryan! 👋
-        </div>
-        <div style={{ fontSize: 15, color: "#8a8ea8" }}>
-          Here's what's happening in your library today.
-        </div>
+        </h1>
+        <p style={{ color: "#8a8ea8", fontSize: 14 }}>Here's what's happening in your library today.</p>
       </div>
 
-      {/* BIG WELCOME BANNER */}
-      <div style={{ background: "linear-gradient(135deg, #1a2744, #3d8bef)", borderRadius: 24, padding: "36px 40px", color: "#fff", position: "relative", overflow: "hidden", boxShadow: "0 16px 40px rgba(61,139,239,.2)", marginBottom: 32 }}>
-        <div style={{ position: "absolute", right: -20, top: -40, fontSize: 160, opacity: 0.1, pointerEvents: "none" }}>📚</div>
-        
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#7fb8f7", marginBottom: 8 }}>System Status</div>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, marginBottom: 12, lineHeight: 1.2 }}>All systems are running smoothly.</h2>
-          <p style={{ fontSize: 15, color: "rgba(255,255,255,.8)", maxWidth: 500, lineHeight: 1.6, marginBottom: 24 }}>
+      {/* NEW: STAFF STATS (Singit sa gitna) */}
+      <div style={{ display: "flex", gap: 16, marginBottom: 28 }}>
+        <StatCard label="Pending Registrations" count={5} color="#e05c5c" icon="✅" />
+        <StatCard label="Borrow Requests" count={3} color="#e8a020" icon="📬" />
+        <StatCard label="Active Borrows" count={12} color="#3d8bef" icon="📖" />
+      </div>
+
+      {/* SYSTEM STATUS (Base sa Image mo) */}
+      <div style={{ 
+        background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)", 
+        borderRadius: 24, 
+        padding: "32px", 
+        color: "#fff", 
+        position: "relative",
+        overflow: "hidden",
+        marginBottom: 32,
+        boxShadow: "0 20px 40px rgba(59, 130, 246, 0.2)"
+      }}>
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", opacity: 0.8, marginBottom: 12 }}>System Status</div>
+          <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>All systems are running smoothly.</h2>
+          <p style={{ fontSize: 14, opacity: 0.9, maxWidth: 500, lineHeight: 1.6, marginBottom: 24 }}>
             You have pending tasks that need your attention. Review new student registrations and book borrowing requests to keep the library moving.
           </p>
-          
           <div style={{ display: "flex", gap: 12 }}>
-            <Link href="/admin/approvals" style={{ background: "#fff", color: "#1a2744", padding: "10px 20px", borderRadius: 12, textDecoration: "none", fontSize: 13.5, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 8, transition: "transform .2s" }}>
+            <button onClick={() => router.push("/admin/approvals")} style={{ background: "#fff", color: "#1e3a8a", border: "none", padding: "10px 20px", borderRadius: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
               ✅ Review Registrations
-            </Link>
-            <Link href="/admin/requests" style={{ background: "rgba(255,255,255,.15)", color: "#fff", border: "1px solid rgba(255,255,255,.3)", padding: "10px 20px", borderRadius: 12, textDecoration: "none", fontSize: 13.5, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 8, transition: "background .2s" }}>
+            </button>
+            <button onClick={() => router.push("/admin/requests")} style={{ background: "rgba(255,255,255,0.2)", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, backdropFilter: "blur(10px)" }}>
               📬 View Book Requests
-            </Link>
+            </button>
           </div>
         </div>
+        {/* Decorative Books Icon in background */}
+        <div style={{ position: "absolute", right: -20, bottom: -20, fontSize: 180, opacity: 0.1, transform: "rotate(-15deg)" }}>📚</div>
       </div>
 
-      {/* QUICK LINKS GRID */}
-      <div style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>Quick Actions</div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
-        
-        <Link href="/admin/scanner" className="hover-card" style={{ background: "#fff", border: "1px solid #e2dfd6", borderRadius: 16, padding: 24, textDecoration: "none", color: "inherit", transition: "all .2s", boxShadow: "0 4px 12px rgba(26,39,68,.04)" }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: "#e8f1fd", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, marginBottom: 16 }}>📷</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#1a2744", marginBottom: 4 }}>Smart Scanner</div>
-          <div style={{ fontSize: 12.5, color: "#8a8ea8", lineHeight: 1.5 }}>Quickly scan ID or Book barcodes</div>
-        </Link>
-
-        <Link href="/admin/books" className="hover-card" style={{ background: "#fff", border: "1px solid #e2dfd6", borderRadius: 16, padding: 24, textDecoration: "none", color: "inherit", transition: "all .2s", boxShadow: "0 4px 12px rgba(26,39,68,.04)" }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: "#e6f7ec", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, marginBottom: 16 }}>📚</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#1a2744", marginBottom: 4 }}>Manage Library</div>
-          <div style={{ fontSize: 12.5, color: "#8a8ea8", lineHeight: 1.5 }}>Add, edit, or remove books</div>
-        </Link>
-
-        <Link href="/admin/analytics" className="hover-card" style={{ background: "#fff", border: "1px solid #e2dfd6", borderRadius: 16, padding: 24, textDecoration: "none", color: "inherit", transition: "all .2s", boxShadow: "0 4px 12px rgba(26,39,68,.04)" }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: "#f3e8ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, marginBottom: 16 }}>📈</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#1a2744", marginBottom: 4 }}>View Analytics</div>
-          <div style={{ fontSize: 12.5, color: "#8a8ea8", lineHeight: 1.5 }}>Check system and borrow trends</div>
-        </Link>
-
+      {/* QUICK ACTIONS (Hindi tinanggal ang Scanner) */}
+      <div>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", marginBottom: 16 }}>Quick Actions</h3>
+        <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+          <ActionCard 
+            icon="📸" 
+            title="Smart Scanner" 
+            desc="Quickly scan student ID or Book barcodes" 
+            onClick={() => router.push("/admin/scanner")} 
+          />
+          <ActionCard 
+            icon="📚" 
+            title="Manage Library" 
+            desc="Add, edit, or remove books from system" 
+            onClick={() => router.push("/admin/books")} 
+          />
+          <ActionCard 
+            icon="📈" 
+            title="View History" 
+            desc="Check borrow trends and past logs" 
+            onClick={() => router.push("/admin/history")} 
+          />
+        </div>
       </div>
     </div>
   );

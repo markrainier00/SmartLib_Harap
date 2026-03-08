@@ -9,14 +9,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [showProf, setShowP] = useState(false);
 
+  // ── NEW SIDEBAR ORDER ──
   const NAV = [
     { id: "/admin",             label: "Dashboard",          icon: "📊" },
-    { id: "/admin/approvals",   label: "Registration",       icon: "✅", badge: 5 },
+    { id: "/admin/books",       label: "Library Management", icon: "📚" },
     { id: "/admin/requests",    label: "Book Requests",      icon: "📬", badge: 3 },
     { id: "/admin/history",     label: "Borrow History",     icon: "🕐" },
+    { id: "/admin/approvals",   label: "Registration",       icon: "✅", badge: 5 },
     { id: "/admin/accounts",    label: "Manage Accounts",    icon: "👥" },
-    // 👇 ITO YUNG BINAGO NATIN (ginawang /admin/books) 👇
-    { id: "/admin/books",       label: "Library Management", icon: "📚" },
     { id: "/admin/analytics",   label: "Data Analytics",     icon: "📈" },
   ];
 
@@ -35,22 +35,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         .pp-item:hover { background: #f5f3ee !important; }
       `}</style>
 
-      {/* Blobs Background */}
+      {/* Background Decor */}
       <div style={{ position: "fixed", width: 300, height: 300, borderRadius: "50%", background: "#b8d0f7", filter: "blur(60px)", opacity: .18, pointerEvents: "none", top: -80, left: -80 }} />
       <div style={{ position: "fixed", width: 240, height: 240, borderRadius: "50%", background: "#c5eac7", filter: "blur(60px)", opacity: .18, pointerEvents: "none", bottom: -60, right: -60 }} />
 
       {/* ── SIDEBAR ── */}
-      <aside style={{ width: 232, flexShrink: 0, background: "#1a2744", display: "flex", flexDirection: "column", zIndex: 20, position: "relative" }}>
+      <aside style={{ width: 240, flexShrink: 0, background: "#1a2744", display: "flex", flexDirection: "column", zIndex: 20, position: "relative" }}>
         <div style={{ padding: "22px 20px 16px", borderBottom: "1px solid rgba(255,255,255,.08)", display: "flex", alignItems: "center", gap: 11 }}>
-          <svg width="36" height="36" viewBox="0 0 56 56" fill="none">
+          <svg width="34" height="34" viewBox="0 0 56 56" fill="none">
             <rect x="20" y="8" width="26" height="34" rx="4" fill="#e8528a" transform="rotate(6 33 25)" />
             <rect x="8" y="12" width="26" height="34" rx="4" fill="#3d8bef" transform="rotate(-4 21 29)" />
             <rect x="13" y="16" width="24" height="30" rx="4" fill="#4caf6e" />
-            <rect x="14" y="17" width="2" height="28" rx="1" fill="rgba(255,255,255,0.4)" />
           </svg>
           <div>
             <div className="dm-serif" style={{ fontSize: 18, color: "#fff", lineHeight: 1 }}>SmartLib</div>
-            <div style={{ fontSize: 9.5, color: "rgba(255,255,255,.35)", letterSpacing: .6, marginTop: 3, textTransform: "uppercase" }}>Admin Portal</div>
+            <div style={{ fontSize: 9, color: "rgba(255,255,255,.35)", letterSpacing: .6, marginTop: 3, textTransform: "uppercase" }}>Admin Portal</div>
           </div>
         </div>
 
@@ -70,13 +69,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div style={{ margin: "0 12px 12px", background: "rgba(61,139,239,.14)", border: "1px solid rgba(61,139,239,.22)", borderRadius: 12, padding: "11px 14px" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#7fb8f7", marginBottom: 2 }}>🛡 Admin Access</div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,.3)", lineHeight: 1.4 }}>Full system permissions</div>
-        </div>
-
         <div style={{ padding: "12px 16px 16px", borderTop: "1px solid rgba(255,255,255,.07)", display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,#3d8bef,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14, fontWeight: 700 }}>A</div>
+          <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#3d8bef,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 700 }}>B</div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,.85)" }}>Bryan Lumangaya</div>
             <div style={{ fontSize: 11, color: "rgba(255,255,255,.35)" }}>Administrator</div>
@@ -88,20 +82,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", zIndex: 1 }}>
         
         {/* TOPBAR */}
-        <header style={{ height: 58, background: "#fff", borderBottom: "1px solid #e2dfd6", padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, position: "relative", zIndex: 40 }}>
+        <header style={{ height: 58, background: "#fff", borderBottom: "1px solid #e2dfd6", padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
           <div className="dm-serif" style={{ fontSize: 17, color: "#1a2744", textTransform: "capitalize" }}>
-            {pathname === "/admin" ? "Dashboard" : pathname.replace("/admin/", "").replace("-", " ")}
+            {pathname === "/admin" ? "Dashboard" : pathname.split("/").pop()?.replace("-", " ")}
           </div>
 
           <div style={{ position: "relative" }}>
-            <button onClick={() => setShowP(!showProf)} style={{ display: "flex", alignItems: "center", gap: 9, background: "#f0ede5", border: "2px solid #e2dfd6", borderRadius: 50, padding: "5px 14px 5px 5px", cursor: "pointer" }}>
-              <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,#3d8bef,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 700 }}>A</div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: "#1a2744" }}>Bryan Lumangaya</span>
+            <button onClick={() => setShowP(!showProf)} style={{ display: "flex", alignItems: "center", gap: 9, background: "#f0ede5", border: "2px solid #e2dfd6", borderRadius: 50, padding: "4px 12px 4px 4px", cursor: "pointer" }}>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg,#3d8bef,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 700 }}>B</div>
+              <span style={{ fontSize: 12.5, fontWeight: 600, color: "#1a2744" }}>Bryan Lumangaya</span>
             </button>
             {showProf && (
-              <div style={{ position: "absolute", top: 50, right: 0, width: 220, background: "#fff", borderRadius: 16, boxShadow: "0 16px 40px rgba(26,39,68,.12)", border: "1px solid #e2dfd6", zIndex: 60, overflow: "hidden", animation: "fadeUp .2s ease" }}>
-                <button className="pp-item" onClick={() => router.push("/admin/profile")} style={{ display: "block", width: "100%", padding: "12px 18px", background: "transparent", border: "none", textAlign: "left", cursor: "pointer", fontSize: 13, fontWeight: 500 }}>👤 Admin Profile</button>
-                <button className="pp-item" onClick={() => router.push("/login")} style={{ display: "block", width: "100%", padding: "12px 18px", background: "transparent", border: "none", borderTop: "1px solid #e2dfd6", textAlign: "left", cursor: "pointer", fontSize: 13, fontWeight: 500, color: "#c94040" }}>🚪 Logout</button>
+              <div style={{ position: "absolute", top: 48, right: 0, width: 200, background: "#fff", borderRadius: 12, boxShadow: "0 10px 30px rgba(0,0,0,.1)", border: "1px solid #e2dfd6", zIndex: 60, overflow: "hidden" }}>
+                <button className="pp-item" style={{ display: "block", width: "100%", padding: "10px 16px", background: "none", border: "none", textAlign: "left", fontSize: 13, cursor: "pointer" }}>👤 Profile</button>
+                <button className="pp-item" onClick={() => router.push("/login")} style={{ display: "block", width: "100%", padding: "10px 16px", background: "none", border: "none", borderTop: "1px solid #e2dfd6", textAlign: "left", fontSize: 13, color: "#c94040", cursor: "pointer" }}>🚪 Logout</button>
               </div>
             )}
           </div>
@@ -109,7 +103,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {showProf && <div style={{ position: "fixed", inset: 0, zIndex: 30 }} onClick={() => setShowP(false)} />}
 
-        {/* ── PAHI-PAHINANG CONTENT ── */}
         <main style={{ flex: 1, overflowY: "auto", padding: "28px 30px" }}>
           {children}
         </main>

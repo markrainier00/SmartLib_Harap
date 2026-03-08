@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import QRCode from "react-qr-code"; // ── DITO NATIN IN-IMPORT ANG TOTOONG QR CODE ──
+import QRCode from "react-qr-code";
 
 export default function Topbar() {
   const router = useRouter();
@@ -21,8 +21,41 @@ export default function Topbar() {
     router.push(path);
   };
 
-  // Ito ang data na ipapasa natin sa QR Code (Kadalasan Student ID ito)
   const studentIdNumber = "2024-00123";
+
+  // 📸 FUNCTION PARA MA-DOWNLOAD ANG QR CODE BILANG PICTURE (.PNG)
+  const downloadQR = () => {
+    const qrWrapper = document.getElementById("qr-wrapper");
+    if (!qrWrapper) return;
+    
+    const svg = qrWrapper.querySelector("svg");
+    if (!svg) return;
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.onload = () => {
+      canvas.width = img.width + 40; // Dagdag white border
+      canvas.height = img.height + 40;
+      
+      if (ctx) {
+        ctx.fillStyle = "#ffffff"; // White background para malinaw sa scanner
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 20, 20); // I-center ang QR
+        
+        const pngFile = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.download = `SmartLib_QR_${studentIdNumber}.png`;
+        downloadLink.href = pngFile;
+        downloadLink.click();
+      }
+    };
+    
+    // I-convert ang SVG to base64 format para maging image
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+  };
 
   return (
     <>
@@ -74,21 +107,23 @@ export default function Topbar() {
         .id-modal-overlay { position: fixed; inset: 0; background: rgba(26,39,68,.7); backdrop-filter: blur(6px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .2s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .id-card { background: linear-gradient(145deg, #1a2744 0%, #2a3d6e 100%); width: 100%; max-width: 360px; border-radius: 24px; padding: 32px 24px; color: #fff; position: relative; box-shadow: 0 24px 64px rgba(0,0,0,.3); text-align: center; border: 1px solid rgba(255,255,255,.1); animation: fadeUp .3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
+        .id-card { background: linear-gradient(145deg, #1a2744 0%, #2a3d6e 100%); width: 100%; max-width: 360px; border-radius: 24px; padding: 32px 24px 0; color: #fff; position: relative; box-shadow: 0 24px 64px rgba(0,0,0,.3); text-align: center; border: 1px solid rgba(255,255,255,.1); animation: fadeUp .3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
         .id-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(61,139,239,.4) 0%, transparent 70%); border-radius: 50%; }
         
         .id-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,.1); border: none; border-radius: 50%; width: 30px; height: 30px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; z-index: 10; }
         .id-close:hover { background: rgba(255,255,255,.2); }
 
-        .id-logo { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .id-logo { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; position: relative; z-index: 2; }
         
-        /* BINAGO ANG QR CONTAINER PARA SAKTO SA TOTOONG QR CODE */
-        .qr-container { background: #fff; padding: 16px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+        .qr-container { background: #fff; padding: 16px; border-radius: 16px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.2); position: relative; z-index: 2; }
 
-        .id-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; }
-        .id-program { font-size: 13px; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        .download-btn { margin-top: 12px; background: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1; padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .download-btn:hover { background: #e0f2fe; transform: translateY(-2px); }
+
+        .id-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; position: relative; z-index: 2; }
+        .id-program { font-size: 12px; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; position: relative; z-index: 2; }
         
-        .id-footer { background: rgba(0,0,0,.2); margin: 0 -24px -32px; padding: 16px 24px; display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,.8); border-top: 1px solid rgba(255,255,255,.05); }
+        .id-footer { background: rgba(0,0,0,.2); margin: 0 -24px; padding: 16px 24px; display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,.8); border-top: 1px solid rgba(255,255,255,.05); position: relative; z-index: 2; }
       `}</style>
 
       <header className="topbar">
@@ -173,15 +208,19 @@ export default function Topbar() {
               📚 SmartLib
             </div>
 
-            <div className="qr-container">
-              {/* TOTOONG QR CODE COMPONENT */}
+            {/* 🚨 DITO NATIN NILAGAY ANG DOWNLOAD LOGIC 🚨 */}
+            <div className="qr-container" id="qr-wrapper">
               <QRCode 
                 value={studentIdNumber} 
-                size={160} 
+                size={220} 
                 bgColor="#ffffff" 
                 fgColor="#1a2744" 
-                level="Q" 
+                level="H" 
               />
+              <button className="download-btn" onClick={downloadQR}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Save as Image
+              </button>
             </div>
 
             <div className="id-name">Bryan Lumangaya</div>
@@ -189,7 +228,7 @@ export default function Topbar() {
             
             <div className="id-footer">
               <span>ID: {studentIdNumber}</span>
-              <span style={{ color: "#4caf6e", fontWeight: "bold" }}>● Valid</span>
+              <span style={{ color: "#4caf50", fontWeight: "bold" }}>● Valid</span>
             </div>
           </div>
         </div>

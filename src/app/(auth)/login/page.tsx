@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link"; // 👈 IN-IMPORT NATIN ITO PARA SA TULAY
 
 export default function AuthPage() {
   const router = useRouter();
@@ -9,16 +10,42 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  
+  // States para sa Login at Error handling
+  const [loginId, setLoginId] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
     const value = e.target.value;
     setter(value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : "");
   };
 
-  // Function para dumiretso sa Library Dashboard pagka-login
+  // 🚦 THE STRICT TRAFFIC ENFORCER
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/dashboard/library");
+    setErrorMsg(""); // I-reset ang error sa bawat pindot
+
+    const input = loginId.toLowerCase().trim();
+
+    // 1. Check kung Admin o Staff
+    if (input.includes("admin") || input.includes("staff") || input.includes("bryan")) {
+      router.push("/admin"); 
+      return;
+    } 
+    
+    // 2. Check kung Valid Student Email (dapat may '@')
+    const isEmail = input.includes("@");
+    
+    // 3. Check kung Valid Student ID (dapat puro numero at dash lang, hal. 2024-00123)
+    const isStudentId = /^[0-9-]+$/.test(input) && input.length > 4;
+
+    if (isEmail || isStudentId) {
+      // Kung pumasa sa Email OR Student ID check
+      router.push("/dashboard"); 
+    } else {
+      // Kapag random letters lang na walang @ at hindi numbers
+      setErrorMsg("Please enter a valid Email Address (with @) or Student ID.");
+    }
   };
 
   return (
@@ -86,7 +113,8 @@ export default function AuthPage() {
         }
         .btn-signin:hover { background: #2a3d6e; transform: translateY(-1px); }
 
-        .forgot-link { display: block; margin-top: 4px; font-size: 11px; color: #8a8ea8; text-decoration: none; text-align: right; }
+        .forgot-link { display: block; margin-top: 4px; font-size: 11px; color: #8a8ea8; text-decoration: none; text-align: right; transition: color 0.2s; }
+        .forgot-link:hover { color: #1a2744; }
         
         .toggle-pw { position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #b0afc9; display: flex; align-items: center; }
       `}</style>
@@ -102,7 +130,7 @@ export default function AuthPage() {
             <rect x="13" y="16" width="24" height="30" rx="4" fill="#4caf6e"/>
             <rect x="14" y="17" width="2" height="28" rx="1" fill="rgba(255,255,255,0.4)"/>
           </svg>
-          <div className="brand-name">LibraSync</div>
+          <div className="brand-name">SmartLib</div>
           <div className="brand-sub">Student Library Management Portal</div>
         </div>
 
@@ -114,10 +142,15 @@ export default function AuthPage() {
         <form onSubmit={handleLogin}>
           {activeTab === 'signin' ? (
             <>
-              {/* BINAGO ANG LABEL AT PLACEHOLDER BASE SA PDF */}
               <div className="field">
                 <label>Email Address / Student ID</label>
-                <input type="text" placeholder="student@university.edu or 2024-00123" required />
+                <input 
+                  type="text" 
+                  placeholder="student@university.edu or 2024-00123" 
+                  value={loginId}
+                  onChange={(e) => setLoginId(e.target.value)}
+                  required 
+                />
               </div>
               <div className="field">
                 <label>Password</label>
@@ -131,8 +164,21 @@ export default function AuthPage() {
                     )}
                   </button>
                 </div>
-                <a href="#" className="forgot-link">Forgot password?</a>
+                
+                {/* 🚨 DITO NA NATIN INILAGAY YUNG TULAY PAPUNTANG FORGOT PASSWORD 🚨 */}
+                <Link href="/forgot-password" className="forgot-link">
+                  Forgot password?
+                </Link>
+
               </div>
+
+              {/* ERROR MESSAGE DISPLAY */}
+              {errorMsg && (
+                <div style={{ color: "#c94040", fontSize: 12, marginBottom: 12, textAlign: "center", fontWeight: 600 }}>
+                  {errorMsg}
+                </div>
+              )}
+
               <button type="submit" className="btn-signin">Sign In</button>
             </>
           ) : (
@@ -140,11 +186,11 @@ export default function AuthPage() {
               <div className="form-row">
                 <div className="field">
                   <label>First Name</label>
-                  <input type="text" placeholder="Maria" value={firstName} onChange={(e) => handleNameChange(e, setFirstName)} required />
+                  <input type="text" placeholder="Bryan" value={firstName} onChange={(e) => handleNameChange(e, setFirstName)} required />
                 </div>
                 <div className="field">
                   <label>Last Name</label>
-                  <input type="text" placeholder="Santos" value={lastName} onChange={(e) => handleNameChange(e, setLastName)} required />
+                  <input type="text" placeholder="Lumangaya" value={lastName} onChange={(e) => handleNameChange(e, setLastName)} required />
                 </div>
               </div>
               <div className="field">
@@ -156,11 +202,10 @@ export default function AuthPage() {
                 <input type="text" placeholder="2024-00123" required />
               </div>
               <div className="form-row">
-                {/* BINAGO ANG LABEL NA COURSE SA PROGRAM BASE SA PDF */}
                 <div className="field">
                   <label>Program</label>
                   <select required defaultValue="">
-                    <option value="" disabled>Select</option>
+                    <option value="" disabled>Course</option>
                     <option value="BSCS">BSCS</option>
                     <option value="BSIT">BSIT</option>
                     <option value="BSCpE">BSCpE</option>
@@ -169,7 +214,7 @@ export default function AuthPage() {
                 <div className="field">
                   <label>Year</label>
                   <select required defaultValue="">
-                    <option value="" disabled>Select</option>
+                    <option value="" disabled>Year</option>
                     <option value="1st">1st Year</option>
                     <option value="2nd">2nd Year</option>
                     <option value="3rd">3rd Year</option>
@@ -181,7 +226,7 @@ export default function AuthPage() {
                 <label>Password</label>
                 <div className="input-wrap">
                   <input type={showPassword ? "text" : "password"} placeholder="••••••••" required />
-                <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
+                  <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
                     ) : (

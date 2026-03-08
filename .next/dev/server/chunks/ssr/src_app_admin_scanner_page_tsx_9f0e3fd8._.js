@@ -9,32 +9,34 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html5$2d$qrcode$2f$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/html5-qrcode/esm/index.js [app-ssr] (ecmascript) <locals>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html5$2d$qrcode$2f$esm$2f$html5$2d$qrcode$2d$scanner$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/html5-qrcode/esm/html5-qrcode-scanner.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html5$2d$qrcode$2f$esm$2f$html5$2d$qrcode$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/html5-qrcode/esm/html5-qrcode.js [app-ssr] (ecmascript)");
 "use client";
 ;
 ;
 ;
-function Btn({ children, variant = "navy", onClick, style = {} }) {
+// 🎨 DESIGN MO: Button Component
+function Btn({ children, variant = "navy", onClick, style = {}, disabled = false }) {
     const base = {
         border: "none",
         borderRadius: 10,
         fontFamily: "'DM Sans', sans-serif",
         fontSize: 13,
         fontWeight: 700,
-        cursor: "pointer",
+        cursor: disabled ? "not-allowed" : "pointer",
         transition: "all .18s",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
         gap: 6,
         padding: "12px 24px",
+        opacity: disabled ? 0.6 : 1,
         ...style
     };
     const v = {
         navy: {
             background: "#1a2744",
             color: "#fff",
-            boxShadow: "0 4px 14px rgba(26,39,68,.22)"
+            boxShadow: disabled ? "none" : "0 4px 14px rgba(26,39,68,.22)"
         },
         ghost: {
             background: "#f0ede5",
@@ -44,9 +46,14 @@ function Btn({ children, variant = "navy", onClick, style = {} }) {
         green: {
             background: "#2d7a4f",
             color: "#fff"
+        },
+        red: {
+            background: "#ef4444",
+            color: "#fff"
         }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+        disabled: disabled,
         style: {
             ...base,
             ...v[variant]
@@ -55,42 +62,94 @@ function Btn({ children, variant = "navy", onClick, style = {} }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/src/app/admin/scanner/page.tsx",
-        lineNumber: 13,
+        lineNumber: 15,
         columnNumber: 10
     }, this);
 }
 function AdminScannerPage() {
     const [scannedResult, setScannedResult] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [isScanning, setIsScanning] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const scannerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const [studentInfo, setStudentInfo] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const html5QrCodeRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // 🚨 REF PARA SA CUSTOM FILE UPLOAD NATIN
+    const fileInputRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // 🧠 CENTRALIZED FUNCTION: Dito babagsak ang data galing Live Cam man o File Upload
+    const processScan = (decodedText)=>{
+        const studentQrId = decodedText.trim();
+        setScannedResult(studentQrId);
+        // Kunin ang data
+        const allRequests = JSON.parse(localStorage.getItem("smartlib_requests") || "[]");
+        const allPenalties = JSON.parse(localStorage.getItem("smartlib_penalties") || "[]");
+        const myReservation = allRequests.find((req)=>req.studentId === studentQrId && req.status === "Pending");
+        const myPenalty = allPenalties.find((p)=>p.studentId === studentQrId);
+        setStudentInfo({
+            name: myReservation ? myReservation.studentName : "Student " + studentQrId,
+            reservation: myReservation || null,
+            penalty: myPenalty ? myPenalty.amount : 0
+        });
+    };
+    // 📸 UPLOAD IMAGE LOGIC
+    const handleFileUpload = async (e)=>{
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const html5QrCode = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html5$2d$qrcode$2f$esm$2f$html5$2d$qrcode$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Html5Qrcode"]("reader");
+            try {
+                const decodedText = await html5QrCode.scanFile(file, false);
+                processScan(decodedText);
+            } catch (err) {
+                alert("Hindi mabasa ang QR code sa picture na ito. Siguraduhing malinaw ang file.");
+            }
+            // I-reset ang input para pwede mag-upload ulit ng same file kung sakali
+            e.target.value = "";
+        }
+    };
+    // 🎥 LIVE CAMERA LOGIC
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         if (isScanning) {
-            // Setup ang scanner pagka-click ng "Start Scanning"
-            scannerRef.current = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html5$2d$qrcode$2f$esm$2f$html5$2d$qrcode$2d$scanner$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Html5QrcodeScanner"]("reader", {
+            html5QrCodeRef.current = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html5$2d$qrcode$2f$esm$2f$html5$2d$qrcode$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Html5Qrcode"]("reader");
+            html5QrCodeRef.current.start({
+                facingMode: "environment"
+            }, {
                 fps: 10,
                 qrbox: {
                     width: 250,
                     height: 250
                 }
-            }, /* verbose= */ false);
-            scannerRef.current.render((decodedText)=>{
-                setScannedResult(decodedText);
+            }, (decodedText)=>{
                 setIsScanning(false);
-                if (scannerRef.current) {
-                    scannerRef.current.clear(); // Patayin ang cam pag may na-detect na
+                if (html5QrCodeRef.current) {
+                    html5QrCodeRef.current.stop().then(()=>{
+                        html5QrCodeRef.current?.clear();
+                        processScan(decodedText); // Ipasa ang data sa process function
+                    }).catch((err)=>console.log("Stop error", err));
                 }
-            }, (error)=>{
-            // Silent error handling habang naghahanap ng code
+            }, (error)=>{}).catch((err)=>{
+                setIsScanning(false);
+                alert("Hindi mabuksan ang camera. Check your browser permissions.");
             });
         }
         return ()=>{
-            if (scannerRef.current) {
-                scannerRef.current.clear().catch((err)=>console.error("Failed to clear scanner", err));
+            if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
+                html5QrCodeRef.current.stop().then(()=>{
+                    html5QrCodeRef.current?.clear();
+                }).catch(()=>{});
             }
         };
     }, [
         isScanning
     ]);
+    const handleConfirmRelease = ()=>{
+        if (!studentInfo?.reservation) return;
+        const allRequests = JSON.parse(localStorage.getItem("smartlib_requests") || "[]");
+        const updated = allRequests.map((req)=>req.id === studentInfo.reservation.id ? {
+                ...req,
+                status: "Approved"
+            } : req);
+        localStorage.setItem("smartlib_requests", JSON.stringify(updated));
+        alert(`Success! "${studentInfo.reservation.bookTitle}" has been released.`);
+        setScannedResult(null);
+        setStudentInfo(null);
+    };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         style: {
             animation: "fadeUp .3s ease",
@@ -101,15 +160,12 @@ function AdminScannerPage() {
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("style", {
                 children: `
         @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-        #reader { border: none !important; border-radius: 16px; overflow: hidden; }
-        #reader__dashboard_section_csr button { 
-          background: #1a2744 !important; color: white !important; border: none !important; 
-          padding: 8px 16px !important; border-radius: 8px !important; cursor: pointer !important;
-        }
+        #reader { border: none !important; border-radius: 16px; overflow: hidden; background: #0f172a; width: 100%; min-height: 250px; }
+        #reader video { object-fit: cover !important; border-radius: 16px; }
       `
             }, void 0, false, {
                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                lineNumber: 53,
+                lineNumber: 115,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -128,7 +184,7 @@ function AdminScannerPage() {
                         children: "Live QR Scanner"
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                        lineNumber: 63,
+                        lineNumber: 123,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -136,16 +192,16 @@ function AdminScannerPage() {
                             fontSize: 14,
                             color: "#8a8ea8"
                         },
-                        children: "Use your laptop camera to scan Student IDs"
+                        children: "Use your laptop camera or upload a QR image"
                     }, void 0, false, {
                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                        lineNumber: 64,
+                        lineNumber: 124,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                lineNumber: 62,
+                lineNumber: 122,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -179,7 +235,13 @@ function AdminScannerPage() {
                                         style: {
                                             padding: "60px 20px",
                                             textAlign: "center",
-                                            color: "rgba(255,255,255,0.5)"
+                                            color: "rgba(255,255,255,0.5)",
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                            width: "100%",
+                                            zIndex: 10
                                         },
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -191,44 +253,80 @@ function AdminScannerPage() {
                                                 children: "📷"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                                lineNumber: 74,
+                                                lineNumber: 135,
                                                 columnNumber: 17
                                             }, this),
                                             "Camera is off"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                        lineNumber: 73,
+                                        lineNumber: 134,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        id: "reader",
-                                        style: {
-                                            width: "100%"
-                                        }
+                                        id: "reader"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                        lineNumber: 78,
+                                        lineNumber: 140,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                lineNumber: 71,
+                                lineNumber: 131,
                                 columnNumber: 11
                             }, this),
-                            !isScanning ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
-                                onClick: ()=>{
-                                    setScannedResult(null);
-                                    setIsScanning(true);
-                                },
+                            !isScanning ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 style: {
-                                    width: "100%"
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "10px"
                                 },
-                                children: scannedResult ? "Scan Again" : "📷 Start Camera"
-                            }, void 0, false, {
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
+                                        onClick: ()=>{
+                                            setScannedResult(null);
+                                            setStudentInfo(null);
+                                            setIsScanning(true);
+                                        },
+                                        style: {
+                                            width: "100%"
+                                        },
+                                        children: scannedResult ? "📷 Scan Another ID" : "📷 Start Camera"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                        lineNumber: 145,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                        type: "file",
+                                        accept: "image/*",
+                                        ref: fileInputRef,
+                                        onChange: handleFileUpload,
+                                        style: {
+                                            display: "none"
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                        lineNumber: 150,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
+                                        variant: "ghost",
+                                        onClick: ()=>fileInputRef.current?.click(),
+                                        style: {
+                                            width: "100%"
+                                        },
+                                        children: "📂 Upload QR Image"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                        lineNumber: 157,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                lineNumber: 82,
+                                lineNumber: 144,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
                                 variant: "ghost",
@@ -239,13 +337,13 @@ function AdminScannerPage() {
                                 children: "Stop Camera"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                lineNumber: 86,
+                                lineNumber: 162,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                        lineNumber: 70,
+                        lineNumber: 130,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -268,13 +366,13 @@ function AdminScannerPage() {
                                     borderBottom: "2px solid #f2efe8",
                                     paddingBottom: 12
                                 },
-                                children: "Scanned Data"
+                                children: "Student Information"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                lineNumber: 92,
+                                lineNumber: 168,
                                 columnNumber: 11
                             }, this),
-                            !scannedResult ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            !scannedResult || !studentInfo ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 style: {
                                     textAlign: "center",
                                     padding: "40px 0",
@@ -289,7 +387,7 @@ function AdminScannerPage() {
                                         children: "🔍"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                        lineNumber: 98,
+                                        lineNumber: 174,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -297,16 +395,16 @@ function AdminScannerPage() {
                                             fontSize: 14,
                                             fontWeight: 600
                                         },
-                                        children: "Ready to scan..."
+                                        children: "Waiting for QR scan..."
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                        lineNumber: 99,
+                                        lineNumber: 175,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                lineNumber: 97,
+                                lineNumber: 173,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 style: {
@@ -315,55 +413,149 @@ function AdminScannerPage() {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         style: {
-                                            background: "#e6f7ec",
-                                            border: "1px solid #b6e8c4",
+                                            background: "#f8fafc",
+                                            border: "1px solid #e2e8f0",
                                             borderRadius: 12,
                                             padding: 16,
-                                            marginBottom: 20
+                                            marginBottom: 16
                                         },
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 style: {
                                                     fontSize: 11,
                                                     fontWeight: 700,
-                                                    color: "#2d7a4f",
+                                                    color: "#3d8bef",
                                                     marginBottom: 4
                                                 },
-                                                children: "QR CODE DETECTED"
+                                                children: "STUDENT DETECTED"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                                lineNumber: 104,
+                                                lineNumber: 182,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 style: {
-                                                    fontSize: 16,
+                                                    fontSize: 18,
                                                     fontWeight: 700,
-                                                    color: "#1a2744",
-                                                    wordBreak: "break-all"
+                                                    color: "#1a2744"
                                                 },
-                                                children: scannedResult
+                                                children: studentInfo.name
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                                lineNumber: 105,
+                                                lineNumber: 183,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                style: {
+                                                    fontSize: 13,
+                                                    color: "#64748b"
+                                                },
+                                                children: [
+                                                    "ID: ",
+                                                    scannedResult
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                lineNumber: 184,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                        lineNumber: 103,
+                                        lineNumber: 181,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         style: {
-                                            fontSize: 13,
-                                            color: "#64748b",
+                                            display: "grid",
+                                            gridTemplateColumns: "1fr 1fr",
+                                            gap: 12,
                                             marginBottom: 20
                                         },
-                                        children: "This data matches a record in the database. What would you like to do?"
-                                    }, void 0, false, {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                style: {
+                                                    background: studentInfo.penalty > 0 ? "#fef2f2" : "#f0fdf4",
+                                                    border: `1px solid ${studentInfo.penalty > 0 ? "#fecaca" : "#bbf7d0"}`,
+                                                    borderRadius: 12,
+                                                    padding: 16
+                                                },
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        style: {
+                                                            fontSize: 11,
+                                                            fontWeight: 700,
+                                                            color: studentInfo.penalty > 0 ? "#ef4444" : "#22c55e",
+                                                            marginBottom: 4
+                                                        },
+                                                        children: "PENALTY STATUS"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                        lineNumber: 190,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        style: {
+                                                            fontSize: 16,
+                                                            fontWeight: 700,
+                                                            color: "#1a2744"
+                                                        },
+                                                        children: studentInfo.penalty > 0 ? `₱${studentInfo.penalty}` : "Clear ✅"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                        lineNumber: 191,
+                                                        columnNumber: 19
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                lineNumber: 189,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                style: {
+                                                    background: studentInfo.reservation ? "#eff6ff" : "#f8fafc",
+                                                    border: `1px solid ${studentInfo.reservation ? "#bfdbfe" : "#e2e8f0"}`,
+                                                    borderRadius: 12,
+                                                    padding: 16
+                                                },
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        style: {
+                                                            fontSize: 11,
+                                                            fontWeight: 700,
+                                                            color: studentInfo.reservation ? "#3b82f6" : "#64748b",
+                                                            marginBottom: 4
+                                                        },
+                                                        children: "RESERVATION"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                        lineNumber: 196,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        style: {
+                                                            fontSize: 14,
+                                                            fontWeight: 700,
+                                                            color: "#1a2744",
+                                                            lineHeight: 1.2
+                                                        },
+                                                        children: studentInfo.reservation ? studentInfo.reservation.bookTitle : "None"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                        lineNumber: 197,
+                                                        columnNumber: 19
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                lineNumber: 195,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                        lineNumber: 108,
+                                        lineNumber: 187,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -372,55 +564,80 @@ function AdminScannerPage() {
                                             gap: 10
                                         },
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
-                                                variant: "green",
+                                            studentInfo.penalty > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
+                                                variant: "red",
                                                 style: {
                                                     flex: 1
                                                 },
-                                                onClick: ()=>alert("Transaction Processed!"),
-                                                children: "Process"
+                                                disabled: true,
+                                                children: "Cannot Release"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                                lineNumber: 113,
-                                                columnNumber: 17
+                                                lineNumber: 206,
+                                                columnNumber: 20
+                                            }, this) : studentInfo.reservation ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
+                                                variant: "navy",
+                                                style: {
+                                                    flex: 1
+                                                },
+                                                onClick: handleConfirmRelease,
+                                                children: "Release Book"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                lineNumber: 208,
+                                                columnNumber: 20
+                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
+                                                variant: "navy",
+                                                style: {
+                                                    flex: 1
+                                                },
+                                                onClick: ()=>alert("Proceeding to Walk-in Borrowing..."),
+                                                children: "Walk-in Borrow"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/admin/scanner/page.tsx",
+                                                lineNumber: 210,
+                                                columnNumber: 20
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Btn, {
                                                 variant: "ghost",
-                                                onClick: ()=>setScannedResult(null),
+                                                onClick: ()=>{
+                                                    setScannedResult(null);
+                                                    setStudentInfo(null);
+                                                },
                                                 children: "Clear"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                                lineNumber: 114,
+                                                lineNumber: 213,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                        lineNumber: 112,
+                                        lineNumber: 204,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                                lineNumber: 102,
+                                lineNumber: 178,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/admin/scanner/page.tsx",
-                        lineNumber: 91,
+                        lineNumber: 167,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/admin/scanner/page.tsx",
-                lineNumber: 67,
+                lineNumber: 127,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/admin/scanner/page.tsx",
-        lineNumber: 52,
+        lineNumber: 114,
         columnNumber: 5
     }, this);
 }
