@@ -53,7 +53,7 @@ function Sidebar() {
                 lineNumber: 12,
                 columnNumber: 39
             }, this),
-            label: "Recommendation"
+            label: "Recommendation  "
         },
         {
             id: "/dashboard/mybooks",
