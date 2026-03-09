@@ -119,17 +119,6 @@ export default function AdminApprovalsPage() {
         ))}
       </div>
 
-      {/* TABS */}
-      <div style={{ display: "flex", borderBottom: "2px solid #e2dfd6", marginBottom: 14 }}>
-        {["pending", "approved", "rejected", "all"].map(t => (
-          <button key={t} onClick={() => setAppTab(t)}
-            style={{ background: "none", border: "none", fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, padding: "9px 16px", cursor: "pointer", color: appTab === t ? "#1a2744" : "#8a8ea8", borderBottom: `2px solid ${appTab === t ? "#1a2744" : "transparent"}`, marginBottom: -2, transition: "all .18s", textTransform: "capitalize", display: "flex", alignItems: "center", gap: 6 }}>
-            {t}
-            <span style={{ background: appTab === t ? "#1a2744" : "#f0ede5", color: appTab === t ? "#fff" : "#8a8ea8", borderRadius: 20, fontSize: 10, fontWeight: 700, padding: "1px 7px" }}>{tabCounts[t]}</span>
-          </button>
-        ))}
-      </div>
-
       {/* FILTERS */}
       <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ position: "relative", flex: 1, minWidth: 180 }}>

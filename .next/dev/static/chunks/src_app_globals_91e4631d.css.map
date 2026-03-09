@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/Bryan/SmartLib_Harap/src/app/globals.css"],"sourcesContent":["/* src/app/globals.css */\r\n* {\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\nbody {\r\n  background-color: #f5f3ee; /* Cream background ng LibraSync */\r\n  color: #1a2744; /* Navy blue text */\r\n  font-family: 'DM Sans', sans-serif;\r\n  overflow-x: hidden;\r\n}"],"names":[],"mappings":"AACA;;;;;;AAMA"}}]
-}

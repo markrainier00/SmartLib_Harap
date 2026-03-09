@@ -127,17 +127,7 @@ export default function AdminRequestsPage() {
           </div>
         ))}
       </div>
-
-      {/* TABS */}
-      <div style={{ display: "flex", borderBottom: "2px solid #e2dfd6", marginBottom: 14, overflowX: "auto" }}>
-        {["pending", "approved", "returned", "rejected", "all"].map(t => (
-          <button key={t} onClick={() => setReqTab(t)}
-            style={{ background: "none", border: "none", fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, padding: "9px 14px", cursor: "pointer", color: reqTab === t ? "#1a2744" : "#8a8ea8", borderBottom: `2px solid ${reqTab === t ? "#1a2744" : "transparent"}`, marginBottom: -2, transition: "all .18s", textTransform: "capitalize", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap" }}>
-            {t} <span style={{ background: reqTab === t ? "#1a2744" : "#f0ede5", color: reqTab === t ? "#fff" : "#8a8ea8", borderRadius: 20, fontSize: 10, fontWeight: 700, padding: "1px 6px" }}>{reqCounts[t]}</span>
-          </button>
-        ))}
-      </div>
-
+      
       {/* FILTERS */}
       <div style={{ display: "flex", gap: 9, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ position: "relative", flex: 1, minWidth: 180 }}>

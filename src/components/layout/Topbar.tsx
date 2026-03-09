@@ -184,7 +184,7 @@ export default function Topbar() {
                   <button className="pp-item" onClick={() => handleNav("/dashboard/profile")}>
                     <span className="pp-icon">👤</span> View Profile
                   </button>
-                  <button className="pp-item" style={{ color: "#c94040" }} onClick={() => handleNav("/login")}>
+                  <button className="pp-item" style={{ color: "#c94040" }} onClick={() => handleNav("/")}>
                     <span className="pp-icon">🚪</span> Logout
                   </button>
                 </div>
