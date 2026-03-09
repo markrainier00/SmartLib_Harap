@@ -204,7 +204,7 @@ export default function AuthPage() {
                     )}
                   </button>
                 </div>
-                <a href="#" className="forgot-link">Forgot password?</a>
+                <Link href="/forgot-password" className="forgot-link">Forgot password?</Link>
               </div>
               <button type="submit" className="btn-signin" disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
             </form>
