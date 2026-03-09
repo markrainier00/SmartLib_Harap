@@ -11,11 +11,11 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("signin");
   const [showPassword, setShowPassword] = useState(false);
 
-  // States para sa Sign In
+  // Sign In fields
   const [identifier, setIdentifier] = useState("");
   const [signinPassword, setSigninPassword] = useState("");
 
-  // States para sa Register
+  // Register fields
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,7 +24,7 @@ export default function AuthPage() {
   const [year, setYear] = useState("");
   const [password, setPassword] = useState("");
 
-// UI state
+  // UI state
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,37 +35,57 @@ export default function AuthPage() {
     setter(value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : "");
   };
 
-  // 🚦 PURE FRONTEND: Dumiretso sa Dashboard
-const handleSignin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const res = await fetch(`${API_URL}/api/auth/signin`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ identifier, password: signinPassword }),
-    });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.message || "Sign in failed");
-    localStorage.setItem("user", JSON.stringify(json.data));
-    router.push("/dashboard/library");
-  } catch (err: any) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
-  // 🚦 PURE FRONTEND: Fake Register Logic
-  const handleRegister = (e: React.FormEvent) => {
+  // Sign In
+  const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setLoading(true);
-
-    setTimeout(() => {
-      alert("Account created successfully! (Frontend Demo)");
+    try {
+      const res = await fetch(`${API_URL}/api/auth/signin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier, password: signinPassword }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Sign in failed");
+      localStorage.setItem("user", JSON.stringify(json.data));
+      router.push("/dashboard/library");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
       setLoading(false);
-      setActiveTab("signin"); // Ibalik sa Sign In tab pagkatapos mag-register
-    }, 800);
+    }
+  };
+
+  // Register
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstname: firstName,
+          lastname: lastName,
+          email,
+          school_id: school_id,
+          program,
+          year,
+          password: password,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Registration failed");
+      setSuccess("Account created! Please sign in.");
+      setActiveTab("signin");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -138,6 +158,9 @@ const handleSignin = async (e: React.FormEvent) => {
         .forgot-link:hover { color: #1a2744; }
         
         .toggle-pw { position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #b0afc9; display: flex; align-items: center; }
+      
+        .alert-error { background: #fff0f0; border: 1px solid #ffcccc; color: #cc0000; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
+        .alert-success { background: #f0fff4; border: 1px solid #c3e6cb; color: #155724; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
       `}</style>
 
       <div className="blob blob-1"></div>
@@ -156,9 +179,12 @@ const handleSignin = async (e: React.FormEvent) => {
         </div>
 
         <div className="tabs">
-          <button className={`tab ${activeTab === 'signin' ? 'active' : ''}`} onClick={() => setActiveTab('signin')}>Sign In</button>
-          <button className={`tab ${activeTab === 'register' ? 'active' : ''}`} onClick={() => setActiveTab('register')}>Register</button>
+          <button className={`tab ${activeTab === 'signin' ? 'active' : ''}`} onClick={() => { setActiveTab('signin'); setError(""); setSuccess(""); }}>Sign In</button>
+          <button className={`tab ${activeTab === 'register' ? 'active' : ''}`} onClick={() => { setActiveTab("register"); setError(""); setSuccess(""); }}>Register</button>
         </div>
+
+        {error && <div className="alert-error">{error}</div>}
+        {success && <div className="alert-success">{success}</div>}
 
         {activeTab === 'signin' ? (
           <form onSubmit={handleSignin}>
@@ -226,7 +252,7 @@ const handleSignin = async (e: React.FormEvent) => {
               <div className="field">
                 <label>Password</label>
                 <div className="input-wrap">
-                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  <input type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
                 <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? (
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
