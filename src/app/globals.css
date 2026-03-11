@@ -1,3 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* src/app/globals.css */
 * {
   box-sizing: border-box;
@@ -11,3 +16,72 @@ body {
   font-family: 'DM Sans', sans-serif;
   overflow-x: hidden;
 }
+
+/* Layout */
+.auth-container {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 30% 20%, #dde8f5 0%, #f5f3ee 55%),
+              radial-gradient(ellipse at 80% 80%, #e8f0d8 0%, transparent 50%);
+  font-family: 'DM Sans', sans-serif;
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  padding: 40px 20px;
+}
+
+/* Blobs */
+.blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.35; pointer-events: none; }
+.blob-1 { width: 340px; height: 340px; background: #b8d0f7; top: -80px; left: -100px; }
+.blob-2 { width: 280px; height: 280px; background: #c5eac7; bottom: -60px; right: -80px; }
+
+/* Card */
+.auth-card {
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 32px 80px rgba(26, 39, 68, 0.18);
+  padding: 32px 36px;
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Brand */
+.brand-name { font-family: 'DM Serif Display', serif; font-size: 26px; color: #1a2744; margin-top: 10px;  text-align: center; }
+.brand-sub { font-size: 12px; color: #8a8ea8; margin-bottom: 24px; text-align: center; }
+
+/* Form fields */
+.field { margin-bottom: 12px; text-align: left; }
+.field label { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1a2744; margin-bottom: 4px; }
+.input-wrap { position: relative; display: flex; align-items: center; }
+.field input, .field select {
+  width: 100%; background: #f0ede5; border: 1.5px solid transparent; border-radius: 10px; padding: 10px 12px;
+  font-size: 13.5px; color: #1a2744; outline: none; transition: 0.2s;
+}
+.field input:focus { border-color: #2a3d6e; background: #fff; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Button */
+.btn-primary {
+  width: 100%; margin-top: 8px; padding: 13px; background: #1a2744; color: #fff;
+  border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(26,39,68,0.2); transition: 0.2s;
+}
+.btn-primary:hover { background: #2a3d6e; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* Alerts */
+.alert-error { background: #fff0f0; border: 1px solid #ffcccc; color: #cc0000; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
+.alert-success { background: #f0fff4; border: 1px solid #c3e6cb; color: #155724; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
+
+/* Misc */
+.toggle-pw { position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #b0afc9; display: flex; align-items: center; }
+.forgot-link { display: block; margin-top: 4px; font-size: 11px; color: #8a8ea8; text-decoration: none; text-align: right; transition: color 0.2s; }
+.forgot-link:hover { color: #1a2744; }

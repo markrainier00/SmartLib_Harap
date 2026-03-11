@@ -79,7 +79,7 @@ export default function AuthPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || "Registration failed");
-      setSuccess("Account created! Please sign in.");
+      setSuccess(json.message);
       setActiveTab("signin");
     } catch (err: any) {
       setError(err.message);
@@ -166,18 +166,10 @@ export default function AuthPage() {
       <div className="blob blob-1"></div>
       <div className="blob blob-2"></div>
 
-      <div className="card">
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <svg width="48" height="48" viewBox="0 0 56 56" fill="none">
-            <rect x="20" y="8" width="26" height="34" rx="4" fill="#e8528a" transform="rotate(6 33 25)"/>
-            <rect x="8" y="12" width="26" height="34" rx="4" fill="#3d8bef" transform="rotate(-4 21 29)"/>
-            <rect x="13" y="16" width="24" height="30" rx="4" fill="#4caf6e"/>
-            <rect x="14" y="17" width="2" height="28" rx="1" fill="rgba(255,255,255,0.4)"/>
-          </svg>
-          <div className="brand-name">SmartLib</div>
-          <div className="brand-sub">Student Library Management Portal</div>
-        </div>
-
+      <div className="auth-card">
+        <div className="brand-name">SmartLib</div>
+        <div className="brand-sub">School Library Management Portal</div>
+        
         <div className="tabs">
           <button className={`tab ${activeTab === 'signin' ? 'active' : ''}`} onClick={() => { setActiveTab('signin'); setError(""); setSuccess(""); }}>Sign In</button>
           <button className={`tab ${activeTab === 'register' ? 'active' : ''}`} onClick={() => { setActiveTab("register"); setError(""); setSuccess(""); }}>Register</button>
