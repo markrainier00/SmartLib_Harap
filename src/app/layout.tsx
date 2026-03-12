@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "LibraSync | Student Portal",
+  title: "SmartLib",
 };
 
 export default function RootLayout({
