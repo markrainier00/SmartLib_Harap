@@ -43,7 +43,7 @@ export default function AdminHistoryPage() {
   const [viewTx, setViewTx] = useState<any>(null);
 
   const statusColor: any = { returned: "green", borrowed: "blue", overdue: "red", lost: "gray" };
-  const statusLabel: any = { returned: "✓ Returned", borrowed: "📖 Borrowed", overdue: "⚠️ Overdue", lost: "❓ Lost" };
+  const statusLabel: any = { returned: "✓ Returned", borrowed: "Borrowed", overdue: " Overdue", lost: " Lost" };
 
   const filtHist = history.filter(h => {
     const ms = h.student.toLowerCase().includes(histSearch.toLowerCase()) ||
@@ -96,7 +96,7 @@ export default function AdminHistoryPage() {
 
         {filtHist.length === 0 ? (
           <div style={{ padding: 40, textAlign: "center", color: "#8a8ea8" }}>
-            <div style={{ fontSize: 36, marginBottom: 10 }}>📭</div>
+            <div style={{ fontSize: 36, marginBottom: 10 }}></div>
             No transaction records found
           </div>
         ) : (
@@ -135,7 +135,7 @@ export default function AdminHistoryPage() {
             <div style={{ padding: "16px", background: "#f7f5f0", borderRadius: 14, marginBottom: 18 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: "#8a8ea8", textTransform: "uppercase", marginBottom: 4 }}>Student & Book</div>
               <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 19, color: "#1a2744" }}>{viewTx.student}</div>
-              <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>📖 {viewTx.book}</div>
+              <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>{viewTx.book}</div>
             </div>
 
             {[

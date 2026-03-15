@@ -1,126 +1,260 @@
 "use client";
 
-import React, { useState } from "react";
-
-const BOOKS = [
-  { id: 1, title: "Introduction to Algorithms", author: "Cormen et al.", color: "#1e3a5f", spine: "#3d8bef", emoji: "📘" },
-  { id: 2, title: "Calculus: Early Transcendentals", author: "James Stewart", color: "#3b1f6e", spine: "#7c3aed", emoji: "📙" },
-  { id: 3, title: "Organic Chemistry", author: "Paula Bruice", color: "#1a4731", spine: "#4caf6e", emoji: "📗" },
-  { id: 4, title: "Principles of Economics", author: "N. Gregory Mankiw", color: "#7c2d12", spine: "#ea580c", emoji: "📕" },
-  { id: 5, title: "Human Anatomy & Physiology", author: "Marieb & Hoehn", color: "#134e4a", spine: "#0d9488", emoji: "📘" },
-];
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MyBooksPage() {
-  const [borrowed] = useState([2, 5]); 
-  const [wishlist, setWishlist] = useState([1, 3]); 
+  const router = useRouter();
 
-  const renderCover = (book: any, width: number, height: number, fontSize: number) => (
-    <div style={{ width, height, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", flexShrink: 0, boxShadow: "4px 4px 15px rgba(0,0,0,.15), inset -3px 0 8px rgba(0,0,0,.2)", background: `linear-gradient(150deg, ${book.color}, ${book.spine}88)` }}>
-      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 5, background: book.spine }}></div>
-      <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(255,255,255,.05) 16px,rgba(255,255,255,.05) 17px)" }}></div>
-      <span style={{ position: "relative", zIndex: 1, fontSize: `${fontSize}px` }}>{book.emoji}</span>
-    </div>
-  );
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [books, setBooks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (!userStr || userStr === "undefined" || userStr === "null") {
+      router.replace("/");
+    } else {
+      try {
+        const parsed = JSON.parse(userStr);
+        if (!parsed || !parsed.id) router.replace("/");
+        else setCurrentUser(parsed);
+      } catch (e) {
+        router.replace("/");
+      }
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const txRes = await fetch(`http://localhost:8080/api/transactions/history?school_id=${currentUser.school_id}`);
+        const txJson = await txRes.json();
+
+        const bkRes = await fetch("http://localhost:8080/api/books");
+        const bkJson = await bkRes.json();
+
+        if (txJson.isSuccess) {
+          console.log("📋 TRANSACTIONS:", txJson.data);
+          setTransactions(txJson.data || []);
+        }
+        if (bkJson.isSuccess) setBooks(bkJson.data || []);
+      } catch (err) {
+        console.error("Failed to fetch data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [currentUser]);
+
+  const getCategory = (title: string) => {
+    const book = books.find(b => b.title === title);
+    return book?.category || "N/A";
+  };
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return "N/A";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  };
+
+  // ✅ FIX: Exact match sa backend status values
+  const pendingRequests = transactions.filter(t => t.status === "Pending");
+  const activeBorrows   = transactions.filter(t => t.status === "Borrowed");
+
+  if (!currentUser) return null;
 
   return (
-    <div className="page-mylist" style={{ animation: "fadeUp .3s ease both" }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", padding: "36px 32px", minHeight: "100vh" }}>
       <style>{`
-        /* INAYOS ANG MAX-WIDTH AT MARGIN PARA PANTAY SA DISCOVER PAGE */
-        .page-mylist { width: 100%; max-width: 1400px; margin: 0 auto; }
-        
-        .ml-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: #1a2744; margin-bottom: 6px; }
-        .ml-sub { font-size: 14px; color: #8a8ea8; margin-bottom: 28px; }
-        
-        .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-        .section-head h3 { font-size: 18px; font-weight: 700; color: #1a2744; margin: 0; }
-        .count-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        
-        /* GINAWANG GRID ANG BORROWED BOOKS PARA HINDI HUMABA NANG SOBRA */
-        .borrowed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-        
-        .list-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 14px rgba(26,39,68,.05); border: 1px solid #e2dfd6; padding: 18px; transition: transform .25s ease; display: flex; align-items: center; }
-        .list-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(26,39,68,.1); }
-        
-        .lc-left { display: flex; gap: 16px; width: 100%; align-items: center; }
-        .lc-title { font-size: 15px; font-weight: 700; color: #1a2744; margin-bottom: 4px; line-height: 1.3; }
-        .lc-author { font-size: 13px; color: #8a8ea8; }
-        .lc-due { font-size: 12.5px; color: #e05c5c; font-weight: 600; margin-top: 10px; display: flex; align-items: center; gap: 6px; background: #fdeaea; padding: 4px 10px; border-radius: 8px; display: inline-flex; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-        .saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        .sv-card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e2dfd6; box-shadow: 0 4px 14px rgba(26,39,68,.05); cursor: pointer; transition: all .25s ease; display: flex; flex-direction: column; }
-        .sv-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(26,39,68,.12); border-color: rgba(26,39,68,.2); }
-        .sv-card-img { padding: 18px 18px 10px; display: flex; justify-content: center; position: relative; background: #faf9f6; }
-        
-        /* UNIFORM STAR BUTTON PARA SA WISHLIST */
-        .star-btn { background: none; border: none; cursor: pointer; font-size: 22px; padding: 4px; transition: transform .2s ease; position: absolute; top: 8px; right: 8px; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.3); color: #fff; }
-        .star-btn:hover { transform: scale(1.25); }
+        :root {
+          --green-dark:    #1B5E35;
+          --green-primary: #256D42;
+          --green-light:   #D6EDE1;
+          --green-pale:    #EBF7F0;
+          --green-accent:  #4CAF78;
+          --border:        #C3DDD0;
+          --text-dark:     #102A1C;
+          --text-light:    #7AAD8E;
+        }
 
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(14px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .sl-page { max-width: 1000px; margin: 0 auto; }
+        .sl-section { margin-bottom: 44px; animation: fadeUp 0.4s ease both; }
+        .sl-section:nth-child(3) { animation-delay: 0.12s; }
+
+        .sl-section-header {
+          display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+        }
+        .sl-icon {
+          width: 34px; height: 34px;
+          background: var(--green-dark);
+          border-radius: 8px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; font-size: 16px;
+        }
+        .sl-title { font-size: 20px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; }
+        .sl-count {
+          margin-left: auto; font-size: 12px; font-weight: 600;
+          color: var(--green-primary); background: var(--green-light);
+          padding: 3px 10px; border-radius: 20px;
+        }
+        .sl-divider { border: none; border-top: 1.5px solid var(--border); margin-bottom: 40px; }
+
+        .sl-card {
+          background: #fff; border-radius: 16px; overflow: hidden;
+          border: 1px solid var(--border);
+          box-shadow: 0 2px 16px rgba(27,94,53,0.07);
+        }
+        .sl-table { width: 100%; border-collapse: collapse; }
+        .sl-table thead tr { background: var(--green-dark); }
+        .sl-table th {
+          padding: 14px 20px; font-size: 11px; font-weight: 700;
+          color: rgba(255,255,255,0.85); text-align: left;
+          letter-spacing: 0.8px; text-transform: uppercase;
+        }
+        .sl-table td {
+          padding: 14px 20px; font-size: 13.5px;
+          color: var(--text-dark); border-top: 1px solid var(--green-pale);
+        }
+        .sl-table tbody tr { transition: background 0.15s; }
+        .sl-table tbody tr:hover { background: var(--green-pale); }
+        .sl-title-cell { font-weight: 600; }
+        .sl-date { color: var(--text-light); font-size: 13px; }
+        .sl-due  { font-size: 13px; font-weight: 400; color: var(--text-light); }
+
+        .sl-empty td {
+          padding: 40px; text-align: center;
+          color: var(--text-light); font-size: 14px;
+          font-style: italic; background: var(--green-pale);
+        }
+        .sl-footer {
+          background: var(--green-pale); padding: 10px 20px;
+          display: flex; align-items: center; justify-content: space-between;
+          border-top: 1px solid var(--border);
+        }
+        .sl-footer span { font-size: 12px; color: var(--text-light); font-weight: 500; }
+        .sl-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-accent); display: inline-block; margin-right: 6px; }
+
+        .sl-loading {
+          display: flex; align-items: center; justify-content: center;
+          gap: 10px; padding: 80px;
+          color: var(--text-light); font-size: 14px;
+        }
+        .sl-spinner {
+          width: 18px; height: 18px;
+          border: 2px solid var(--green-light);
+          border-top-color: var(--green-dark);
+          border-radius: 50%;
+          animation: spin 0.7s linear infinite;
+        }
       `}</style>
 
-      <div className="ml-title">My List</div>
-      <div className="ml-sub">Monitor your current borrowed items and your wishlist</div>
-
-      {/* ── BORROWED BOOKS (NAKA-GRID NA NGAYON) ── */}
-      <div style={{ marginBottom: "36px" }}>
-        <div className="section-head">
-          <h3>📖 Borrowed Books</h3>
-          <span className="count-badge" style={{ background: "#e8f1fd", color: "#3d8bef" }}>{borrowed.length}</span>
+      {loading ? (
+        <div className="sl-loading">
+          <div className="sl-spinner" />
+          Loading your books...
         </div>
-        
-        <div className="borrowed-grid">
-          {borrowed.map(id => {
-            const b = BOOKS.find(x => x.id === id);
-            if(!b) return null;
-            return (
-              <div key={b.id} className="list-card">
-                <div className="lc-left">
-                  {renderCover(b, 75, 100, 28)}
-                  <div style={{ flex: 1 }}>
-                    <div className="lc-title">{b.title}</div>
-                    <div className="lc-author">{b.author}</div>
-                    <div className="lc-due">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                      Due: March 16, 2026
-                    </div>
-                  </div>
-                </div>
+      ) : (
+        <div className="sl-page">
+
+          {/* ── BOOK REQUESTS (Pending) ── */}
+          <div className="sl-section">
+            <div className="sl-section-header">
+              <div className="sl-icon">📋</div>
+              <span className="sl-title">Book Requests</span>
+              <span className="sl-count">{pendingRequests.length} pending</span>
+            </div>
+            <div className="sl-card">
+              <table className="sl-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Date Requested</th>
+                    <th>Due Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingRequests.length === 0 ? (
+                    <tr className="sl-empty"><td colSpan={4}>No pending requests at the moment.</td></tr>
+                  ) : (
+                    pendingRequests.map((req, i) => (
+                      <tr key={i}>
+                        <td className="sl-title-cell">{req.book_title}</td>
+                        <td>{getCategory(req.book_title)}</td>
+                        <td className="sl-date">{formatDate(req.created_at)}</td>
+                        <td className="sl-due">{formatDate(req.return_date)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+              <div className="sl-footer">
+                <span><span className="sl-dot" />Awaiting librarian approval</span>
+                <span>{pendingRequests.length} record{pendingRequests.length !== 1 ? "s" : ""}</span>
               </div>
-            );
-          })}
-        </div>
-      </div>
+            </div>
+          </div>
 
-      {/* ── WISHLIST (PANTAY SA GRID NG DISCOVER PAGE) ── */}
-      <div>
-        <div className="section-head">
-          <h3>⭐ My Wishlist</h3>
-          <span className="count-badge" style={{ background: "#fef5e6", color: "#a06010" }}>{wishlist.length}</span>
-        </div>
+          <hr className="sl-divider" />
 
-        <div className="saved-grid">
-          {wishlist.map(id => {
-            const b = BOOKS.find(x => x.id === id);
-            if(!b) return null;
-            return (
-              <div key={b.id} className="sv-card">
-                <div className="sv-card-img">
-                  {renderCover(b, 120, 165, 50)}
-                  <button className="star-btn" onClick={() => setWishlist(wishlist.filter(x => x !== b.id))}>⭐</button>
-                </div>
-                <div style={{ padding: "12px 16px 16px", flex: 1, display: "flex", flexDirection: "column" }}>
-                  <div style={{ fontSize: "14px", fontWeight: 700, color: "#1a2744", lineHeight: 1.4, marginBottom: "4px" }}>
-                    {b.title.length > 28 ? b.title.slice(0, 28) + '…' : b.title}
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#8a8ea8" }}>{b.author}</div>
-                </div>
+          {/* ── BOOK BORROW (Borrowed) ── */}
+          <div className="sl-section">
+            <div className="sl-section-header">
+              <div className="sl-icon">📚</div>
+              <span className="sl-title">Book Borrow</span>
+              <span className="sl-count">{activeBorrows.length} active</span>
+            </div>
+            <div className="sl-card">
+              <table className="sl-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Date Approved</th>
+                    <th>Due Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeBorrows.length === 0 ? (
+                    <tr className="sl-empty"><td colSpan={4}>No currently borrowed books.</td></tr>
+                  ) : (
+                    activeBorrows.map((borrow, i) => (
+                      <tr key={i}>
+                        <td className="sl-title-cell">{borrow.book_title}</td>
+                        <td>{getCategory(borrow.book_title)}</td>
+                        {/* ✅ FIX: updated_at na ngayon mula sa model */}
+                        <td className="sl-date">{formatDate(borrow.updated_at)}</td>
+                        <td className="sl-due">{formatDate(borrow.return_date)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+              <div className="sl-footer">
+                <span><span className="sl-dot" />Currently borrowed books</span>
+                <span>{activeBorrows.length} record{activeBorrows.length !== 1 ? "s" : ""}</span>
               </div>
-            );
-          })}
+            </div>
+          </div>
+
         </div>
-        {wishlist.length === 0 && <div style={{ color: "#8a8ea8", padding: "20px 0" }}>Your wishlist is empty.</div>}
-      </div>
-      
+      )}
     </div>
   );
 }

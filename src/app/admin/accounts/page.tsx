@@ -141,7 +141,7 @@ export default function AdminAccountsPage() {
             {viewAcc.role === "student" ? (
               <div style={{ display: "flex", gap: 8 }}>
                 <Btn variant={viewAcc.status === "active" ? "amber" : "navy"} style={{ flex: 1 }} onClick={() => setActionModal({ type: viewAcc.status === "active" ? "lock" : "unlock", acc: viewAcc })}>
-                  {viewAcc.status === "active" ? "🔒 Lock Student" : "🔓 Unlock Student"}
+                  {viewAcc.status === "active" ? "Lock Student" : "Unlock Student"}
                 </Btn>
                 <Btn variant="red" style={{ flex: 1 }} onClick={() => setActionModal({ type: "delete", acc: viewAcc })}>🗑 Delete Record</Btn>
               </div>
@@ -158,7 +158,7 @@ export default function AdminAccountsPage() {
       {actionModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.4)", zIndex: 110, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "#fff", borderRadius: 20, padding: 24, maxWidth: 350, textAlign: "center" }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>{actionModal.type === 'delete' ? '⚠️' : '🛡️'}</div>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>{actionModal.type === 'delete' ? '' : ''}</div>
             <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Confirm {actionModal.type}?</div>
             <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20 }}>Are you sure you want to {actionModal.type} <strong>{actionModal.acc.name}</strong>?</div>
             <div style={{ display: "flex", gap: 8 }}>

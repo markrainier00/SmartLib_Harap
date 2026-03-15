@@ -26,11 +26,11 @@ const CATEGORY_DATA = [
 ];
 
 const TOP_BOOKS = [
-  { title: "Introduction to Algorithms", author: "Cormen et al.", borrows: 145, emoji: "📘" },
-  { title: "Clean Code", author: "Robert C. Martin", borrows: 112, emoji: "📗" },
-  { title: "Engineering Mechanics", author: "R.C. Hibbeler", borrows: 98, emoji: "📙" },
-  { title: "Calculus: Early Transcendentals", author: "James Stewart", borrows: 85, emoji: "📕" },
-  { title: "Business Law", author: "Jane Doe", borrows: 64, emoji: "📔" },
+  { title: "Introduction to Algorithms", author: "Cormen et al.", borrows: 145, emoji: "" },
+  { title: "Clean Code", author: "Robert C. Martin", borrows: 112, emoji: "" },
+  { title: "Engineering Mechanics", author: "R.C. Hibbeler", borrows: 98, emoji: "" },
+  { title: "Calculus: Early Transcendentals", author: "James Stewart", borrows: 85, emoji: "" },
+  { title: "Business Law", author: "Jane Doe", borrows: 64, emoji: "" },
 ];
 
 /* ─── COMPONENTS ───────────────────────────────────────── */
@@ -67,7 +67,7 @@ export default function AdminAnalyticsPage() {
           <select value={timeRange} onChange={e => setTimeRange(e.target.value)} style={{ background: "#fff", border: "2px solid #e2dfd6", borderRadius: 10, padding: "8px 14px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#1a2744", outline: "none", cursor: "pointer", fontWeight: 600 }}>
             {["This Year", "Last 6 Months", "This Month"].map(t => <option key={t}>{t}</option>)}
           </select>
-          <Btn onClick={() => window.print()}>🖨️ Export PDF</Btn>
+          <Btn onClick={() => window.print()}>Export to PDF</Btn>
         </div>
       </div>
 
@@ -170,7 +170,7 @@ export default function AdminAnalyticsPage() {
 
           {/* MINI REPORT WIDGET */}
           <div style={{ background: "linear-gradient(135deg, #1a2744, #2a3d66)", borderRadius: 16, padding: "24px", color: "#fff", position: "relative", overflow: "hidden", boxShadow: "0 8px 24px rgba(26,39,68,.15)" }}>
-            <div style={{ position: "absolute", top: -20, right: -20, fontSize: 100, opacity: 0.1, pointerEvents: "none" }}>📈</div>
+            <div style={{ position: "absolute", top: -20, right: -20, fontSize: 100, opacity: 0.1, pointerEvents: "none" }}></div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#7fb8f7", marginBottom: 8 }}>Weekly Insight</div>
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, lineHeight: 1.3, marginBottom: 12 }}>Borrowing increased by 15% this week!</div>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,.7)", lineHeight: 1.5, marginBottom: 20 }}>

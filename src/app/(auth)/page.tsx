@@ -6,11 +6,10 @@ import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 type AuthMode = "signin" | "register";
 type RegisterStep = 1 | 2 | 3 | 4 | 5; // email → otp → school_id → password → details
 
-// ─── Shared styles (injected once) ───────────────────────────────────────────
+
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
@@ -605,8 +604,9 @@ export default function AuthPage() {
         {mode === "signin" && (
           <form onSubmit={handleSignin} className="ac-fade">
             <div className="ac-field">
-              <label>Email Address / School ID</label>
+              <label htmlFor="signinIdentifier">Email Address / School ID</label>
               <input
+                id="signinIdentifier"
                 type="text"
                 placeholder="student@university.edu or 2024-00123"
                 value={identifier}
@@ -615,9 +615,10 @@ export default function AuthPage() {
               />
             </div>
             <div className="ac-field">
-              <label>Password</label>
+              <label htmlFor="signinPassword">Password</label>
               <div className="ac-input-wrap">
                 <input
+                  id="signinPassword"
                   type={showSigninPw ? "text" : "password"}
                   placeholder="••••••••"
                   value={signinPassword}
@@ -625,7 +626,7 @@ export default function AuthPage() {
                   className="has-icon"
                   required
                 />
-                <button type="button" className="ac-pw-toggle" onClick={() => setShowSigninPw(v => !v)}>
+                <button type="button" aria-label="Toggle password visibility" className="ac-pw-toggle" onClick={() => setShowSigninPw(v => !v)}>
                   {showSigninPw ? <IconEyeOff /> : <IconEye />}
                 </button>
               </div>
@@ -645,9 +646,10 @@ export default function AuthPage() {
             {step === 1 && (
               <form onSubmit={handleSendOtp}>
                 <div className="ac-field">
-                  <label>Email Address</label>
+                  <label htmlFor="regEmail">Email Address</label>
                   <div className="ac-input-wrap">
                     <input
+                      id="regEmail"
                       type="email"
                       placeholder="student@university.edu"
                       value={regEmail}
@@ -674,6 +676,7 @@ export default function AuthPage() {
                   {otp.map((digit, i) => (
                     <input
                       key={i}
+                      aria-label={`Digit ${i + 1}`}
                       ref={el => { otpRefs.current[i] = el; }}
                       type="text"
                       inputMode="numeric"
@@ -703,9 +706,10 @@ export default function AuthPage() {
               <button className="ac-back" onClick={() => { setStep(1); clearAlerts(); }}><IconBack /> Back</button>
               <form onSubmit={handleCheckSchoolId}>
                 <div className="ac-field">
-                  <label>School ID Number</label>
+                  <label htmlFor="regSchoolId">School ID Number</label>
                   <div className="ac-input-wrap">
                     <input
+                      id="regSchoolId"
                       type="text"
                       placeholder="e.g. 2024-00123"
                       value={schoolId}
@@ -725,14 +729,15 @@ export default function AuthPage() {
             )}
 
             {/* Step 4: Password */}
+            {/* 🚀 Na-fix na ang mga classes at HTML labels dito */}
             {step === 4 && (<>
               <button className="ac-back" onClick={() => { setStep(3); clearAlerts(); }}><IconBack /> Back</button>
               <form onSubmit={handlePassword}>
-                <div className="field">
-                    <label>New Password</label>
-                    <div className="input-wrap">
-                        <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" minLength={8}/>
-                        <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
+                <div className="ac-field">
+                    <label htmlFor="regPassword">New Password</label>
+                    <div className="ac-input-wrap">
+                        <input id="regPassword" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" minLength={8} required/>
+                        <button type="button" aria-label="Toggle new password visibility" className="ac-pw-toggle" onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? (
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
                             ) : (
@@ -741,11 +746,11 @@ export default function AuthPage() {
                         </button>
                     </div>
                 </div>
-                <div className="field">
-                    <label>Confirm Password</label>
-                    <div className="input-wrap">
-                        <input type={showConfirm ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} required/>
-                        <button type="button" className="toggle-pw" onClick={() => setShowConfirm(!showConfirm)}>
+                <div className="ac-field">
+                    <label htmlFor="regConfirm">Confirm Password</label>
+                    <div className="ac-input-wrap">
+                        <input id="regConfirm" type={showConfirm ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} required/>
+                        <button type="button" aria-label="Toggle confirm password visibility" className="ac-pw-toggle" onClick={() => setShowConfirm(!showConfirm)}>
                             {showConfirm ? (
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
                             ) : (
@@ -754,7 +759,7 @@ export default function AuthPage() {
                         </button>
                     </div>
                 </div>
-                <button type="submit" className="btn-primary" disabled={loading}>Save Password</button>
+                <button type="submit" className="ac-btn" disabled={loading}>Save Password</button>
               </form></>
             )}
 
@@ -764,19 +769,19 @@ export default function AuthPage() {
               <form onSubmit={handleRegister}>
                 <div className="ac-form-row">
                   <div className="ac-field">
-                    <label>First Name</label>
-                    <input type="text" placeholder="Juan" value={firstName} onChange={e => handleNameChange(e, setFirstName)} required />
+                    <label htmlFor="firstName">First Name</label>
+                    <input id="firstName" type="text" placeholder="Juan" value={firstName} onChange={e => handleNameChange(e, setFirstName)} required />
                   </div>
                   <div className="ac-field">
-                    <label>Last Name</label>
-                    <input type="text" placeholder="Dela Cruz" value={lastName} onChange={e => handleNameChange(e, setLastName)} required />
+                    <label htmlFor="lastName">Last Name</label>
+                    <input id="lastName" type="text" placeholder="Dela Cruz" value={lastName} onChange={e => handleNameChange(e, setLastName)} required />
                   </div>
                 </div>
 
                 <div className="ac-form-row">
                   <div className="ac-field">
-                    <label>Program</label>
-                    <select value={program} onChange={e => setProgram(e.target.value)} required>
+                    <label htmlFor="program">Program</label>
+                    <select id="program" value={program} onChange={e => setProgram(e.target.value)} required>
                       <option value="" disabled>Select</option>
                       <option value="BSCS">BSCS</option>
                       <option value="BSIT">BSIT</option>
@@ -784,8 +789,8 @@ export default function AuthPage() {
                     </select>
                   </div>
                   <div className="ac-field">
-                    <label>Year Level</label>
-                    <select value={year} onChange={e => setYear(e.target.value)} required>
+                    <label htmlFor="year">Year Level</label>
+                    <select id="year" value={year} onChange={e => setYear(e.target.value)} required>
                       <option value="" disabled>Select</option>
                       <option value="1st">1st Year</option>
                       <option value="2nd">2nd Year</option>
@@ -796,8 +801,8 @@ export default function AuthPage() {
                 </div>
 
                 <div className="ac-field">
-                  <label>School ID Photo</label>
-                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleSchoolIdImage} />
+                  <label htmlFor="schoolidImage" >School ID Photo</label>
+                  <input id="schoolidImage" aria-label="Upload School ID Photo" ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleSchoolIdImage} />
                   {!schoolIdPreview ? (
                     <div className="ac-upload" onClick={() => fileInputRef.current?.click()}>
                       <div className="ac-upload-icon">
@@ -814,7 +819,8 @@ export default function AuthPage() {
                     <div className="ac-upload has-img">
                       <div className="ac-img-wrap">
                         <img src={schoolIdPreview} alt="School ID preview" className="ac-img-preview" />
-                        <button type="button" className="ac-img-remove" onClick={removeSchoolIdImage}>
+                        <button type="button" aria-label="Remove School ID Photo" className="ac-img-remove" onClick={removeSchoolIdImage}>
+                          <span aria-hidden="true">X</span>
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                           </svg>

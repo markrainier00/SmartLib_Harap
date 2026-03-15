@@ -85,7 +85,7 @@ export default function AdminApprovalsPage() {
   };
 
   const statusColor: any = { pending: "amber", approved: "green", rejected: "red" };
-  const statusLabel: any = { pending: "⏳ Pending", approved: "✓ Approved", rejected: "✗ Rejected" };
+  const statusLabel: any = { pending: " Pending", approved: "✓ Approved", rejected: "✗ Rejected" };
 
   return (
     <div style={{ animation: "fadeUp .3s ease" }}>
@@ -103,10 +103,10 @@ export default function AdminApprovalsPage() {
       {/* SUMMARY CARDS */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 24 }}>
         {[
-          { label: "Pending", val: tabCounts.pending, color: "#e8a020", bg: "#fff8e6", icon: "⏳" },
-          { label: "Approved", val: tabCounts.approved, color: "#2d7a4f", bg: "#e6f7ec", icon: "✅" },
-          { label: "Rejected", val: tabCounts.rejected, color: "#c94040", bg: "#fdeaea", icon: "✗" },
-          { label: "Total", val: tabCounts.all, color: "#2563eb", bg: "#e8f1fd", icon: "📋" },
+          { label: "Pending", val: tabCounts.pending, color: "#e8a020", bg: "#fff8e6", icon: "" },
+          { label: "Approved", val: tabCounts.approved, color: "#2d7a4f", bg: "#e6f7ec", icon: "" },
+          { label: "Rejected", val: tabCounts.rejected, color: "#c94040", bg: "#fdeaea", icon: "" },
+          { label: "Total", val: tabCounts.all, color: "#2563eb", bg: "#e8f1fd", icon: "" },
         ].map((s, i) => (
           <div key={i} style={{ background: "#fff", borderRadius: 14, border: "1px solid #e2dfd6", padding: "16px 18px", boxShadow: "0 2px 12px rgba(26,39,68,.06)", display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
             onClick={() => setAppTab(s.label.toLowerCase())}>
@@ -251,7 +251,7 @@ export default function AdminApprovalsPage() {
                 style={{ width: "100%", background: "#f0ede5", border: "2px solid transparent", borderRadius: 11, padding: "11px 13px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none", resize: "vertical", minHeight: 90 }} />
             </div>
             <div style={{ background: "#fff8e6", border: "1px solid #fde8b0", borderRadius: 10, padding: "10px 14px", marginBottom: 18 }}>
-              <div style={{ fontSize: 12, color: "#a06010" }}>📧 The student will receive an email notification with this reason.</div>
+              <div style={{ fontSize: 12, color: "#a06010" }}>The student will receive an email notification with this reason.</div>
             </div>
             
             <div style={{ display: "flex", gap: 9 }}>
@@ -265,7 +265,7 @@ export default function AdminApprovalsPage() {
       {/* TOAST NOTIFICATION */}
       {toast && (
         <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: toast.type === "err" ? "#c94040" : "#2d7a4f", color: "#fff", padding: "12px 22px", borderRadius: 12, fontSize: 13.5, fontWeight: 500, boxShadow: "0 8px 24px rgba(0,0,0,.2)", zIndex: 200, animation: "fadeUp .3s ease", display: "flex", alignItems: "center", gap: 8 }}>
-          {toast.type === "err" ? "⚠️" : "✅"} {toast.msg}
+          {toast.type === "err" ? "" : ""} {toast.msg}
         </div>
       )}
     </div>

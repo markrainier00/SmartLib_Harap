@@ -1,17 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /* ─── MINI COMPONENTS ─── */
-function StatCard({ label, count, color, icon }: any) {
+function StatCard({ label, count, color, icon, loading }: any) {
   return (
     <div style={{ background: "#fff", borderRadius: 16, padding: "20px", border: "1px solid #e2dfd6", display: "flex", alignItems: "center", gap: 15, flex: 1 }}>
       <div style={{ width: 48, height: 48, borderRadius: 12, background: `${color}15`, color: color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
         {icon}
       </div>
       <div>
-        <div style={{ fontSize: 24, fontWeight: 800, color: "#1a2744", lineHeight: 1 }}>{count}</div>
+        <div style={{ fontSize: 24, fontWeight: 800, color: "#1a2744", lineHeight: 1 }}>
+          {loading ? "..." : count}
+        </div>
         <div style={{ fontSize: 12, color: "#8a8ea8", marginTop: 4, fontWeight: 500 }}>{label}</div>
       </div>
     </div>
@@ -20,7 +22,7 @@ function StatCard({ label, count, color, icon }: any) {
 
 function ActionCard({ icon, title, desc, onClick }: any) {
   return (
-    <div onClick={onClick} style={{ background: "#fff", borderRadius: 20, padding: "24px", border: "1px solid #e2dfd6", cursor: "pointer", transition: "all .2s", flex: 1, minWidth: 200 }}>
+    <div onClick={onClick} style={{ background: "#fff", borderRadius: 20, padding: "24px", border: "1px solid #e2dfd6", cursor: "pointer", transition: "all .2s", flex: 1, minWidth: 200, boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}>
       <div style={{ width: 40, height: 40, borderRadius: 10, background: "#f0ede5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, marginBottom: 16 }}>
         {icon}
       </div>
@@ -33,6 +35,36 @@ function ActionCard({ icon, title, desc, onClick }: any) {
 /* ─── MAIN DASHBOARD ─── */
 export default function StaffDashboard() {
   const router = useRouter();
+  
+  // 🧠 STATE PARA SA LIVE DATA
+  const [stats, setStats] = useState({
+    pendingRegistrations: 0,
+    borrowRequests: 0,
+    activeBorrows: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  // 📡 FETCH DATA FROM GO BACKEND
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        // Papalitan natin ito ng endpoint mo sa Go mamaya
+        // For now, itong pattern na ito ang gagamitin natin
+        const response = await fetch("http://localhost:8080/api/admin/stats");
+        const result = await response.json();
+        
+        if (response.ok) {
+          setStats(result.data);
+        }
+      } catch (err) {
+        console.error("Failed to load stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
+  }, []);
 
   return (
     <div style={{ animation: "fadeUp .4s ease" }}>
@@ -48,14 +80,32 @@ export default function StaffDashboard() {
         <p style={{ color: "#8a8ea8", fontSize: 14 }}>Here's what's happening in your library today.</p>
       </div>
 
-      {/* NEW: STAFF STATS (Singit sa gitna) */}
+      {/* 🚀 LIVE STATS SECTION */}
       <div style={{ display: "flex", gap: 16, marginBottom: 28 }}>
-        <StatCard label="Pending Registrations" count={5} color="#e05c5c" icon="✅" />
-        <StatCard label="Borrow Requests" count={3} color="#e8a020" icon="📬" />
-        <StatCard label="Active Borrows" count={12} color="#3d8bef" icon="📖" />
+        <StatCard 
+          label="Pending Registrations" 
+          count={stats.pendingRegistrations} 
+          color="#e05c5c" 
+          icon="✅" 
+          loading={loading} 
+        />
+        <StatCard 
+          label="Borrow Requests" 
+          count={stats.borrowRequests} 
+          color="#e8a020" 
+          icon="📬" 
+          loading={loading} 
+        />
+        <StatCard 
+          label="Active Borrows" 
+          count={stats.activeBorrows} 
+          color="#3d8bef" 
+          icon="📖" 
+          loading={loading} 
+        />
       </div>
 
-      {/* SYSTEM STATUS (Base sa Image mo) */}
+      {/* SYSTEM STATUS (Banner) */}
       <div style={{ 
         background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)", 
         borderRadius: 24, 
@@ -70,22 +120,23 @@ export default function StaffDashboard() {
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", opacity: 0.8, marginBottom: 12 }}>System Status</div>
           <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>All systems are running smoothly.</h2>
           <p style={{ fontSize: 14, opacity: 0.9, maxWidth: 500, lineHeight: 1.6, marginBottom: 24 }}>
-            You have pending tasks that need your attention. Review new student registrations and book borrowing requests to keep the library moving.
+            {stats.borrowRequests > 0 
+              ? `You have ${stats.borrowRequests} book requests waiting for approval. Go to Smart Scanner to release books.`
+              : "No urgent tasks. Review student registrations to keep the library moving."}
           </p>
           <div style={{ display: "flex", gap: 12 }}>
             <button onClick={() => router.push("/admin/approvals")} style={{ background: "#fff", color: "#1e3a8a", border: "none", padding: "10px 20px", borderRadius: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
               ✅ Review Registrations
             </button>
-            <button onClick={() => router.push("/admin/requests")} style={{ background: "rgba(255,255,255,0.2)", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, backdropFilter: "blur(10px)" }}>
-              📬 View Book Requests
+            <button onClick={() => router.push("/admin/scanner")} style={{ background: "rgba(255,255,255,0.2)", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, backdropFilter: "blur(10px)" }}>
+              📬 Process Releases
             </button>
           </div>
         </div>
-        {/* Decorative Books Icon in background */}
         <div style={{ position: "absolute", right: -20, bottom: -20, fontSize: 180, opacity: 0.1, transform: "rotate(-15deg)" }}>📚</div>
       </div>
 
-      {/* QUICK ACTIONS (Hindi tinanggal ang Scanner) */}
+      {/* QUICK ACTIONS */}
       <div>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", marginBottom: 16 }}>Quick Actions</h3>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
