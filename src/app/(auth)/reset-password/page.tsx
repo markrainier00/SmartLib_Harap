@@ -3,114 +3,142 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { IconEye, IconEyeOff } from "@/components/icons";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 function ResetPasswordForm() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const token = searchParams.get("token") ?? "";
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const token = searchParams.get("token") ?? "";
 
-    // Fields
-    const [password, setPassword] = useState("");
-    const [confirm, setConfirm] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
+  const [form, setForm] = useState({
+    password: "",
+    confirm: "",
+    showPassword: false,
+    showConfirm: false,
+  });
 
-    // UI state
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [ui, setUi] = useState({
+    error: "",
+    success: "",
+    loading: false,
+  });
 
-    useEffect(() => {
-        if (!token) router.push("/");
-    }, [token]);
+  const setForm_ = (fields: Partial<typeof form>) =>
+    setForm(prev => ({ ...prev, ...fields }));
 
-    // Submission
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
-        setSuccess("");
+  const setUI = (fields: Partial<typeof ui>) =>
+    setUi(prev => ({ ...prev, ...fields }));
 
-        if (password !== confirm) {
-            setError("Passwords do not match");
-            return;
-        }
+  useEffect(() => {
+    if (!token) router.push("/");
+  }, [token]);
 
-        setLoading(true);
-        try {
-            const res = await fetch(`${API_URL}/api/auth/reset-password`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, password }),
-            });
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.message || "Reset password failed");
-            setSuccess(json.message);
-            setTimeout(() => router.push("/"), 2000);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUI({ error: "", success: "" });
 
-    return (
-        <div className="auth-container">
-            <div className="blob blob-1"></div>
-            <div className="blob blob-2"></div>
+    if (form.password !== form.confirm) {
+      setUI({ error: "Passwords do not match" });
+      return;
+    }
 
-            <div className="auth-card">
-                <div className="flex flex-col items-center">
-                    <div className="brand-name">SmartLib</div>
-                    <div className="brand-sub">Student Library Management Portal</div>
-                </div>
+    setUI({ loading: true });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password: form.password }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Reset password failed");
+      setUI({ success: json.message });
+      setTimeout(() => router.push("/"), 2000);
+    } catch (err: any) {
+      setUI({ error: err.message });
+    } finally {
+      setUI({ loading: false });
+    }
+  };
 
-                {error && <div className="alert-error">{error}</div>}
-                {success && <div className="alert-success">{success}</div>}
+  return (
+    <div className="container">
+      <div className="blob">
+        <div className="blob-1"></div>
+        <div className="blob-2"></div>
+      </div>
 
-                <p className="text-xs text-[#8a8ea8] mb-4">Enter your new password below.</p>
+      <div className="card">
+        <div className="smartlib-logo text-center">SmartLib</div>
+        <div className="smartlib-sub text-center mb-5">School Library Management Portal</div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="field">
-                        <label>New Password</label>
-                        <div className="input-wrap">
-                            <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}/>
-                            <button type="button" className="toggle-pw" onClick={() => setShowPassword(!showPassword)}>
-                                {showPassword ? (
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                                ) : (
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                    <div className="field">
-                        <label>Confirm Password</label>
-                        <div className="input-wrap">
-                            <input type={showConfirm ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} required/>
-                            <button type="button" className="toggle-pw" onClick={() => setShowConfirm(!showConfirm)}>
-                                {showConfirm ? (
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                                ) : (
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                    <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? "Resetting..." : "Reset Password"}
-                    </button>
-                </form>
+        {ui.error && (
+          <div className="alert-error">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0,marginTop:1}}>
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {ui.error}
+          </div>
+        )}
+        {ui.success && (
+          <div className="alert-success">
+            <div className="check">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
             </div>
-        </div>
-    );
+            {ui.success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="field">
+            <label>New Password</label>
+            <div className="input-wrap">
+              <input
+                type={form.showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={e => setForm_({ password: e.target.value })}
+                required
+                minLength={8}
+                className="has-icon"
+              />
+              <button type="button" className="pw-toggle" onClick={() => setForm_({ showPassword: !form.showPassword })}>
+                {form.showPassword ? <IconEyeOff /> : <IconEye />}
+              </button>
+            </div>
+          </div>
+          <div className="field">
+            <label>Confirm Password</label>
+            <div className="input-wrap">
+              <input
+                type={form.showConfirm ? "text" : "password"}
+                value={form.confirm}
+                onChange={e => setForm_({ confirm: e.target.value })}
+                required
+                className="has-icon"
+              />
+              <button type="button" className="pw-toggle" onClick={() => setForm_({ showConfirm: !form.showConfirm })}>
+                {form.showConfirm ? <IconEyeOff /> : <IconEye />}
+              </button>
+            </div>
+          </div>
+          <button type="submit" className="btn" disabled={ui.loading}>
+            {ui.loading ? <><div className="spinner" /> Resetting…</> : "Reset Password"}
+          </button>
+        </form>
+
+        <Link href="/" className="forgot text-center mt-4">← Back to Sign In</Link>
+      </div>
+    </div>
+  );
 }
 
 export default function ResetPasswordPage() {
-    return (
-        <Suspense>
-            <ResetPasswordForm/>
-        </Suspense>
-    );
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
+  );
 }
