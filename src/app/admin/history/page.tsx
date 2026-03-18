@@ -1,19 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-/* ─── HELPERS & MOCK DATA ───────────────────────────────── */
-const INIT_HISTORY = [
-  { id: "TRX-00101", student: "Juan dela Cruz", book: "Introduction to Algorithms", borrowDate: "Feb 10, 2026", dueDate: "Feb 24, 2026", returnDate: "Feb 22, 2026", status: "returned", penalty: 0 },
-  { id: "TRX-00102", student: "Maria Santos", book: "Human Anatomy & Physiology", borrowDate: "Feb 15, 2026", dueDate: "Mar 01, 2026", returnDate: "Mar 03, 2026", status: "returned", penalty: 100 },
-  { id: "TRX-00103", student: "Sofia Manalo", book: "Calculus: Early Transcendentals", borrowDate: "Feb 25, 2026", dueDate: "Mar 11, 2026", returnDate: "—", status: "borrowed", penalty: 0 },
-  { id: "TRX-00104", student: "Pedro Bautista", book: "Engineering Mechanics", borrowDate: "Jan 15, 2026", dueDate: "Jan 29, 2026", returnDate: "—", status: "lost", penalty: 1500 },
-  { id: "TRX-00105", student: "Mark Villanueva", book: "Physics for Scientists", borrowDate: "Feb 18, 2026", dueDate: "Mar 04, 2026", returnDate: "—", status: "overdue", penalty: 100 },
-  { id: "TRX-00106", student: "Luz Garcia", book: "Organic Chemistry", borrowDate: "Mar 01, 2026", dueDate: "Mar 15, 2026", returnDate: "—", status: "borrowed", penalty: 0 },
-  { id: "TRX-00107", student: "Nena Cruz", book: "Data Structures in Java", borrowDate: "Feb 01, 2026", dueDate: "Feb 15, 2026", returnDate: "Feb 15, 2026", status: "returned", penalty: 0 },
-  { id: "TRX-00108", student: "Carlos Reyes", book: "Business Law", borrowDate: "Feb 12, 2026", dueDate: "Feb 26, 2026", returnDate: "Mar 01, 2026", status: "returned", penalty: 150 },
-];
-
+/* ─── COMPONENTS ───────────────────────────────────────── */
 function Badge({ label, type = "navy" }: any) {
   const m: any = {
     green: ["#e6f7ec", "#2d7a4f"], red: ["#fdeaea", "#c94040"],
@@ -36,14 +25,52 @@ function Btn({ children, variant = "navy", onClick, style = {} }: any) {
 
 /* ─── MAIN COMPONENT ────────────────────────────────────── */
 export default function AdminHistoryPage() {
-  const [history, setHistory] = useState<any[]>(INIT_HISTORY);
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [histSearch, setHistSearch] = useState("");
   const [histStatus, setHistStatus] = useState("All");
 
   const [viewTx, setViewTx] = useState<any>(null);
 
-  const statusColor: any = { returned: "green", borrowed: "blue", overdue: "red", lost: "gray" };
-  const statusLabel: any = { returned: "✓ Returned", borrowed: "Borrowed", overdue: " Overdue", lost: " Lost" };
+  // 🚀 STATUS MAPPING (Nakadepende na sa totoong database values)
+  const statusColor: any = { returned: "green", borrowed: "blue", pending: "amber", rejected: "red", overdue: "red", lost: "gray" };
+  const statusLabel: any = { returned: "✓ Returned", borrowed: "Borrowed", pending: "⏳ Pending", rejected: "✗ Rejected", overdue: " Overdue", lost: " Lost" };
+
+  // 🚀 FETCH DATA FROM GO BACKEND
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setLoading(true);
+      try {
+        // Ginamit natin yung existing endpoint na kumukuha ng lahat ng requests
+        const res = await fetch("http://localhost:8080/api/transactions/pending-all");
+        const json = await res.json();
+        
+        if (res.ok && json.data) {
+          const formattedData = json.data.map((tx: any) => {
+            const statusStr = tx.status ? tx.status.toLowerCase() : "pending";
+            
+            return {
+              id: `TRX-${tx.id.toString().padStart(5, '0')}`,
+              student: tx.school_id, // Ginamit natin ang School ID bilang identifier
+              book: tx.book_title,
+              borrowDate: tx.pickup_date || new Date(tx.created_at).toLocaleDateString(),
+              dueDate: tx.return_date || "—",
+              returnDate: statusStr === "returned" ? new Date(tx.updated_at).toLocaleDateString() : "—",
+              status: statusStr,
+              penalty: 0 // Naka-default muna sa 0 habang hindi pa natin kino-connect ang Penalties table
+            };
+          });
+          setHistory(formattedData);
+        }
+      } catch (err) {
+        console.error("Failed to fetch history:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   const filtHist = history.filter(h => {
     const ms = h.student.toLowerCase().includes(histSearch.toLowerCase()) ||
@@ -61,6 +88,7 @@ export default function AdminHistoryPage() {
         .chip { border: 2px solid #e2dfd6; border-radius: 50px; padding: 7px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: #8a8ea8; transition: all .18s; }
         .chip:hover { border-color: #1a2744; color: #1a2744; }
         .chip.active { background: #1a2744; color: #fff; border-color: #1a2744; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
       {/* HEADER */}
@@ -77,7 +105,8 @@ export default function AdminHistoryPage() {
             style={{ width: "100%", background: "#fff", border: "2px solid #e2dfd6", borderRadius: 11, padding: "9px 13px 9px 38px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none" }} />
         </div>
         
-        {["All", "returned", "borrowed", "overdue", "lost"].map(v => (
+        {/* 🚀 INAYOS NA TABS PARA SAKTO SA DATABASE VALUES */}
+        {["All", "borrowed", "returned", "pending", "rejected"].map(v => (
           <button key={v} className={`chip ${histStatus === v ? "active" : ""}`} onClick={() => setHistStatus(v)}>
             {v === "All" ? "All Records" : statusLabel[v]}
           </button>
@@ -89,21 +118,26 @@ export default function AdminHistoryPage() {
       {/* TABLE */}
       <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2dfd6", boxShadow: "0 2px 12px rgba(26,39,68,.06)", overflow: "hidden" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1.8fr 2fr 1fr 1fr 1fr 1fr 0.6fr", padding: "11px 20px", background: "#f7f5f0", borderBottom: "1px solid #e2dfd6" }}>
-          {["Trans ID", "Student", "Book", "Borrowed", "Due Date", "Returned", "Status", ""].map((h, i) => (
+          {["Trans ID", "Student ID", "Book", "Borrowed", "Due Date", "Returned", "Status", ""].map((h, i) => (
             <div key={i} style={{ fontSize: 10.5, fontWeight: 700, color: "#8a8ea8", letterSpacing: ".06em", textTransform: "uppercase" }}>{h}</div>
           ))}
         </div>
 
-        {filtHist.length === 0 ? (
+        {loading ? (
+          <div style={{ padding: 60, textAlign: "center", color: "#1a2744" }}>
+            <div style={{ width: 28, height: 28, border: "3px solid #1a274433", borderTopColor: "#1a2744", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }}></div>
+            Loading transaction history...
+          </div>
+        ) : filtHist.length === 0 ? (
           <div style={{ padding: 40, textAlign: "center", color: "#8a8ea8" }}>
-            <div style={{ fontSize: 36, marginBottom: 10 }}></div>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>📭</div>
             No transaction records found
           </div>
         ) : (
           filtHist.map((h, i) => (
             <div key={h.id} className="row-hover" style={{ display: "grid", gridTemplateColumns: "1fr 1.8fr 2fr 1fr 1fr 1fr 1fr 0.6fr", padding: "14px 20px", borderBottom: i < filtHist.length - 1 ? "1px solid #f2efe8" : "none", alignItems: "center", transition: "background .15s" }}>
               <div style={{ fontSize: 12.5, fontFamily: "monospace", color: "#64748b", fontWeight: 600 }}>{h.id}</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744" }}>{h.student}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", fontFamily: "monospace" }}>{h.student}</div>
               <div style={{ fontSize: 12.5, color: "#64748b", lineHeight: 1.3 }}>{h.book.length > 28 ? h.book.slice(0, 28) + "…" : h.book}</div>
               <div style={{ fontSize: 12, color: "#8a8ea8" }}>{h.borrowDate}</div>
               <div style={{ fontSize: 12, color: h.status === "overdue" ? "#c94040" : "#8a8ea8", fontWeight: h.status === "overdue" ? 700 : 400 }}>{h.dueDate}</div>
@@ -133,8 +167,8 @@ export default function AdminHistoryPage() {
             </div>
 
             <div style={{ padding: "16px", background: "#f7f5f0", borderRadius: 14, marginBottom: 18 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#8a8ea8", textTransform: "uppercase", marginBottom: 4 }}>Student & Book</div>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 19, color: "#1a2744" }}>{viewTx.student}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#8a8ea8", textTransform: "uppercase", marginBottom: 4 }}>Student ID & Book</div>
+              <div style={{ fontFamily: "monospace", fontSize: 19, fontWeight: "bold", color: "#1a2744" }}>{viewTx.student}</div>
               <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>{viewTx.book}</div>
             </div>
 

@@ -1,23 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-/* ─── HELPERS & MOCK DATA ───────────────────────────────── */
+/* ─── HELPERS ───────────────────────────────── */
 const COURSES = ["All", "BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE", "BSBio", "BSPharma"];
 const YEARS = ["All", "1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year"];
-
-const INIT_PENDING = [
-  { id: 1, name: "Reina Dela Torre", email: "reina@university.edu", studentId: "2025-00101", course: "BSCS", year: "1st Year", dept: "College of Computing", date: "Mar 05, 2026", status: "pending" },
-  { id: 2, name: "Marco Villafuerte", email: "marco@university.edu", studentId: "2025-00102", course: "BSN", year: "2nd Year", dept: "College of Nursing", date: "Mar 05, 2026", status: "pending" },
-  { id: 3, name: "Jasmine Aquino", email: "jasmine@university.edu", studentId: "2025-00103", course: "BSBA", year: "1st Year", dept: "College of Business", date: "Mar 04, 2026", status: "pending" },
-  { id: 4, name: "Eugene Macaraeg", email: "eugene@university.edu", studentId: "2025-00104", course: "BSCE", year: "3rd Year", dept: "College of Engineering", date: "Mar 04, 2026", status: "pending" },
-  { id: 5, name: "Patricia Soriano", email: "pat@university.edu", studentId: "2025-00105", course: "BSMATH", year: "2nd Year", dept: "College of Science", date: "Mar 03, 2026", status: "pending" },
-  { id: 6, name: "Lorenzo Bautista", email: "lorenzo@university.edu", studentId: "2025-00106", course: "BSPharma", year: "1st Year", dept: "College of Pharmacy", date: "Mar 03, 2026", status: "approved" },
-  { id: 7, name: "Camille Reyes", email: "camille@university.edu", studentId: "2025-00107", course: "BSIT", year: "2nd Year", dept: "College of Computing", date: "Mar 02, 2026", status: "approved" },
-  { id: 8, name: "Danilo Santos", email: "danilo@university.edu", studentId: "2025-00108", course: "BSAcc", year: "3rd Year", dept: "College of Accountancy", date: "Mar 02, 2026", status: "rejected" },
-  { id: 9, name: "Rhea Mendoza", email: "rhea@university.edu", studentId: "2025-00109", course: "BSCHE", year: "1st Year", dept: "College of Engineering", date: "Mar 01, 2026", status: "pending" },
-  { id: 10, name: "Francis Tan", email: "francis@university.edu", studentId: "2025-00110", course: "BSBio", year: "2nd Year", dept: "College of Science", date: "Mar 01, 2026", status: "rejected" },
-];
 
 function Badge({ label, type = "navy" }: any) {
   const m: any = {
@@ -40,8 +27,9 @@ function Btn({ children, variant = "navy", onClick, style = {} }: any) {
 
 /* ─── MAIN COMPONENT ────────────────────────────────────── */
 export default function AdminApprovalsPage() {
-  const [pending, setPending] = useState<any[]>(INIT_PENDING);
-  const [appTab, setAppTab] = useState("pending"); // pending | approved | rejected | all
+  const [pending, setPending] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [appTab, setAppTab] = useState("pending"); 
   const [appSearch, setAppSearch] = useState("");
   const [appCourse, setAppCourse] = useState("All");
   const [appYear, setAppYear] = useState("All");
@@ -53,6 +41,40 @@ export default function AdminApprovalsPage() {
 
   const fireToast = (type: string, msg: string) => { setToast({ type, msg }); setTimeout(() => setToast(null), 3000); };
 
+  // 🚀 1. FETCH DATA FROM GO BACKEND
+  const fetchRegistrations = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8080/api/users/registrations");
+      const json = await res.json();
+      if (res.ok && json.data) {
+        // Map backend data to frontend format
+        const formattedData = json.data.map((u: any) => ({
+          id: u.id,
+          name: `${u.firstname} ${u.lastname}`,
+          email: u.email,
+          studentId: u.school_id,
+          course: u.program || "N/A",
+          year: u.year || "N/A",           // 👈 INAYOS DITO: u.year_level naging u.year
+          dept: u.program || "N/A",        // 👈 INAYOS DITO: u.department naging u.program
+          date: new Date(u.created_at).toLocaleDateString(),
+          // Backend uses "New", "Active", "Rejected" -> map to frontend terms
+          status: u.status === "New" ? "pending" : u.status === "Active" ? "approved" : "rejected",
+          rejectReason: u.reject_reason || ""
+        }));
+        setPending(formattedData);
+      }
+    } catch (err) {
+      fireToast("err", "Failed to load registrations from server.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRegistrations();
+  }, []);
+
   const filtPending = pending.filter(p => {
     const ms = p.name.toLowerCase().includes(appSearch.toLowerCase()) ||
                p.email.toLowerCase().includes(appSearch.toLowerCase()) ||
@@ -63,18 +85,42 @@ export default function AdminApprovalsPage() {
     return ms && mt && mc && my;
   }).sort((a, b) => a.name.localeCompare(b.name));
 
-  const approve = (id: any) => {
-    setPending(prev => prev.map(p => p.id === id ? { ...p, status: "approved" } : p));
-    fireToast("ok", "Student registration approved! Email sent.");
-    setViewApplicant(null);
+  // 🚀 2. APPROVE ACTION
+  const approve = async (studentId: string) => {
+    try {
+      const res = await fetch("http://localhost:8080/api/users/approve", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ school_id: studentId }),
+      });
+      if (res.ok) {
+        fireToast("ok", "Student registration approved!");
+        fetchRegistrations(); // Refresh list
+        setViewApplicant(null);
+      } else {
+        fireToast("err", "Failed to approve student.");
+      }
+    } catch (err) { fireToast("err", "Server error"); }
   };
 
-  const reject = (id: any, reason: any) => {
-    setPending(prev => prev.map(p => p.id === id ? { ...p, status: "rejected", rejectReason: reason } : p));
-    fireToast("ok", "Registration rejected. Student has been notified.");
-    setRejectModal(null);
-    setViewApplicant(null);
-    setRejectReason("");
+  // 🚀 3. REJECT ACTION
+  const reject = async (studentId: string, reason: string) => {
+    try {
+      const res = await fetch("http://localhost:8080/api/users/reject", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ school_id: studentId, reason: reason }),
+      });
+      if (res.ok) {
+        fireToast("ok", "Registration rejected. Student has been notified.");
+        fetchRegistrations(); // Refresh list
+        setRejectModal(null);
+        setViewApplicant(null);
+        setRejectReason("");
+      } else {
+        fireToast("err", "Failed to reject student.");
+      }
+    } catch (err) { fireToast("err", "Server error"); }
   };
 
   const tabCounts: any = {
@@ -92,6 +138,7 @@ export default function AdminApprovalsPage() {
       <style>{`
         @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
         .row-hover:hover { background: #f7f5f0 !important; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
       {/* HEADER */}
@@ -149,7 +196,12 @@ export default function AdminApprovalsPage() {
           ))}
         </div>
 
-        {filtPending.length === 0 ? (
+        {loading ? (
+          <div style={{ padding: 50, textAlign: "center", color: "#1a2744" }}>
+             <div style={{ width: 24, height: 24, border: "3px solid #1a274433", borderTopColor: "#1a2744", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 10px" }}></div>
+             Fetching registrations...
+          </div>
+        ) : filtPending.length === 0 ? (
           <div style={{ padding: 40, textAlign: "center", color: "#8a8ea8" }}>
             <div style={{ fontSize: 36, marginBottom: 8 }}>📭</div>
             No registrations found
@@ -172,7 +224,7 @@ export default function AdminApprovalsPage() {
               <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                 {p.status === "pending" ? (
                   <>
-                    <button onClick={() => approve(p.id)} style={{ background: "#e6f7ec", color: "#2d7a4f", border: "1.5px solid #b6e8c4", borderRadius: 8, padding: "5px 10px", fontSize: 11.5, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all .15s" }}>✓ Approve</button>
+                    <button onClick={() => approve(p.studentId)} style={{ background: "#e6f7ec", color: "#2d7a4f", border: "1.5px solid #b6e8c4", borderRadius: 8, padding: "5px 10px", fontSize: 11.5, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all .15s" }}>✓ Approve</button>
                     <button onClick={() => { setRejectModal(p); setRejectReason(""); }} style={{ background: "#fdeaea", color: "#c94040", border: "1.5px solid #f5c5c5", borderRadius: 8, padding: "5px 10px", fontSize: 11.5, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all .15s" }}>✗ Reject</button>
                   </>
                 ) : (
@@ -225,7 +277,7 @@ export default function AdminApprovalsPage() {
 
             {viewApplicant.status === "pending" && (
               <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-                <Btn onClick={() => approve(viewApplicant.id)}>✓ Approve</Btn>
+                <Btn onClick={() => approve(viewApplicant.studentId)}>✓ Approve</Btn>
                 <Btn variant="red" onClick={() => { setRejectModal(viewApplicant); setRejectReason(""); setViewApplicant(null); }}>✗ Reject</Btn>
                 <Btn variant="ghost" onClick={() => setViewApplicant(null)}>Close</Btn>
               </div>
@@ -255,7 +307,7 @@ export default function AdminApprovalsPage() {
             </div>
             
             <div style={{ display: "flex", gap: 9 }}>
-              <Btn variant="red" onClick={() => { if (!rejectReason.trim()) { fireToast("err", "Please provide a reason"); return; } reject(rejectModal.id, rejectReason); }}>Confirm Rejection</Btn>
+              <Btn variant="red" onClick={() => { if (!rejectReason.trim()) { fireToast("err", "Please provide a reason"); return; } reject(rejectModal.studentId, rejectReason); }}>Confirm Rejection</Btn>
               <Btn variant="ghost" onClick={() => setRejectModal(null)}>Cancel</Btn>
             </div>
           </div>
@@ -265,7 +317,7 @@ export default function AdminApprovalsPage() {
       {/* TOAST NOTIFICATION */}
       {toast && (
         <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: toast.type === "err" ? "#c94040" : "#2d7a4f", color: "#fff", padding: "12px 22px", borderRadius: 12, fontSize: 13.5, fontWeight: 500, boxShadow: "0 8px 24px rgba(0,0,0,.2)", zIndex: 200, animation: "fadeUp .3s ease", display: "flex", alignItems: "center", gap: 8 }}>
-          {toast.type === "err" ? "" : ""} {toast.msg}
+          {toast.msg}
         </div>
       )}
     </div>
