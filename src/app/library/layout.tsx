@@ -3,7 +3,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 
 export const metadata = {
-  title: "Dashboard | SmartLib",
+  title: "SmartLib",
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

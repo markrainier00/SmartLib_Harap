@@ -11,13 +11,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // ── NEW SIDEBAR ORDER ──
   const NAV = [
-    { id: "/admin",             label: "Dashboard",          },
-    { id: "/admin/books",       label: "Library Management", },
-    { id: "/admin/requests",    label: "Book Requests",      badge: 3 },
-    { id: "/admin/history",     label: "Borrow History",     },
-    { id: "/admin/approvals",   label: "Registration",        badge: 5 },
-    { id: "/admin/accounts",    label: "Manage Accounts",    },
-    { id: "/admin/analytics",   label: "Data Analytics",     },
+    { id: "/admin",             label: "Dashboard",          icon: "📊" },
+    { id: "/admin/books",       label: "Library Management", icon: "📚" },
+    { id: "/admin/requests",    label: "Book Requests",      icon: "📬", badge: 3 },
+    { id: "/admin/history",     label: "Borrow History",     icon: "🕐" },
+    { id: "/admin/approvals",   label: "Registration",       icon: "✅", badge: 5 },
+    { id: "/admin/accounts",    label: "Manage Accounts",    icon: "👥" },
+    { id: "/admin/analytics",   label: "Data Analytics",     icon: "📈" },
   ];
 
   return (

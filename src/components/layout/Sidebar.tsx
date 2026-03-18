@@ -9,10 +9,10 @@ export default function Sidebar() {
   const program = "BSCS";
 
   const NAV_ITEMS = [
-    { id: "/dashboard/library", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>, label: "Recommendation" },
-    { id: "/dashboard/mybooks", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: "My List" },
-    { id: "/dashboard/history", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, label: "History" },
-    { id: "/dashboard/support", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: "Support" },
+    { id: "/library/recommendation", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>, label: "Recommendation" },
+    { id: "/library/mylist", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: "My List" },
+    { id: "/library/history", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, label: "History" },
+    { id: "/library/support", icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: "Support" },
   ];
 
   return (
@@ -98,37 +98,6 @@ export default function Sidebar() {
           font-weight: 600;
         }
 
-        .sidebar-status {
-          margin: 0 16px 12px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.1);
-          border-radius: 12px;
-          padding: 12px 14px;
-        }
-
-        .st-dot {
-          display: inline-block;
-          width: 7px;
-          height: 7px;
-          background: #4CAF78;
-          border-radius: 50%;
-          margin-right: 6px;
-          box-shadow: 0 0 6px #4CAF78;
-        }
-
-        .st-label {
-          font-size: 12px;
-          font-weight: 700;
-          color: #A8D5B8;
-        }
-
-        .st-sub {
-          font-size: 11px;
-          color: rgba(255,255,255,.4);
-          margin-top: 4px;
-          line-height: 1.4;
-        }
-
         .sidebar-user {
           display: flex;
           align-items: center;
@@ -181,13 +150,6 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <div className="sidebar-course">
-          <label>My Program</label>
-          <div style={{ background: "rgba(255,255,255,.08)", border: "1px solid rgba(255,255,255,.12)", borderRadius: "10px", color: "rgba(255,255,255,.85)", padding: "9px 12px", fontSize: "13px", fontWeight: 600 }}>
-            {program}
-          </div>
-        </div>
-
         <nav className="sidebar-nav">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname?.includes(item.id);
@@ -199,20 +161,6 @@ export default function Sidebar() {
             );
           })}
         </nav>
-
-        <div className="sidebar-status">
-          <span className="st-dot"></span>
-          <span className="st-label">Account Active</span>
-          <div className="st-sub">Email alerts enabled for all library updates</div>
-        </div>
-
-        <div className="sidebar-user">
-          <div className="user-avatar">B</div>
-          <div style={{ overflow: "hidden" }}>
-            <div className="user-name">Bryan Lumangaya</div>
-            <div className="user-course">{program}</div>
-          </div>
-        </div>
       </aside>
     </>
   );

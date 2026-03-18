@@ -83,7 +83,7 @@ export default function AdminAnalyticsPage() {
           <select value={timeRange} onChange={e => setTimeRange(e.target.value)} style={{ background: "#fff", border: "2px solid #e2dfd6", borderRadius: 10, padding: "8px 14px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#1a2744", outline: "none", cursor: "pointer", fontWeight: 600 }}>
             {["This Year", "Last 6 Months", "This Month"].map(t => <option key={t}>{t}</option>)}
           </select>
-          <Btn onClick={() => window.print()}>Export to PDF</Btn>
+          <Btn onClick={() => window.print()}>🖨️ Export PDF</Btn>
         </div>
       </div>
 

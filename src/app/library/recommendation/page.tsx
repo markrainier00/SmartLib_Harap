@@ -77,10 +77,10 @@ export default function LibraryPage() {
       });
       const result = await res.json();
       if (res.ok && result.isSuccess) {
-        alert(`✅ Request submitted successfully for: ${selectedBook.title}!`);
+        alert(`Request submitted successfully for: ${selectedBook.title}!`);
         closePanel();
       } else {
-        alert(`❌ Error: ${result.message}`);
+        alert(`Error: ${result.message}`);
       }
     } catch (err) {
       alert("⚠️ Server connection failed. Make sure your Go backend is running on port 8080.");
@@ -438,7 +438,11 @@ export default function LibraryPage() {
               </div>
             )) : (
               <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "60px 0", color: "#7AAD8E" }}>
-                <div style={{ fontSize: 42 }}>📭</div>
+                <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto block">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                  <line x1="3" y1="16" x2="21" y2="16"/>
+                </svg>
                 <p style={{ marginTop: 12, fontSize: 15 }}>No books found in the library.</p>
               </div>
             )}
@@ -513,17 +517,17 @@ export default function LibraryPage() {
                   <>
                     <button style={{ flex: 1, padding: "14px 10px", borderRadius: "12px", border: "none", background: "#1B5E35", color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", boxShadow: "0 4px 14px rgba(27,94,53,.3)", transition: "all 0.2s" }}
                       onClick={() => setRequestStep("form")}>
-                      ✋ Request
+                      Request
                     </button>
                     <button style={{ flex: 1, padding: "14px 10px", borderRadius: "12px", border: "2px solid #C3DDD0", background: savedBooks.includes(selectedBook.id) ? "#1B5E35" : "#fff", color: savedBooks.includes(selectedBook.id) ? "#fff" : "#1B5E35", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", transition: "all 0.2s" }}
                       onClick={() => toggleSave(null, selectedBook.id)}>
-                      {savedBooks.includes(selectedBook.id) ? '⭐ Saved' : '☆ Wishlist'}
+                      {savedBooks.includes(selectedBook.id) ? 'Saved' : '☆ Wishlist'}
                     </button>
                   </>
                 ) : (
                   <button style={{ width: "100%", padding: "14px", borderRadius: "12px", border: "none", background: "#e89940", color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", boxShadow: "0 4px 14px rgba(232,153,64,.3)", transition: "all 0.2s" }}
                     onClick={() => { alert('You are now in queue!'); closePanel(); }}>
-                    🔔 Notify When Available
+                    Notify When Available
                   </button>
                 )}
               </div>
@@ -531,7 +535,7 @@ export default function LibraryPage() {
               <div style={{ display: "flex", gap: "10px" }}>
                 <button style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: "#1B5E35", color: "#fff", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", boxShadow: "0 4px 14px rgba(27,94,53,.25)" }}
                   onClick={handleConfirmRequest}>
-                  ✅ Confirm
+                  Confirm
                 </button>
                 <button style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "2px solid #C3DDD0", background: "#fff", color: "#1B5E35", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px" }}
                   onClick={() => setRequestStep("details")}>
