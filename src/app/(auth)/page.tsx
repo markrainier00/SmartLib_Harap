@@ -1,13 +1,10 @@
 "use client";
-
+import {api} from "@/lib/api";
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IconEye, IconEyeOff, IconBack, IconMail, IconID } from "@/components/icons";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-// ─── Types ───────────────────────────────────────────────────────────────────
 type AuthMode = "signin" | "register";
 type RegisterStep = 1 | 2 | 3 | 4 | 5;
 
@@ -62,8 +59,6 @@ export default function AuthPage() {
 
   // ── OTP state ──
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [resendCountdown, setResendCountdown] = useState(60);
-  const [resendActive, setResendActive] = useState(false);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // ── School ID image state ──
@@ -175,17 +170,24 @@ export default function AuthPage() {
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
     clearAlerts();
+
+    if (!signin.identifier || !signin.password) {
+      setUI({ error: "Please fill in all fields" });
+      return;
+    }
+
     setUI({ loading: true });
     try {
-      const res = await fetch(`${API_URL}/api/auth/signin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier: signin.identifier, password: signin.password }),
+      const json = await api.postPublic("/api/auth/signin", {
+        identifier: signin.identifier,
+        password: signin.password,
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Sign in failed");
+
+      console.log(json);
+      if (json.retCode !== "200") throw new Error(json.message || "Sign in failed");
       localStorage.setItem("user", JSON.stringify(json.data));
-      router.push("/dashboard/library");
+      localStorage.setItem("token", json.token);
+      router.push("/library");
     } catch (err: any) {
       setUI({ error: err.message });
     } finally {
@@ -199,13 +201,10 @@ export default function AuthPage() {
     if (!register.email) { setUI({ error: "Please enter an email." }); return; }
     setUI({ loading: true });
     try {
-      const res = await fetch(`${API_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: register.email }),
+      const json = await api.postPublic("/api/auth/send-otp", {
+        email: register.email,
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Could not send verification code");
+      if (json.retCode !== "200") throw new Error(json.message || "Could not send verification code");
       setStep(2);
       setUI({ info: `A 6-digit code was sent to ${register.email}` });
     } catch (err: any) {
@@ -222,13 +221,11 @@ export default function AuthPage() {
     if (code.length < 6) { setUI({ error: "Please enter all 6 digits." }); return; }
     setUI({ loading: true });
     try {
-      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: register.email, otp: code }),
+      const json = await api.postPublic("/api/auth/verify-otp", {
+        email: register.email,
+        otp: code,
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Invalid or expired code");
+      if (json.retCode !== "200") throw new Error(json.message || "Invalid or expired code");
       setStep(3);
       clearAlerts();
     } catch (err: any) {
@@ -241,13 +238,10 @@ export default function AuthPage() {
   const handleResendOtp = async () => {
     clearAlerts();
     try {
-      const res = await fetch(`${API_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: register.email }),
+      const json = await api.postPublic("/api/auth/send-otp", {
+        email: register.email,
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Could not resend code");
+      if (json.retCode !== "200") throw new Error(json.message || "Could not resend code");
       setOtp(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
       setUI({ info: "A new code has been sent." });
@@ -261,13 +255,10 @@ export default function AuthPage() {
     clearAlerts();
     setUI({ loading: true });
     try {
-      const res = await fetch(`${API_URL}/api/auth/check-school-id`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ school_id: register.schoolId }),
+      const json = await api.postPublic("/api/auth/check-school-id", {
+        school_id: register.schoolId,
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "School ID check failed");
+      if (json.retCode !== "200") throw new Error(json.message || "School ID check failed");
       setStep(4);
       clearAlerts();
     } catch (err: any) {
@@ -301,14 +292,9 @@ export default function AuthPage() {
       formData.append("program", register.program);
       formData.append("year", register.year);
       formData.append("password", register.password);
-      if (schoolIdImage) formData.append("school_id_image", schoolIdImage);
+      formData.append("school_id_image", schoolIdImage);
 
-      const res = await fetch(`${API_URL}/api/auth/register`, {
-        method: "POST",
-        body: formData,
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Registration failed");
+      const json = await api.postFormPublic("/api/auth/register", formData);
       clearRegisterForm();
       setUI({ success: json.message || "Registration successful." });
       switchMode("signin", true);
@@ -320,7 +306,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="container">
+    <div className="layout">
         <div className="blob blob-1"></div>
         <div className="blob blob-2"></div>
       <div className="card">
@@ -369,8 +355,9 @@ export default function AuthPage() {
         {mode === "signin" && (
           <form onSubmit={handleSignin} className="slideFromLeft">
             <div className="field">
-              <label>Email Address / School ID</label>
+              <label htmlFor="signinIdentifier">Email Address / School ID</label>
               <input
+                id="signinIdentifier"
                 type="text"
                 placeholder="student@university.edu or 2024-00123"
                 value={signin.identifier}
@@ -379,9 +366,10 @@ export default function AuthPage() {
               />
             </div>
             <div className="field">
-              <label>Password</label>
+              <label htmlFor="signinPassword">Password</label>
               <div className="input-wrap">
                 <input
+                  id="signinPassword"
                   type={signin.showPw ? "text" : "password"}
                   placeholder="••••••••"
                   value={signin.password}
@@ -389,7 +377,7 @@ export default function AuthPage() {
                   className="has-icon"
                   required
                 />
-                <button type="button" className="pw-toggle" onClick={() => setSignIn({ showPw: !signin.showPw })}>
+                <button type="button" aria-label="Toggle password visibility" className="pw-toggle" onClick={() => setSignIn({ showPw: !signin.showPw })}>
                   {signin.showPw ? <IconEyeOff /> : <IconEye />}
                 </button>
               </div>
@@ -409,19 +397,20 @@ export default function AuthPage() {
             {step === 1 && (
               <form onSubmit={handleSendOtp}>
                 <div className="field">
-                  <label>Email Address</label>
-                  <div className="input-wrap">
-                    <input
-                      type="email"
-                      placeholder="student@university.edu"
-                      value={register.email}
-                      onChange={e => setReg({ email: e.target.value })}
-                      required
-                      style={{paddingLeft: "40px"}}
-                    />
-                    <span style={{position:"absolute",left:"13px",color:"var(--color-muted)",display:"flex",alignItems:"center"}}>
-                      <IconMail />
-                    </span>
+                    <label htmlFor="regEmail">Email Address</label>
+                    <div className="input-wrap">
+                      <input
+                        id="regEmail"
+                        type="email"
+                        placeholder="student@university.edu"
+                        value={register.email}
+                        onChange={e => setReg({ email: e.target.value })}
+                        required
+                        style={{paddingLeft: "40px"}}
+                      />
+                      <span style={{position:"absolute",left:"13px",color:"var(--color-muted)",display:"flex",alignItems:"center"}}>
+                        <IconMail />
+                      </span>
                   </div>
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading}>
@@ -438,6 +427,7 @@ export default function AuthPage() {
                   {otp.map((digit, i) => (
                     <input
                       key={i}
+                      aria-label={`Digit ${i + 1}`}
                       ref={el => { otpRefs.current[i] = el; }}
                       type="text"
                       inputMode="numeric"
@@ -450,11 +440,7 @@ export default function AuthPage() {
                   ))}
                 </div>
                 <div className="resend">
-                  {resendActive ? (
-                    <>Resend code in <strong>{resendCountdown}s</strong></>
-                  ) : (
-                    <>Didn't get it? <button type="button" onClick={handleResendOtp} disabled={resendActive}>Resend code</button></>
-                  )}
+                  Didn't get it? <button type="button" onClick={handleResendOtp}>Resend code</button>
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading || otp.join("").length < 6} style={{marginTop:"18px"}}>
                   {ui.loading ? <><div className="spinner" /> Verifying…</> : "Verify Code →"}
@@ -470,6 +456,7 @@ export default function AuthPage() {
                   <label>School ID Number</label>
                   <div className="input-wrap">
                     <input
+                      id="regSchoolId"
                       type="text"
                       placeholder="e.g. 2024-00123"
                       value={register.schoolId}
@@ -529,22 +516,22 @@ export default function AuthPage() {
 
             {/* Step 5: Details */}
             {step === 5 && (<>
-              <button className="back" onClick={() => { setStep(3); clearAlerts(); }}><IconBack /> Back</button>
+              <button className="back" onClick={() => { setStep(4); clearAlerts(); }}><IconBack /> Back</button>
               <form onSubmit={handleRegister}>
                 <div className="form-row">
                   <div className="field">
-                    <label>First Name</label>
-                    <input type="text" placeholder="Juan" value={register.firstName} onChange={e => handleNameChange(e, "firstName")} required />
+                    <label htmlFor="firstName">First Name</label>
+                    <input id="firstName" type="text" placeholder="Juan" value={register.firstName} onChange={e => handleNameChange(e, "firstName")} required />
                   </div>
                   <div className="field">
-                    <label>Last Name</label>
-                    <input type="text" placeholder="Dela Cruz" value={register.lastName} onChange={e => handleNameChange(e, "lastName")} required />
+                    <label htmlFor="lastName">Last Name</label>
+                    <input id="lastName" type="text" placeholder="Dela Cruz" value={register.lastName} onChange={e => handleNameChange(e, "lastName")} required />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="field">
-                    <label>Program</label>
-                    <select value={register.program} onChange={e => setReg({ program: e.target.value })} required>
+                    <label htmlFor="program">Program</label>
+                    <select id="program" value={register.program} onChange={e => setReg({ program: e.target.value })} required>
                       <option value="" disabled>Select</option>
                       <option value="BSCS">BSCS</option>
                       <option value="BSIT">BSIT</option>
@@ -552,8 +539,8 @@ export default function AuthPage() {
                     </select>
                   </div>
                   <div className="field">
-                    <label>Year Level</label>
-                    <select value={register.year} onChange={e => setReg({ year: e.target.value })} required>
+                    <label htmlFor="year">Year Level</label>
+                    <select id="year" value={register.year} onChange={e => setReg({ year: e.target.value })} required>
                       <option value="" disabled>Select</option>
                       <option value="1st">1st Year</option>
                       <option value="2nd">2nd Year</option>
@@ -563,8 +550,8 @@ export default function AuthPage() {
                   </div>
                 </div>
                 <div className="field">
-                  <label>School ID Upload (For Identity Verification)</label>
-                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleSchoolIdImage} />
+                  <label htmlFor="schoolidImage" >School ID Upload (For Identity Verification)</label>
+                  <input id="schoolidImage" aria-label="Upload School ID Photo" ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleSchoolIdImage} />
                   {!schoolIdPreview ? (
                     <div className="upload" onClick={() => fileInputRef.current?.click()}>
                       <div className="upload-icon">
@@ -581,7 +568,7 @@ export default function AuthPage() {
                     <div className="upload has-img">
                       <div className="img-wrap">
                         <img src={schoolIdPreview} alt="School ID preview" className="img-preview" />
-                        <button type="button" className="img-remove" onClick={removeSchoolIdImage}>
+                        <button type="button" aria-label="Remove School ID Photo" className="img-remove" onClick={removeSchoolIdImage}>
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                           </svg>

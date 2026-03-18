@@ -63,7 +63,7 @@ function ResetPasswordForm() {
   };
 
   return (
-    <div className="container">
+    <div className="layout">
       <div className="blob">
         <div className="blob-1"></div>
         <div className="blob-2"></div>
