@@ -166,7 +166,9 @@ export default function AuthPage() {
     setReg({ [field]: v.length > 0 ? v.charAt(0).toUpperCase() + v.slice(1) : "" });
   };
 
-  // ── API calls ──
+  // ========================================================
+  // 🚀 API CALLS (DITO NATIN INAYOS ANG BOUNCER LOGIC)
+  // ========================================================
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
     clearAlerts();
@@ -183,11 +185,31 @@ export default function AuthPage() {
         password: signin.password,
       });
 
-      console.log(json);
-      if (json.retCode !== "200") throw new Error(json.message || "Sign in failed");
+      console.log("Login Response:", json);
+      
+      // Safety check (babasahin either retCode o isSuccess)
+      if (json.retCode !== "200" && !json.isSuccess) {
+        throw new Error(json.message || "Sign in failed");
+      }
+      
+      // I-save ang user data sa browser
       localStorage.setItem("user", JSON.stringify(json.data));
-      localStorage.setItem("token", json.token);
-      router.push("/library");
+      // 🚀 Dagdag ito para basahin ng Admin Dashboard mo yung pangalan!
+      localStorage.setItem("smartLib_user", JSON.stringify(json.data)); 
+      
+      if (json.token) localStorage.setItem("token", json.token);
+
+      // 🚀 ANG BOUNCER: Titingin sa Role para malaman kung saan pupunta
+      const userRole = json.data?.role?.toLowerCase() || "student";
+
+      if (userRole === "superadmin") {
+        router.push("/superadmin/dashboard");
+      } else if (userRole === "admin") {
+        router.push("/admin"); // 👈 Dito pupunta ang Admin
+      } else {
+        router.push("/library"); // 👈 Dito pupunta ang Student
+      }
+
     } catch (err: any) {
       setUI({ error: err.message });
     } finally {
