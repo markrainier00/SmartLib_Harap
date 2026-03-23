@@ -1,22 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-/* ─── HELPERS & MOCK DATA ───────────────────────────────── */
+/* ─── HELPERS ───────────────────────────────── */
 const COURSES = ["All", "BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE", "BSBio", "BSPharma"];
-
-const INIT_REQUESTS = [
-  { id: 1, student: "Juan dela Cruz", studentId: "2025-00001", course: "BSCS", book: "Introduction to Algorithms", type: "borrow", date: "Mar 05, 2026", dueDate: "Mar 19, 2026", status: "pending" },
-  { id: 2, student: "Maria Santos", studentId: "2025-00002", course: "BSN", book: "Human Anatomy & Physiology", type: "borrow", date: "Mar 05, 2026", dueDate: "Mar 19, 2026", status: "pending" },
-  { id: 3, student: "Pedro Bautista", studentId: "2025-00005", course: "BSCE", book: "Engineering Mechanics", type: "reserve", date: "Mar 04, 2026", dueDate: "—", status: "pending" },
-  { id: 4, student: "Sofia Manalo", studentId: "2025-00010", course: "BSMATH", book: "Calculus: Early Transcendentals", type: "borrow", date: "Mar 04, 2026", dueDate: "Mar 18, 2026", status: "approved" },
-  { id: 5, student: "Mark Villanueva", studentId: "2025-00009", course: "BSCpE", book: "Physics for Scientists", type: "borrow", date: "Mar 03, 2026", dueDate: "Mar 17, 2026", status: "approved" },
-  { id: 6, student: "Luz Garcia", studentId: "2025-00006", course: "BSPharma", book: "Organic Chemistry", type: "reserve", date: "Mar 03, 2026", dueDate: "—", status: "rejected" },
-  { id: 7, student: "Nena Cruz", studentId: "2025-00008", course: "BSIT", book: "Data Structures in Java", type: "borrow", date: "Mar 02, 2026", dueDate: "Mar 16, 2026", status: "pending" },
-  { id: 8, student: "Carlos Reyes", studentId: "2025-00003", course: "BSBA", book: "Business Law", type: "reserve", date: "Mar 02, 2026", dueDate: "—", status: "pending" },
-  { id: 9, student: "Ana Lim", studentId: "2025-00004", course: "BSMATH", book: "Discrete Mathematics", type: "borrow", date: "Mar 01, 2026", dueDate: "Mar 15, 2026", status: "approved" },
-  { id: 10, student: "Pedro Bautista", studentId: "2025-00005", course: "BSCE", book: "Physics for Scientists", type: "borrow", date: "Feb 28, 2026", dueDate: "Mar 14, 2026", status: "rejected", rejectReason: "Student already has overdue books." },
-];
 
 function Badge({ label, type = "navy" }: any) {
   const m: any = {
@@ -40,9 +27,11 @@ function Btn({ children, variant = "navy", onClick, style = {} }: any) {
 
 /* ─── MAIN COMPONENT ────────────────────────────────────── */
 export default function AdminRequestsPage() {
-  const [requests, setRequests] = useState<any[]>(INIT_REQUESTS);
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [reqTab, setReqTab] = useState("pending");
-  const [reqType, setReqType] = useState("All"); // All | borrow | reserve
+  const [reqType, setReqType] = useState("All"); 
   const [reqSearch, setReqSearch] = useState("");
   const [reqCourse, setReqCourse] = useState("All");
 
@@ -52,45 +41,112 @@ export default function AdminRequestsPage() {
 
   const fireToast = (type: string, msg: string) => { setToast({ type, msg }); setTimeout(() => setToast(null), 3000); };
 
-  const statusColor: any = { pending: "amber", approved: "green", rejected: "red", returned: "navy" };
-  const statusLabel: any = { pending: "⏳ Pending", approved: "✓ Approved", rejected: "✗ Rejected", returned: "↩ Returned" };
-  const typeColor: any = { borrow: "blue", reserve: "navy" };
+  // 🚀 FETCH TRANSACTIONS MULA SA DATABASE
+  const fetchRequests = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8080/api/transactions/all");
+      const json = await res.json();
+      if (json.isSuccess && json.data) {
+        setRequests(json.data);
+      } else {
+        setRequests([]); // Kung walang laman
+      }
+    } catch (err) {
+      console.error("Failed to fetch requests", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  // 🚀 ACTION BUTTONS NA NAKAKONEKTA SA GO BACKEND
+  const approveReq = async (id: any) => {
+    try {
+      const res = await fetch("http://localhost:8080/api/transactions/release", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transaction_id: id })
+      });
+      const json = await res.json();
+      if (json.isSuccess) {
+        fireToast("ok", "Request approved! Student notified.");
+        fetchRequests(); // I-refresh ang listahan
+      } else {
+        fireToast("err", json.message || "Failed to approve.");
+      }
+    } catch (err) {
+      fireToast("err", "Server connection failed.");
+    }
+  };
+
+  const markReturned = async (id: any) => {
+    try {
+      const res = await fetch("http://localhost:8080/api/transactions/return", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transaction_id: id })
+      });
+      const json = await res.json();
+      if (json.isSuccess) {
+        fireToast("ok", "Book marked as returned.");
+        fetchRequests();
+      } else {
+        fireToast("err", json.message || "Failed to mark returned.");
+      }
+    } catch (err) {
+      fireToast("err", "Server connection failed.");
+    }
+  };
+
+  const rejectReq = async (id: any, reason: any) => {
+    if (!reason.trim()) { fireToast("err", "Please provide a reason"); return; }
+    try {
+      const res = await fetch("http://localhost:8080/api/transactions/reject", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transaction_id: id, reason: reason })
+      });
+      const json = await res.json();
+      if (json.isSuccess) {
+        fireToast("ok", "Request rejected. Student notified.");
+        setRejectReqModal(null);
+        setRejectReqReason("");
+        fetchRequests();
+      } else {
+        fireToast("err", json.message || "Failed to reject.");
+      }
+    } catch (err) {
+      fireToast("err", "Server connection failed.");
+    }
+  };
+
+  // ── FILTERING LOGIC ──
   const filtReqs = requests.filter(r => {
-    const ms = r.student.toLowerCase().includes(reqSearch.toLowerCase()) ||
-               r.book.toLowerCase().includes(reqSearch.toLowerCase()) ||
-               r.studentId.includes(reqSearch);
-    const mt = reqTab === "all" || r.status === reqTab;
-    const mtype = reqType === "All" || r.type === reqType;
-    const mc = reqCourse === "All" || r.course === reqCourse;
+    const ms = (r.student || "").toLowerCase().includes(reqSearch.toLowerCase()) ||
+               (r.book || "").toLowerCase().includes(reqSearch.toLowerCase()) ||
+               (r.school_id || "").includes(reqSearch); // Ginamit natin school_id base sa Go DB mo
+    // Note: Sa database mo, baka naka-Capitalize yung status (e.g. "Pending"), kaya nag-toLowerCase tayo
+    const mt = reqTab === "all" || (r.status || "").toLowerCase() === reqTab.toLowerCase();
+    const mtype = reqType === "All" || (r.type || "").toLowerCase() === reqType.toLowerCase();
+    const mc = reqCourse === "All" || (r.course || "") === reqCourse;
     return ms && mt && mtype && mc;
-  }).sort((a, b) => a.student.localeCompare(b.student));
+  });
 
   const reqCounts: any = {
-    pending: requests.filter(r => r.status === "pending").length,
-    approved: requests.filter(r => r.status === "approved").length,
-    returned: requests.filter(r => r.status === "returned").length,
-    rejected: requests.filter(r => r.status === "rejected").length,
+    pending: requests.filter(r => (r.status || "").toLowerCase() === "pending").length,
+    approved: requests.filter(r => (r.status || "").toLowerCase() === "approved" || (r.status || "").toLowerCase() === "released").length,
+    returned: requests.filter(r => (r.status || "").toLowerCase() === "returned").length,
+    rejected: requests.filter(r => (r.status || "").toLowerCase() === "rejected").length,
     all: requests.length,
   };
 
-  const approveReq = (id: any) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: "approved", approvedDate: "Mar 05, 2026" } : r));
-    fireToast("ok", "Request approved! Student notified.");
-  };
-
-  const markReturned = (id: any) => {
-    const today = "Mar 05, 2026";
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: "returned", returnedDate: today } : r));
-    fireToast("ok", "Book marked as returned.");
-  };
-
-  const rejectReq = (id: any, reason: any) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: "rejected", rejectReason: reason } : r));
-    fireToast("ok", "Request rejected. Student notified.");
-    setRejectReqModal(null);
-    setRejectReqReason("");
-  };
+  const statusColor: any = { pending: "amber", approved: "green", released: "green", rejected: "red", returned: "navy" };
+  const statusLabel: any = { pending: "⏳ Pending", approved: "✓ Approved", released: "✓ Released", rejected: "✗ Rejected", returned: "↩ Returned" };
+  const typeColor: any = { borrow: "blue", reserve: "navy" };
 
   return (
     <div style={{ animation: "fadeUp .3s ease" }}>
@@ -100,6 +156,7 @@ export default function AdminRequestsPage() {
         .chip { border: 2px solid #e2dfd6; border-radius: 50px; padding: 7px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: #8a8ea8; transition: all .18s; }
         .chip:hover { border-color: #1a2744; color: #1a2744; }
         .chip.active { background: #1a2744; color: #fff; border-color: #1a2744; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
       {/* HEADER */}
@@ -112,7 +169,7 @@ export default function AdminRequestsPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, marginBottom: 22 }}>
         {[
           { key: "pending", label: "Pending", color: "#e8a020", bg: "#fff8e6", icon: "⏳" },
-          { key: "approved", label: "Approved", color: "#2d7a4f", bg: "#e6f7ec", icon: "✅" },
+          { key: "approved", label: "Approved/Released", color: "#2d7a4f", bg: "#e6f7ec", icon: "✅" },
           { key: "returned", label: "Returned", color: "#1a2744", bg: "#e8ecf5", icon: "↩️" },
           { key: "rejected", label: "Rejected", color: "#c94040", bg: "#fdeaea", icon: "✗" },
           { key: "all", label: "Total", color: "#2563eb", bg: "#e8f1fd", icon: "📋" },
@@ -154,42 +211,50 @@ export default function AdminRequestsPage() {
           ))}
         </div>
         
-        {filtReqs.length === 0 ? (
+        {loading ? (
+           <div style={{ padding: 40, textAlign: "center", color: "#8a8ea8" }}>
+             <div style={{ width: 24, height: 24, border: "3px solid #e2dfd6", borderTopColor: "#1a2744", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 10px" }}></div>
+             Loading requests...
+           </div>
+        ) : filtReqs.length === 0 ? (
           <div style={{ padding: 40, textAlign: "center", color: "#8a8ea8" }}>
             <div style={{ fontSize: 36, marginBottom: 8 }}>📭</div>
-            No requests found
+            No requests found in database.
           </div>
         ) : (
           filtReqs.map((r, i) => {
-            const rowBg = r.status === "pending" ? "#fffdf5" : r.status === "returned" ? "#f7fdf9" : "#fff";
+            const rawStatus = (r.status || "pending").toLowerCase();
+            const rowBg = rawStatus === "pending" ? "#fffdf5" : rawStatus === "returned" ? "#f7fdf9" : "#fff";
+            const reqTypeStr = (r.type || "borrow").toLowerCase();
+            
             return (
               <div key={r.id} className="row-hover" style={{ display: "grid", gridTemplateColumns: "1.8fr 2.2fr 0.8fr 0.8fr 1fr 0.9fr 1.8fr", padding: "12px 20px", borderBottom: i < filtReqs.length - 1 ? "1px solid #f2efe8" : "none", alignItems: "center", transition: "background .15s", background: rowBg }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744" }}>{r.student}</div>
-                  <div style={{ fontSize: 11, color: "#8a8ea8" }}>{r.studentId}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744" }}>{r.student || r.student_name}</div>
+                  <div style={{ fontSize: 11, color: "#8a8ea8" }}>{r.school_id}</div>
                 </div>
-                <div style={{ fontSize: 12.5, color: "#64748b", lineHeight: 1.3 }}>{r.book.length > 30 ? r.book.slice(0, 30) + "…" : r.book}</div>
+                <div style={{ fontSize: 12.5, color: "#64748b", lineHeight: 1.3 }}>{(r.book || r.book_title || "").length > 30 ? (r.book || r.book_title).slice(0, 30) + "…" : (r.book || r.book_title)}</div>
                 <div style={{ fontSize: 12, color: "#64748b" }}>{r.course}</div>
-                <div><Badge label={r.type === "borrow" ? "📖 Borrow" : "🔖 Reserve"} type={typeColor[r.type]} /></div>
-                <div style={{ fontSize: 12, color: "#8a8ea8" }}>{r.date}</div>
-                <div><Badge label={statusLabel[r.status]} type={statusColor[r.status]} /></div>
+                <div><Badge label={reqTypeStr === "borrow" ? "📖 Borrow" : "🔖 Reserve"} type={typeColor[reqTypeStr] || "blue"} /></div>
+                <div style={{ fontSize: 12, color: "#8a8ea8" }}>{new Date(r.created_at).toLocaleDateString()}</div>
+                <div><Badge label={statusLabel[rawStatus] || r.status} type={statusColor[rawStatus] || "navy"} /></div>
                 
                 <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                  {r.status === "pending" && (
+                  {rawStatus === "pending" && (
                     <>
                       <button onClick={() => approveReq(r.id)} style={{ background: "#e6f7ec", color: "#2d7a4f", border: "1.5px solid #b6e8c4", borderRadius: 8, padding: "5px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>✓ Approve</button>
                       <button onClick={() => { setRejectReqModal(r); setRejectReqReason(""); }} style={{ background: "#fdeaea", color: "#c94040", border: "1.5px solid #f5c5c5", borderRadius: 8, padding: "5px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>✗ Reject</button>
                     </>
                   )}
-                  {r.status === "approved" && r.type === "borrow" && (
+                  {(rawStatus === "approved" || rawStatus === "released") && reqTypeStr === "borrow" && (
                     <button onClick={() => markReturned(r.id)} style={{ background: "#e8ecf5", color: "#1a2744", border: "1.5px solid #c8d0e8", borderRadius: 8, padding: "5px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>↩ Mark Returned</button>
                   )}
-                  {r.status === "returned" && (
+                  {rawStatus === "returned" && (
                     <span style={{ fontSize: 12, color: "#4caf6e", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                      ✓ Returned {r.returnedDate && <span style={{ fontSize: 10, color: "#8a8ea8", fontWeight: 400 }}>({r.returnedDate})</span>}
+                      ✓ Returned
                     </span>
                   )}
-                  {r.status === "rejected" && (
+                  {rawStatus === "rejected" && (
                     <span style={{ fontSize: 11, color: "#c94040", fontStyle: "italic" }} title={r.rejectReason}>Rejected</span>
                   )}
                 </div>
@@ -203,10 +268,10 @@ export default function AdminRequestsPage() {
       {rejectReqModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(26,39,68,.5)", backdropFilter: "blur(6px)", zIndex: 90, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={e => e.target === e.currentTarget && setRejectReqModal(null)}>
           <div style={{ background: "#fff", borderRadius: 22, padding: "26px 28px", maxWidth: 420, width: "100%", boxShadow: "0 24px 64px rgba(26,39,68,.18)", animation: "fadeUp .25s ease" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#c94040", marginBottom: 8 }}>Reject {rejectReqModal.type} Request</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 18, color: "#1a2744", marginBottom: 2 }}>{rejectReqModal.student}</div>
-            <div style={{ fontSize: 12, color: "#8a8ea8", marginBottom: 6 }}>{rejectReqModal.studentId}</div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 16 }}>Book: <strong style={{ color: "#1a2744" }}>{rejectReqModal.book}</strong></div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#c94040", marginBottom: 8 }}>Reject Request</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 18, color: "#1a2744", marginBottom: 2 }}>{rejectReqModal.student || rejectReqModal.student_name}</div>
+            <div style={{ fontSize: 12, color: "#8a8ea8", marginBottom: 6 }}>{rejectReqModal.school_id}</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 16 }}>Book: <strong style={{ color: "#1a2744" }}>{rejectReqModal.book || rejectReqModal.book_title}</strong></div>
             
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 7 }}>Reason for Rejection *</label>
@@ -215,7 +280,7 @@ export default function AdminRequestsPage() {
             </div>
             
             <div style={{ display: "flex", gap: 9 }}>
-              <Btn variant="red" onClick={() => { if (!rejectReqReason.trim()) { fireToast("err", "Please provide a reason"); return; } rejectReq(rejectReqModal.id, rejectReqReason); }}>Confirm Rejection</Btn>
+              <Btn variant="red" onClick={() => rejectReq(rejectReqModal.id, rejectReqReason)}>Confirm Rejection</Btn>
               <Btn variant="ghost" onClick={() => setRejectReqModal(null)}>Cancel</Btn>
             </div>
           </div>

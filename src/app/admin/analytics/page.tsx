@@ -15,6 +15,11 @@ function Btn({ children, variant = "ghost", onClick, style = {} }: any) {
 export default function AdminAnalyticsPage() {
   const [timeRange, setTimeRange] = useState("This Year");
   const [loading, setLoading] = useState(true);
+  
+  // 🚀 REPORT MODAL STATES
+  const [showReport, setShowReport] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [adminName, setAdminName] = useState("Administrator");
 
   // 🚀 DYNAMIC STATES NA SASALO NG DATA MULA SA BACKEND
   const [stats, setStats] = useState([
@@ -29,6 +34,13 @@ export default function AdminAnalyticsPage() {
 
   // 🚀 FETCH DATA FROM GO BACKEND
   useEffect(() => {
+    // Kunin ang Admin Name para sa Report Signatory
+    const userStr = localStorage.getItem("smartLib_user") || localStorage.getItem("user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      if (user.firstname) setAdminName(`${user.firstname} ${user.lastname}`);
+    }
+
     const fetchAnalytics = async () => {
       setLoading(true);
       try {
@@ -57,10 +69,18 @@ export default function AdminAnalyticsPage() {
     };
 
     fetchAnalytics();
-  }, [timeRange]); // Magre-refresh ito kapag binago ang timeRange dropdown
+  }, [timeRange]);
 
-  // I-calculate ang pinakamataas na borrow para sa height ng bar chart
   const maxBorrow = monthlyData.length > 0 ? Math.max(...monthlyData.map(d => d.val)) : 100;
+
+  // 🚀 FUNCTION PARA SA GENERATE REPORT ANIMATION
+  const handleGenerateReport = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      setIsGenerating(false);
+      setShowReport(true);
+    }, 1200); // 1.2s loading simulation for premium feel
+  };
 
   return (
     <div style={{ animation: "fadeUp .3s ease", paddingBottom: 40 }}>
@@ -71,10 +91,18 @@ export default function AdminAnalyticsPage() {
         .bar-hover:hover { opacity: 0.8; }
         .row-hover:hover { background: #f7f5f0; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* 🚀 CSS PARA SA PDF EXPORT / PRINTING */
+        @media print {
+          body * { visibility: hidden; }
+          .print-section, .print-section * { visibility: visible; }
+          .print-section { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; box-shadow: none; border: none; }
+          .no-print { display: none !important; }
+        }
       `}</style>
 
       {/* HEADER */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+      <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <div>
           <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, color: "#1a2744" }}>Data Analytics</div>
           <div style={{ fontSize: 13, color: "#8a8ea8", marginTop: 2 }}>System overview and borrowing trends</div>
@@ -83,17 +111,19 @@ export default function AdminAnalyticsPage() {
           <select value={timeRange} onChange={e => setTimeRange(e.target.value)} style={{ background: "#fff", border: "2px solid #e2dfd6", borderRadius: 10, padding: "8px 14px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#1a2744", outline: "none", cursor: "pointer", fontWeight: 600 }}>
             {["This Year", "Last 6 Months", "This Month"].map(t => <option key={t}>{t}</option>)}
           </select>
-          <Btn onClick={() => window.print()}>🖨️ Export PDF</Btn>
+          <Btn onClick={handleGenerateReport} variant="navy">
+            {isGenerating ? "Generating..." : "📄 View Full Report"}
+          </Btn>
         </div>
       </div>
 
       {loading ? (
-        <div style={{ padding: 100, textAlign: "center", color: "#1a2744" }}>
+        <div className="no-print" style={{ padding: 100, textAlign: "center", color: "#1a2744" }}>
            <div style={{ width: 30, height: 30, border: "3px solid #1a274433", borderTopColor: "#1a2744", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 16px" }}></div>
            Analyzing library data...
         </div>
       ) : (
-        <>
+        <div className="no-print">
           {/* TOP STATS */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
             {stats.map((s, i) => (
@@ -152,7 +182,6 @@ export default function AdminAnalyticsPage() {
               <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2dfd6", padding: "24px", boxShadow: "0 2px 12px rgba(26,39,68,.06)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", fontFamily: "'DM Serif Display', serif" }}>Most Popular Books</div>
-                  <Btn style={{ padding: "5px 10px", fontSize: 11 }}>View All</Btn>
                 </div>
                 
                 {topBooks.length === 0 ? (
@@ -176,7 +205,6 @@ export default function AdminAnalyticsPage() {
                   </div>
                 )}
               </div>
-
             </div>
 
             {/* RIGHT COLUMN: DISTRIBUTION */}
@@ -207,19 +235,116 @@ export default function AdminAnalyticsPage() {
 
               {/* MINI REPORT WIDGET */}
               <div style={{ background: "linear-gradient(135deg, #1a2744, #2a3d66)", borderRadius: 16, padding: "24px", color: "#fff", position: "relative", overflow: "hidden", boxShadow: "0 8px 24px rgba(26,39,68,.15)" }}>
-                <div style={{ position: "absolute", top: -20, right: -20, fontSize: 100, opacity: 0.1, pointerEvents: "none" }}></div>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#7fb8f7", marginBottom: 8 }}>Weekly Insight</div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, lineHeight: 1.3, marginBottom: 12 }}>System analytics is live!</div>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#7fb8f7", marginBottom: 8 }}>Executive Insight</div>
+                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, lineHeight: 1.3, marginBottom: 12 }}>Generate Official Report</div>
                 <p style={{ fontSize: 13, color: "rgba(255,255,255,.7)", lineHeight: 1.5, marginBottom: 20 }}>
-                  Data is now fetching directly from the Go Backend and Supabase database.
+                  Compile all live database statistics into a formal PDF report for administrative review and archiving.
                 </p>
-                <button style={{ width: "100%", background: "#fff", border: "none", borderRadius: 10, padding: "10px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, color: "#1a2744", cursor: "pointer", transition: "opacity .15s" }}>Generate Full Report</button>
+                <button onClick={handleGenerateReport} style={{ width: "100%", background: "#fff", border: "none", borderRadius: 10, padding: "10px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, color: "#1a2744", cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: 8 }}>
+                  {isGenerating ? <span style={{ animation: "spin 1s linear infinite" }}>⏳</span> : "📄"} 
+                  {isGenerating ? "Compiling Data..." : "Generate Full Report"}
+                </button>
               </div>
 
             </div>
           </div>
-        </>
+        </div>
       )}
+
+      {/* 🚀 PROFESSIONAL REPORT MODAL (OVERLAY) */}
+      {showReport && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.6)", display: "flex", justifyContent: "center", alignItems: "flex-start", overflowY: "auto", padding: "40px 20px" }}>
+          
+          <div className="print-section" style={{ background: "#fff", width: "100%", maxWidth: 850, borderRadius: 12, padding: "50px", boxShadow: "0 20px 50px rgba(0,0,0,0.2)", position: "relative" }}>
+            
+            {/* Modal Controls (Hindi kasama sa Print) */}
+            <div className="no-print" style={{ position: "absolute", top: 20, right: 20, display: "flex", gap: 10 }}>
+              <Btn variant="ghost" onClick={() => setShowReport(false)}>✖ Close</Btn>
+              <Btn variant="navy" onClick={() => window.print()}>🖨️ Save as PDF</Btn>
+            </div>
+
+            {/* ─── PORMAL NA REPORT HEADER ─── */}
+            <div style={{ borderBottom: "2px solid #1a2744", paddingBottom: 20, marginBottom: 30, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              <div>
+                <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: "#1a2744", margin: 0 }}>SmartLib System</h1>
+                <div style={{ fontSize: 14, color: "#64748b", fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>Executive Analytics Report</div>
+              </div>
+              <div style={{ textAlign: "right", fontSize: 12, color: "#1a2744" }}>
+                <div><strong>Date Generated:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                <div><strong>Generated By:</strong> {adminName}</div>
+                <div><strong>Reporting Period:</strong> {timeRange}</div>
+              </div>
+            </div>
+
+            {/* ─── SUMMARY STATS ─── */}
+            <h3 style={{ fontSize: 16, color: "#1a2744", borderBottom: "1px solid #e2e8f0", paddingBottom: 8, marginBottom: 16 }}>I. System Overview</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 15, marginBottom: 40 }}>
+              {stats.map((s, i) => (
+                <div key={i} style={{ padding: 15, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", fontWeight: 700, marginBottom: 8 }}>{s.label}</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: "#1a2744" }}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* ─── TABULAR DATA ─── */}
+            <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 40 }}>
+              
+              {/* Table 1: Top Books */}
+              <div>
+                <h3 style={{ fontSize: 16, color: "#1a2744", borderBottom: "1px solid #e2e8f0", paddingBottom: 8, marginBottom: 16 }}>II. Most Popular Titles</h3>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: "#f1f5f9", textAlign: "left" }}>
+                      <th style={{ padding: "10px", borderBottom: "2px solid #cbd5e1", color: "#475569" }}>Title & Author</th>
+                      <th style={{ padding: "10px", borderBottom: "2px solid #cbd5e1", color: "#475569", textAlign: "right" }}>Borrows</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topBooks.length > 0 ? topBooks.map((b, i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                        <td style={{ padding: "10px", color: "#1e293b", fontWeight: 500 }}>
+                          {b.title} <br/><span style={{ fontSize: 10, color: "#64748b", fontWeight: 400 }}>{b.author}</span>
+                        </td>
+                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 700, color: "#1a2744" }}>{b.borrows}</td>
+                      </tr>
+                    )) : <tr><td colSpan={2} style={{ padding: "10px", textAlign: "center", color: "#64748b" }}>No data available.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Table 2: Category Breakdown */}
+              <div>
+                <h3 style={{ fontSize: 16, color: "#1a2744", borderBottom: "1px solid #e2e8f0", paddingBottom: 8, marginBottom: 16 }}>III. Category Distribution</h3>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: "#f1f5f9", textAlign: "left" }}>
+                      <th style={{ padding: "10px", borderBottom: "2px solid #cbd5e1", color: "#475569" }}>Category</th>
+                      <th style={{ padding: "10px", borderBottom: "2px solid #cbd5e1", color: "#475569", textAlign: "right" }}>Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {categoryData.length > 0 ? categoryData.map((c, i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                        <td style={{ padding: "10px", color: "#1e293b", fontWeight: 500 }}>{c.cat}</td>
+                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 700, color: c.color }}>{c.pct}%</td>
+                      </tr>
+                    )) : <tr><td colSpan={2} style={{ padding: "10px", textAlign: "center", color: "#64748b" }}>No data available.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* ─── FOOTER ─── */}
+            <div style={{ marginTop: 60, paddingTop: 20, borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8" }}>
+              <div>SmartLib Library Management System v1.0</div>
+              <div>Confidential and Proprietary. Do not distribute without permission.</div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

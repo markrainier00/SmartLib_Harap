@@ -202,7 +202,9 @@ export default function AuthPage() {
     setReg({ [field]: v.length > 0 ? v.charAt(0).toUpperCase() + v.slice(1) : "" });
   };
 
-  // ── API calls ──
+  // ========================================================
+  // 🚀 API CALLS (DITO NATIN INAYOS ANG BOUNCER LOGIC)
+  // ========================================================
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
     clearAlerts();
