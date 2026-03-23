@@ -192,11 +192,31 @@ export default function AdminLibraryPage() {
 
               <div style={{ marginBottom: 13 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 5 }}>Author *</label>
+                <input name="author" value={bookForm.isbn} onChange={handleInputChange} style={{ width: "100%", background: "#f0ede5", border: "2px solid transparent", borderRadius: 10, padding: "9px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none" }} />
+              </div>
+
+              <div style={{ marginBottom: 13 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 5 }}>ISBN *</label>
                 <input name="author" value={bookForm.author} onChange={handleInputChange} style={{ width: "100%", background: "#f0ede5", border: "2px solid transparent", borderRadius: 10, padding: "9px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none" }} />
               </div>
 
               <div style={{ marginBottom: 13 }}>
-                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 5 }}>Category</label>
+                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 5 }}>Publisher *</label>
+                <input name="author" value={bookForm.author} onChange={handleInputChange} style={{ width: "100%", background: "#f0ede5", border: "2px solid transparent", borderRadius: 10, padding: "9px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none" }} />
+              </div>
+
+              <div style={{ marginBottom: 13 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 5 }}>Date of Publication *</label>
+                <input name="author" value={bookForm.author} onChange={handleInputChange} style={{ width: "100%", background: "#f0ede5", border: "2px solid transparent", borderRadius: 10, padding: "9px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none" }} />
+              </div>
+
+              <div style={{ marginBottom: 13 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 5 }}>Edition *</label>
+                <input name="isbn" value={bookForm.author} onChange={handleInputChange} style={{ width: "100%", background: "#f0ede5", border: "2px solid transparent", borderRadius: 10, padding: "9px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none" }} />
+              </div>
+
+              <div style={{ marginBottom: 13 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 5 }}>Genre/Category</label>
                 <select name="cat" value={bookForm.cat} onChange={handleInputChange} style={{ width: "100%", background: "#f0ede5", border: "2px solid transparent", borderRadius: 10, padding: "9px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: "#1a2744", outline: "none" }}>
                   {CATS.slice(1).map(c => <option key={c}>{c}</option>)}
                 </select>

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useUser } from "@/lib/user";
+import { api } from "@/lib/api";
 
-const TABS = ["All", "Requested", "Borrowed", "Returned", "Overdue"];
+const TABS = ["All", "Active", "Returned", "Overdue"];
 const PER_PAGE = 10;
 
 export default function HistoryPage() {
@@ -10,13 +12,14 @@ export default function HistoryPage() {
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const { school_id } = useUser();
 
   useEffect(() => {
+    if(!school_id) return;
     const fetchHistory = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/transactions/history?school_id=2024-0003");
-        const result = await response.json();
-        if (response.ok) setHistoryData(result.data || []);
+        const json = await api.get(`/api/transactions/history?school_id=${school_id}`);
+        if (json.retCode === "200") setHistoryData(json.data || []);
       } catch (err) {
         console.error("Failed to fetch history:", err);
       } finally {
@@ -24,7 +27,7 @@ export default function HistoryPage() {
       }
     };
     fetchHistory();
-  }, []);
+  }, [school_id]);
 
   // Reset to page 1 when tab changes
   useEffect(() => {
@@ -38,17 +41,13 @@ export default function HistoryPage() {
   const totalPages = Math.ceil(filteredData.length / PER_PAGE);
   const paginated  = filteredData.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
-  const total    = historyData.length;
-  const pending  = historyData.filter(i => i.status === "Pending").length;
-  const returned = historyData.filter(i => i.status === "Returned").length;
-  const active   = historyData.filter(i => i.status === "Borrowed").length;
-
   const getStatusClass = (status: string) => {
     switch (status) {
       case "Overdue":  return "badge-red";
       case "Borrowed": return "badge-blue";
       case "Pending":  return "badge-orange";
       case "Returned": return "badge-green";
+      case "Rejected": return "badge-red";
       default:         return "";
     }
   };
@@ -57,26 +56,6 @@ export default function HistoryPage() {
     <div className="page-layout fadeUp">
       <div className="page-header">Library History</div>
       <div className="page-sub">Your complete borrowing activity recorded in the system</div>
-
-      {/* Summary */}
-      <div className="summary-grid">
-        <div className="sum-card">
-          <div className="sum-num" style={{ color: "var(--color-info)" }}>{total}</div>
-          <div className="sum-label">Total Logs</div>
-        </div>
-        <div className="sum-card">
-          <div className="sum-num" style={{ color: "#e89940" }}>{pending}</div>
-          <div className="sum-label">Pending Request</div>
-        </div>
-        <div className="sum-card">
-          <div className="sum-num" style={{ color: "var(--color-success)" }}>{returned}</div>
-          <div className="sum-label">Returned</div>
-        </div>
-        <div className="sum-card">
-          <div className="sum-num" style={{ color: "var(--color-error)" }}>{active}</div>
-          <div className="sum-label">Active</div>
-        </div>
-      </div>
 
       {/* Tabs */}
       <div className="page-tabs">
@@ -97,32 +76,55 @@ export default function HistoryPage() {
           <thead>
             <tr>
               <th>Book Title</th>
-              <th>Date</th>
-              <th>Status</th>
+              <th>Author</th>
+              {activeTab === "All" && <><th>Status</th><th>Date Borrowed</th><th>Return Date</th></>}
+              {activeTab === "Active" && <><th>Date Borrowed</th><th>Expected Return Date</th></>}
+              {activeTab === "Returned" && <><th>Date Borrowed</th><th>Date Returned</th></>}
+              {activeTab === "Overdue" && <><th>Expected Return Date</th><th>Date Returned</th></>}
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={3} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)" }}>
+                <td colSpan={5} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)" }}>
                   Loading your records...
                 </td>
               </tr>
             ) : paginated.length > 0 ? (
-              paginated.map((item: any) => (
-                <tr key={item.id}>
+              paginated.map((item: any, index) => (
+                <tr key={index}>
                   <td style={{ fontWeight: 600 }}>{item.book_title}</td>
-                  <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>
-                    {new Date(item.CreatedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-                  </td>
-                  <td>
-                    <span className={`badge ${getStatusClass(item.status)}`}>{item.status}</span>
-                  </td>
+                  <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.author}</td>
+                  {activeTab === "All" && (
+                    <>
+                      <td><span className={`badge ${getStatusClass(item.status)}`}>{item.status}</span></td>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.borrow_date ? new Date(item.borrow_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.return_date ? new Date(item.return_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                    </>
+                  )}
+                  {activeTab === "Active" && (
+                    <>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.borrow_date ? new Date(item.borrow_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.return_date ? new Date(item.return_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                    </>
+                  )}
+                  {activeTab === "Returned" && (
+                    <>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.borrow_date ? new Date(item.borrow_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.date_returned ? new Date(item.date_returned).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                    </>
+                  )}
+                  {activeTab === "Overdue" && (
+                    <>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.return_date ? new Date(item.return_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.date_returned ? new Date(item.date_returned).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
+                    </>
+                  )}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={3} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)", fontStyle: "italic", background: "var(--color-surface)" }}>
+                <td colSpan={5} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)", fontStyle: "italic", background: "var(--color-surface)" }}>
                   No records found.
                 </td>
               </tr>

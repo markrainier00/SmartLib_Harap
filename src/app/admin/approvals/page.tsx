@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { api } from "@/lib/api";
+import { IconEllipsis, IconSearch, IconX } from "@/components/icons";
 
 /* ─── HELPERS ───────────────────────────────── */
-const COURSES = ["All", "BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE", "BSBio", "BSPharma"];
-const YEARS = ["All", "1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year"];
+const PROGRAMS = ["All Programs", "BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE", "BSBio", "BSPharma"];
+const YEARS = ["All Year Levels", "1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year"];
 
 function Badge({ label, type = "navy" }: any) {
   const m: any = {
@@ -27,11 +29,12 @@ function Btn({ children, variant = "navy", onClick, style = {} }: any) {
 
 /* ─── MAIN COMPONENT ────────────────────────────────────── */
 export default function AdminApprovalsPage() {
-  const [pending, setPending] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [appTab, setAppTab] = useState("pending"); 
-  const [appSearch, setAppSearch] = useState("");
-  const [appCourse, setAppCourse] = useState("All");
+  const [viewAcc, setViewAcc] = useState<any>(null);
+ 
+  const [search, setSearch] = useState("");
+  const [appProgram, setAppProgram] = useState("All");
   const [appYear, setAppYear] = useState("All");
 
   const [viewApplicant, setViewApplicant] = useState<any>(null);
@@ -41,28 +44,25 @@ export default function AdminApprovalsPage() {
 
   const fireToast = (type: string, msg: string) => { setToast({ type, msg }); setTimeout(() => setToast(null), 3000); };
 
-  // 🚀 1. FETCH DATA FROM GO BACKEND
-  const fetchRegistrations = async () => {
+  const fetchAccounts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/api/users/registrations");
-      const json = await res.json();
-      if (res.ok && json.data) {
-        // Map backend data to frontend format
-        const formattedData = json.data.map((u: any) => ({
-          id: u.id,
-          name: `${u.firstname} ${u.lastname}`,
-          email: u.email,
-          studentId: u.school_id,
-          course: u.program || "N/A",
-          year: u.year || "N/A",           // 👈 INAYOS DITO: u.year_level naging u.year
-          dept: u.program || "N/A",        // 👈 INAYOS DITO: u.department naging u.program
-          date: new Date(u.created_at).toLocaleDateString(),
-          // Backend uses "New", "Active", "Rejected" -> map to frontend terms
-          status: u.status === "New" ? "pending" : u.status === "Active" ? "approved" : "rejected",
-          rejectReason: u.reject_reason || ""
-        }));
-        setPending(formattedData);
+      const json = await api.get("/api/admin/registrations");
+      
+      if (json.data) {
+        setAccounts(json.data
+          .filter((u: any) => u.status === "Pending" && u.role === "Student")
+          .map((u: any) => ({
+            id: u.school_id,
+            name: `${u.firstname} ${u.lastname}`,
+            email: u.email,
+            role: u.role,
+            department: u.department,
+            program: u.program,
+            year: u.year,
+            status: u.status,
+            joined: new Date(u.created_at).toLocaleDateString()
+        })));
       }
     } catch (err) {
       fireToast("err", "Failed to load registrations from server.");
@@ -72,83 +72,78 @@ export default function AdminApprovalsPage() {
   };
 
   useEffect(() => {
-    fetchRegistrations();
+    fetchAccounts();
   }, []);
 
-  const filtPending = pending.filter(p => {
-    const ms = p.name.toLowerCase().includes(appSearch.toLowerCase()) ||
-               p.email.toLowerCase().includes(appSearch.toLowerCase()) ||
-               p.studentId.toLowerCase().includes(appSearch.toLowerCase());
-    const mt = appTab === "all" || p.status === appTab;
-    const mc = appCourse === "All" || p.course === appCourse;
-    const my = appYear === "All" || p.year === appYear;
+  const filtered = accounts.filter(a => {
+    const ms = a.name.toLowerCase().includes(search.toLowerCase()) ||
+               a.email.toLowerCase().includes(search.toLowerCase()) ||
+               a.id.toLowerCase().includes(search.toLowerCase());
+    const mt = true;
+    const mc = appProgram === "All" || a.program === appProgram;
+    const my = appYear === "All" || a.year === appYear;
     return ms && mt && mc && my;
   }).sort((a, b) => a.name.localeCompare(b.name));
 
-  // 🚀 2. APPROVE ACTION
-  const approve = async (studentId: string) => {
-    try {
-      const res = await fetch("http://localhost:8080/api/users/approve", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ school_id: studentId }),
-      });
-      if (res.ok) {
-        fireToast("ok", "Student registration approved!");
-        fetchRegistrations(); // Refresh list
-        setViewApplicant(null);
-      } else {
-        fireToast("err", "Failed to approve student.");
-      }
-    } catch (err) { fireToast("err", "Server error"); }
-  };
+  // // 🚀 2. APPROVE ACTION
+  // const approve = async (id: string) => {
+  //   try {
+  //     const res = await fetch("http://localhost:8080/api/users/approve", {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ school_id: id }),
+  //     });
+  //     if (res.ok) {
+  //       fireToast("ok", "Student registration approved!");
+  //       fetchRegistrations(); // Refresh list
+  //       setViewApplicant(null);
+  //     } else {
+  //       fireToast("err", "Failed to approve student.");
+  //     }
+  //   } catch (err) { fireToast("err", "Server error"); }
+  // };
 
-  // 🚀 3. REJECT ACTION
-  const reject = async (studentId: string, reason: string) => {
-    try {
-      const res = await fetch("http://localhost:8080/api/users/reject", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ school_id: studentId, reason: reason }),
-      });
-      if (res.ok) {
-        fireToast("ok", "Registration rejected. Student has been notified.");
-        fetchRegistrations(); // Refresh list
-        setRejectModal(null);
-        setViewApplicant(null);
-        setRejectReason("");
-      } else {
-        fireToast("err", "Failed to reject student.");
-      }
-    } catch (err) { fireToast("err", "Server error"); }
-  };
+  // // 🚀 3. REJECT ACTION
+  // const reject = async (id: string, reason: string) => {
+  //   try {
+  //     const res = await fetch("http://localhost:8080/api/users/reject", {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ school_id: id, reason: reason }),
+  //     });
+  //     if (res.ok) {
+  //       fireToast("ok", "Registration rejected. Student has been notified.");
+  //       fetchRegistrations(); // Refresh list
+  //       setRejectModal(null);
+  //       setViewApplicant(null);
+  //       setRejectReason("");
+  //     } else {
+  //       fireToast("err", "Failed to reject student.");
+  //     }
+  //   } catch (err) { fireToast("err", "Server error"); }
+  // };
 
-  const tabCounts: any = {
-    pending: pending.filter(p => p.status === "pending").length,
-    approved: pending.filter(p => p.status === "approved").length,
-    rejected: pending.filter(p => p.status === "rejected").length,
-    all: pending.length,
-  };
+  // const tabCounts: any = {
+  //   pending: pending.filter(p => p.status === "pending").length,
+  //   approved: pending.filter(p => p.status === "approved").length,
+  //   rejected: pending.filter(p => p.status === "rejected").length,
+  //   all: pending.length,
+  // };
 
-  const statusColor: any = { pending: "amber", approved: "green", rejected: "red" };
-  const statusLabel: any = { pending: "⏳ Pending", approved: "✓ Approved", rejected: "✗ Rejected" };
+  // const statusColor: any = { pending: "amber", approved: "green", rejected: "red" };
+  // const statusLabel: any = { pending: "⏳ Pending", approved: "✓ Approved", rejected: "✗ Rejected" };
 
   return (
     <div style={{ animation: "fadeUp .3s ease" }}>
-      <style>{`
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-        .row-hover:hover { background: #f7f5f0 !important; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
 
       {/* HEADER */}
-      <div style={{ marginBottom: 22 }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, color: "#1a2744" }}>Registration Approvals</div>
-        <div style={{ fontSize: 13, color: "#8a8ea8", marginTop: 2 }}>Review and approve student registration requests</div>
+      <div style={{ marginBottom: 20 }}>
+        <div className="page-header">Registration Approvals</div>
+        <div className="page-sub">Review and approve student registration requests</div>
       </div>
 
       {/* SUMMARY CARDS */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 24 }}>
+      {/* <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 24 }}>
         {[
           { label: "Pending", val: tabCounts.pending, color: "#e8a020", bg: "#fff8e6", icon: "⏳" },
           { label: "Approved", val: tabCounts.approved, color: "#2d7a4f", bg: "#e6f7ec", icon: "✅" },
@@ -164,77 +159,76 @@ export default function AdminApprovalsPage() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* FILTERS */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
-        <div style={{ position: "relative", flex: 1, minWidth: 180 }}>
-          <span style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", fontSize: 13, pointerEvents: "none" }}>🔍</span>
-          <input value={appSearch} onChange={e => setAppSearch(e.target.value)} placeholder="Search name, email, ID…"
-            style={{ width: "100%", background: "#fff", border: "2px solid #e2dfd6", borderRadius: 11, padding: "8px 13px 8px 32px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#1a2744", outline: "none" }} />
+      <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap", alignItems: "center" }}>
+        <div className="search-wrapper">
+          <IconSearch/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"/>
         </div>
-        <select value={appCourse} onChange={e => setAppCourse(e.target.value)} style={{ background: "#fff", border: "2px solid #e2dfd6", borderRadius: 11, padding: "8px 13px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#1a2744", outline: "none", cursor: "pointer" }}>
-          {COURSES.map(c => <option key={c}>{c}</option>)}
+        <select className="pills" value={appProgram} onChange={e => setAppProgram(e.target.value)}>
+          {PROGRAMS.map(c => <option key={c}>{c}</option>)}
         </select>
-        <select value={appYear} onChange={e => setAppYear(e.target.value)} style={{ background: "#fff", border: "2px solid #e2dfd6", borderRadius: 11, padding: "8px 13px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#1a2744", outline: "none", cursor: "pointer" }}>
+        <select className="pills" value={appYear} onChange={e => setAppYear(e.target.value)}>
           {YEARS.map(y => <option key={y}>{y}</option>)}
         </select>
-        {(appCourse !== "All" || appYear !== "All" || appSearch) && (
-          <button onClick={() => { setAppCourse("All"); setAppYear("All"); setAppSearch(""); }}
-            style={{ background: "transparent", border: "1.5px solid #e2dfd6", borderRadius: 9, padding: "7px 13px", fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "#8a8ea8", cursor: "pointer", whiteSpace: "nowrap" }}>
-            ✕ Reset
+        {(appProgram !== "All" || appYear !== "All" || search) && (
+          <button className="pills" onClick={() => { setAppProgram("All"); setAppYear("All"); setSearch(""); }} style={{ background: "#f5f5f5", borderColor: "#dadada", color: "#777777" }}>
+            Reset
           </button>
         )}
-        <div style={{ marginLeft: "auto", fontSize: 12, color: "#8a8ea8", whiteSpace: "nowrap" }}>{filtPending.length} result{filtPending.length !== 1 ? "s" : ""}</div>
       </div>
 
       {/* TABLE */}
-      <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2dfd6", boxShadow: "0 2px 12px rgba(26,39,68,.06)", overflow: "hidden" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2.2fr 2fr 1fr 1fr 1fr 1.6fr", padding: "11px 20px", background: "#f7f5f0", borderBottom: "1px solid #e2dfd6" }}>
-          {["Applicant", "Email", "Student ID", "Course", "Date", "Actions"].map(h => (
-            <div key={h} style={{ fontSize: 10.5, fontWeight: 700, color: "#8a8ea8", letterSpacing: ".06em", textTransform: "uppercase" }}>{h}</div>
-          ))}
-        </div>
-
-        {loading ? (
-          <div style={{ padding: 50, textAlign: "center", color: "#1a2744" }}>
-             <div style={{ width: 24, height: 24, border: "3px solid #1a274433", borderTopColor: "#1a2744", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 10px" }}></div>
-             Fetching registrations...
-          </div>
-        ) : filtPending.length === 0 ? (
-          <div style={{ padding: 40, textAlign: "center", color: "#8a8ea8" }}>
-            <div style={{ fontSize: 36, marginBottom: 8 }}>📭</div>
-            No registrations found
-          </div>
-        ) : (
-          filtPending.map((p, i) => (
-            <div key={p.id} className="row-hover" style={{ display: "grid", gridTemplateColumns: "2.2fr 2fr 1fr 1fr 1fr 1.6fr", padding: "13px 20px", borderBottom: i < filtPending.length - 1 ? "1px solid #f2efe8" : "none", alignItems: "center", transition: "background .15s", background: p.status === "pending" ? "#fffdf5" : "#fff" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => setViewApplicant(p)}>
-                <div style={{ width: 34, height: 34, borderRadius: "50%", background: `linear-gradient(135deg,#3d8bef,#4caf6e)`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{p.name[0]}</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744" }}>{p.name}</div>
-                  <div style={{ fontSize: 10.5, color: "#8a8ea8" }}>{p.year} · {p.dept.split(" ").slice(-1)[0]}</div>
-                </div>
-              </div>
-              <div style={{ fontSize: 12.5, color: "#64748b" }}>{p.email}</div>
-              <div style={{ fontSize: 12.5, fontFamily: "monospace", color: "#1a2744", fontWeight: 600 }}>{p.studentId}</div>
-              <div><Badge label={p.course} type="navy" /></div>
-              <div style={{ fontSize: 12, color: "#8a8ea8" }}>{p.date}</div>
-              
-              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                {p.status === "pending" ? (
-                  <>
-                    <button onClick={() => approve(p.studentId)} style={{ background: "#e6f7ec", color: "#2d7a4f", border: "1.5px solid #b6e8c4", borderRadius: 8, padding: "5px 10px", fontSize: 11.5, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all .15s" }}>✓ Approve</button>
-                    <button onClick={() => { setRejectModal(p); setRejectReason(""); }} style={{ background: "#fdeaea", color: "#c94040", border: "1.5px solid #f5c5c5", borderRadius: 8, padding: "5px 10px", fontSize: 11.5, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all .15s" }}>✗ Reject</button>
-                  </>
-                ) : (
-                  <Badge label={statusLabel[p.status]} type={statusColor[p.status]} />
-                )}
-                <button onClick={() => setViewApplicant(p)} style={{ background: "#f0ede5", border: "1.5px solid #e2dfd6", borderRadius: 8, padding: "5px 9px", fontSize: 13, cursor: "pointer" }}>👁</button>
-              </div>
-            </div>
-          ))
-        )}
+      <div className="data-card">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>User Details</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Program</th>
+              <th>Year Level</th>
+              <th>Data Joined</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={7} style={{ padding: 60, textAlign: "center" }}>
+                  <div className="spinner" style={{ borderColor: "var(--color-surface)", borderTopColor: "var(--color-primary)", margin: "0 auto 12px" }} />
+                  Loading accounts...
+                </td>
+              </tr>
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={7} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)", fontStyle: "italic", background: "var(--color-surface)" }}>
+                  No accounts found.
+                </td>
+              </tr>
+            ) : (
+              filtered.map(a => (
+                <tr key={a.id}>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+                      <div>
+                        <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--color-primary)" }}>{a.name}</div>
+                        <div style={{ fontSize: 10, color: "var(--color-subtext)", fontFamily: "monospace" }}>{a.id}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ color: "var(--color-subtext)" }}>{a.email}</td>
+                  <td style={{ fontSize: 12.5, color: "var(--color-subtext)" }}>{a.department}</td>
+                  <td style={{ fontSize: 12.5, color: "var(--color-subtext)" }}>{a.program}</td>
+                  <td style={{ fontSize: 12.5, color: "var(--color-subtext)" }}>{a.year}</td>
+                  <td style={{ fontSize: 12.5, color: "var(--color-subtext)" }}>{a.joined}</td>
+                  <td><button className="ellipsis-button" onClick={() => setViewApplicant(a)}><IconEllipsis/></button></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* ── MODAL: VIEW APPLICANT ── */}
@@ -251,13 +245,13 @@ export default function AdminApprovalsPage() {
               <div>
                 <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 19, color: "#1a2744" }}>{viewApplicant.name}</div>
                 <div style={{ fontSize: 12, color: "#8a8ea8", marginTop: 2 }}>{viewApplicant.email}</div>
-                <div style={{ marginTop: 8 }}><Badge label={statusLabel[viewApplicant.status]} type={statusColor[viewApplicant.status]} /></div>
+                {/* <div style={{ marginTop: 8 }}><Badge label={statusLabel[viewApplicant.status]} type={statusColor[viewApplicant.status]} /></div> */}
               </div>
             </div>
 
             {[
-              ["Student ID", viewApplicant.studentId],
-              ["Course", viewApplicant.course],
+              ["School ID", viewApplicant.id],
+              ["Program", viewApplicant.program],
               ["Year Level", viewApplicant.year],
               ["Department", viewApplicant.dept],
               ["Applied On", viewApplicant.date],
@@ -277,7 +271,7 @@ export default function AdminApprovalsPage() {
 
             {viewApplicant.status === "pending" && (
               <div style={{ display: "flex", gap: 9, marginTop: 20 }}>
-                <Btn onClick={() => approve(viewApplicant.studentId)}>✓ Approve</Btn>
+                {/* <Btn onClick={() => approve(viewApplicant.id)}>✓ Approve</Btn> */}
                 <Btn variant="red" onClick={() => { setRejectModal(viewApplicant); setRejectReason(""); setViewApplicant(null); }}>✗ Reject</Btn>
                 <Btn variant="ghost" onClick={() => setViewApplicant(null)}>Close</Btn>
               </div>
@@ -295,7 +289,7 @@ export default function AdminApprovalsPage() {
           <div style={{ background: "#fff", borderRadius: 22, padding: "26px 28px", maxWidth: 420, width: "100%", boxShadow: "0 24px 64px rgba(26,39,68,.18)", animation: "fadeUp .25s ease" }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#c94040", marginBottom: 8 }}>Reject Registration</div>
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 19, color: "#1a2744", marginBottom: 4 }}>{rejectModal.name}</div>
-            <div style={{ fontSize: 12, color: "#8a8ea8", marginBottom: 18 }}>{rejectModal.email} · {rejectModal.studentId}</div>
+            <div style={{ fontSize: 12, color: "#8a8ea8", marginBottom: 18 }}>{rejectModal.email} · {rejectModal.id}</div>
             
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#1a2744", display: "block", marginBottom: 7 }}>Reason for Rejection *</label>
@@ -307,7 +301,7 @@ export default function AdminApprovalsPage() {
             </div>
             
             <div style={{ display: "flex", gap: 9 }}>
-              <Btn variant="red" onClick={() => { if (!rejectReason.trim()) { fireToast("err", "Please provide a reason"); return; } reject(rejectModal.studentId, rejectReason); }}>Confirm Rejection</Btn>
+              {/* <Btn variant="red" onClick={() => { if (!rejectReason.trim()) { fireToast("err", "Please provide a reason"); return; } reject(rejectModal.id, rejectReason); }}>Confirm Rejection</Btn> */}
               <Btn variant="ghost" onClick={() => setRejectModal(null)}>Cancel</Btn>
             </div>
           </div>

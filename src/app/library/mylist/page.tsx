@@ -2,45 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/user";
+import { api } from "@/lib/api"
 
-const PER_PAGE = 5;
 const TABS = ["Pending", "Borrowed"];
+const PER_PAGE = 10;
 
 export default function MyListPage() {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Pending");
   const [currentPage, setCurrentPage] = useState(1);
+  const { school_id } = useUser();
 
   useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    if (!userStr || userStr === "undefined" || userStr === "null") {
-      router.replace("/");
-    } else {
-      try {
-        const parsed = JSON.parse(userStr);
-        if (!parsed || !parsed.id) router.replace("/");
-        else setCurrentUser(parsed);
-      } catch (e) {
-        router.replace("/");
-      }
-    }
-  }, [router]);
-
-  useEffect(() => {
-    if (!currentUser) return;
+    if (!school_id) return;
     const fetchData = async () => {
-      setLoading(true);
       try {
-        const txRes = await fetch(`http://localhost:8080/api/transactions/history?school_id=${currentUser.school_id}`);
-        const txJson = await txRes.json();
-        const bkRes = await fetch("http://localhost:8080/api/books");
-        const bkJson = await bkRes.json();
-        if (txJson.isSuccess) setTransactions(txJson.data || []);
-        if (bkJson.isSuccess) setBooks(bkJson.data || []);
+        const transaction = await api.get(`/api/transactions/history?school_id=${school_id}`);
+        const books = await api.get(`/api/books`);
+        if (transaction === "200") setTransactions(transaction.data || []);
+        if (books.isSuccess) setBooks(books.data || []);
       } catch (err) {
         console.error("Failed to fetch data", err);
       } finally {
@@ -48,7 +32,7 @@ export default function MyListPage() {
       }
     };
     fetchData();
-  }, [currentUser]);
+  }, [school_id]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -70,7 +54,7 @@ export default function MyListPage() {
   const totalPages   = Math.ceil(filteredData.length / PER_PAGE);
   const paginated    = filteredData.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
-  if (!currentUser) return null;
+  if (!school_id) return null;
 
   return (
     <div className="page-layout fadeUp">

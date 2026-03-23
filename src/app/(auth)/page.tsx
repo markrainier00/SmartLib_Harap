@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IconEye, IconEyeOff, IconBack, IconMail, IconID } from "@/components/icons";
+import FloatingInput from "@/components/ui/FloatingInput";
+import PasswordStrength from "@/components/ui/PasswordStrength";
 
 type AuthMode = "signin" | "register";
 type RegisterStep = 1 | 2 | 3 | 4 | 5;
@@ -49,6 +51,7 @@ export default function AuthPage() {
     schoolId: "",
     firstName: "",
     lastName: "",
+    department: "",
     program: "",
     year: "",
     password: "",
@@ -60,6 +63,38 @@ export default function AuthPage() {
   // ── OTP state ──
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // ── School data state ──
+  const [schools, setSchools] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        const json = await api.getPublic("/api/auth/schools");
+        if (json.retCode === "200") setSchools(json.data || []);
+      } catch (err) {
+        console.error("Failed to fetch schools", err);
+      }
+    };
+    fetchSchools();
+  }, []);
+
+  // ── Derived options ──
+  const departments = [...new Set(schools.map((s: any) => s.department))];
+
+  const programs = schools
+    .filter((s: any) => s.department === register.department)
+    .map((s: any) => s.program);
+
+  const selectedSchool = schools.find(
+    (s: any) => s.program === register.program && s.department === register.department
+  );
+  const maxYears = selectedSchool?.duration || 4;
+
+  const yearOptions = Array.from({ length: maxYears }, (_, i) => {
+    const labels = ["1st", "2nd", "3rd", "4th", "5th", "6th"];
+    return labels[i];
+  });
 
   // ── School ID image state ──
   const [schoolIdImage, setSchoolIdImage] = useState<File | null>(null);
@@ -92,6 +127,7 @@ export default function AuthPage() {
       schoolId: "",
       firstName: "",
       lastName: "",
+      department: "",
       program: "",
       year: "",
       password: "",
@@ -183,11 +219,19 @@ export default function AuthPage() {
         password: signin.password,
       });
 
-      console.log(json);
       if (json.retCode !== "200") throw new Error(json.message || "Sign in failed");
+      
       localStorage.setItem("user", JSON.stringify(json.data));
       localStorage.setItem("token", json.token);
-      router.push("/library");
+
+      const role = json.data.role;
+      if (role === "Admin") {
+        router.push("/admin");
+      } else if (role === "Staff") {
+        router.push("/admin");
+      } else {
+        router.push("/library");
+      }
     } catch (err: any) {
       setUI({ error: err.message });
     } finally {
@@ -289,6 +333,7 @@ export default function AuthPage() {
       formData.append("lastname", register.lastName);
       formData.append("email", register.email);
       formData.append("school_id", register.schoolId);
+      formData.append("department", register.department);
       formData.append("program", register.program);
       formData.append("year", register.year);
       formData.append("password", register.password);
@@ -355,32 +400,27 @@ export default function AuthPage() {
         {mode === "signin" && (
           <form onSubmit={handleSignin} className="slideFromLeft">
             <div className="field">
-              <label htmlFor="signinIdentifier">Email Address / School ID</label>
-              <input
-                id="signinIdentifier"
-                type="text"
-                placeholder="student@university.edu or 2024-00123"
+              <FloatingInput
+                label="Email Address or School ID"
+                type= "text"
                 value={signin.identifier}
                 onChange={e => setSignIn({ identifier: e.target.value })}
                 required
               />
             </div>
             <div className="field">
-              <label htmlFor="signinPassword">Password</label>
-              <div className="input-wrap">
-                <input
-                  id="signinPassword"
-                  type={signin.showPw ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={signin.password}
-                  onChange={e => setSignIn({ password: e.target.value })}
-                  className="has-icon"
-                  required
-                />
-                <button type="button" aria-label="Toggle password visibility" className="pw-toggle" onClick={() => setSignIn({ showPw: !signin.showPw })}>
-                  {signin.showPw ? <IconEyeOff /> : <IconEye />}
-                </button>
-              </div>
+              <FloatingInput
+                label="Password"
+                type={signin.showPw ? "text" : "password"}
+                value={signin.password}
+                onChange={e => setSignIn({ password: e.target.value })}
+                required
+                suffix={
+                  <button type="button" className="pw-toggle" onClick={() => setSignIn({ showPw: !signin.showPw })}>
+                    {signin.showPw ? <IconEyeOff /> : <IconEye />}
+                  </button>
+                }
+              />
               <Link href="/forgot-password" className="forgot">Forgot password?</Link>
             </div>
             <button type="submit" className="btn" disabled={ui.loading}>
@@ -397,21 +437,13 @@ export default function AuthPage() {
             {step === 1 && (
               <form onSubmit={handleSendOtp}>
                 <div className="field">
-                    <label htmlFor="regEmail">Email Address</label>
-                    <div className="input-wrap">
-                      <input
-                        id="regEmail"
-                        type="email"
-                        placeholder="student@university.edu"
-                        value={register.email}
-                        onChange={e => setReg({ email: e.target.value })}
-                        required
-                        style={{paddingLeft: "40px"}}
-                      />
-                      <span style={{position:"absolute",left:"13px",color:"var(--color-muted)",display:"flex",alignItems:"center"}}>
-                        <IconMail />
-                      </span>
-                  </div>
+                  <FloatingInput
+                    label="Email Address"
+                    type= "email"
+                    value={register.email}
+                    onChange={e => setReg({ email: e.target.value })}
+                    required
+                  />
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading}>
                   {ui.loading ? <><div className="spinner" /> Sending code…</> : "Send Verification Code →"}
@@ -439,12 +471,12 @@ export default function AuthPage() {
                     />
                   ))}
                 </div>
-                <div className="resend">
-                  Didn't get it? <button type="button" onClick={handleResendOtp}>Resend code</button>
-                </div>
                 <button type="submit" className="btn" disabled={ui.loading || otp.join("").length < 6} style={{marginTop:"18px"}}>
                   {ui.loading ? <><div className="spinner" /> Verifying…</> : "Verify Code →"}
                 </button>
+                <div className="resend">
+                  Didn't get it? <button type="button" onClick={handleResendOtp}>Resend code</button>
+                </div>
               </form></>
             )}
 
@@ -453,21 +485,13 @@ export default function AuthPage() {
               <button className="back" onClick={() => { setStep(1); clearAlerts(); }}><IconBack /> Back</button>
               <form onSubmit={handleCheckSchoolId}>
                 <div className="field">
-                  <label>School ID Number</label>
-                  <div className="input-wrap">
-                    <input
-                      id="regSchoolId"
-                      type="text"
-                      placeholder="e.g. 2024-00123"
-                      value={register.schoolId}
-                      onChange={e => setReg({ schoolId: e.target.value })}
-                      required
-                      style={{paddingLeft: "40px"}}
-                    />
-                    <span style={{position:"absolute",left:"13px",color:"var(--color-muted)",display:"flex",alignItems:"center"}}>
-                      <IconID />
-                    </span>
-                  </div>
+                  <FloatingInput
+                    label="School ID"
+                    type= "text"
+                    value={register.schoolId}
+                    onChange={e => setReg({ schoolId: e.target.value })}
+                    required
+                  />
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading}>
                   {ui.loading ? <><div className="spinner" /> Checking…</> : "Continue →"}
@@ -480,35 +504,35 @@ export default function AuthPage() {
               <button className="back" onClick={() => { setStep(3); clearAlerts(); }}><IconBack /> Back</button>
               <form onSubmit={handlePassword}>
                 <div className="field">
-                  <label>New Password</label>
-                  <div className="input-wrap">
-                    <input
-                      type={register.showPassword ? "text" : "password"}
-                      value={register.password}
-                      onChange={e => setReg({ password: e.target.value })}
-                      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
-                      minLength={8}
-                      className="has-icon"
-                    />
-                    <button type="button" className="pw-toggle" onClick={() => setReg({ showPassword: !register.showPassword })}>
-                      {register.showPassword ? <IconEyeOff /> : <IconEye />}
-                    </button>
-                  </div>
+                  <FloatingInput
+                    label="New Password"
+                    type={register.showPassword ? "text" : "password"}
+                    value={register.password}
+                    onChange={e => setReg({ password: e.target.value })}
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+                    required
+                    suffix={
+                      <button type="button" className="pw-toggle" onClick={() => setReg({ showPassword: !register.showPassword })}>
+                        {register.showPassword ? <IconEyeOff /> : <IconEye />}
+                      </button>
+                    }
+                  />
+                  <PasswordStrength password={register.password}/>
                 </div>
                 <div className="field">
-                  <label>Confirm Password</label>
-                  <div className="input-wrap">
-                    <input
-                      type={register.showConfirm ? "text" : "password"}
-                      value={register.confirm}
-                      onChange={e => setReg({ confirm: e.target.value })}
-                      required
-                      className="has-icon"
-                    />
-                    <button type="button" className="pw-toggle" onClick={() => setReg({ showConfirm: !register.showConfirm })}>
-                      {register.showConfirm ? <IconEyeOff /> : <IconEye />}
-                    </button>
-                  </div>
+                  <FloatingInput
+                    label="Confirm Password"
+                    type={register.showConfirm ? "text" : "password"}
+                    value={register.confirm}
+                    onChange={e => setReg({ confirm: e.target.value })}
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+                    required
+                    suffix={
+                      <button type="button" className="pw-toggle" onClick={() => setReg({ showConfirm: !register.showConfirm })}>
+                        {register.showConfirm ? <IconEyeOff /> : <IconEye />}
+                      </button>
+                    }
+                  />
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading}>Save Password</button>
               </form></>
@@ -530,22 +554,34 @@ export default function AuthPage() {
                 </div>
                 <div className="form-row">
                   <div className="field">
+                    <label htmlFor="department">Department</label>
+                    <select
+                      id="department"
+                      value={register.department}
+                      onChange={e => setReg({ department: e.target.value, program: "", year: "" })}
+                      required>
+                      <option value="" disabled>Select department</option>
+                      {departments.map((dept: string) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
                     <label htmlFor="program">Program</label>
-                    <select id="program" value={register.program} onChange={e => setReg({ program: e.target.value })} required>
+                    <select id="program" value={register.program} onChange={e => setReg({ program: e.target.value, year: "" })} required disabled={!register.department}>
                       <option value="" disabled>Select</option>
-                      <option value="BSCS">BSCS</option>
-                      <option value="BSIT">BSIT</option>
-                      <option value="BSCpE">BSCpE</option>
+                      {programs.map((prog: string) => (
+                        <option key={prog} value={prog}>{prog}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="field">
                     <label htmlFor="year">Year Level</label>
-                    <select id="year" value={register.year} onChange={e => setReg({ year: e.target.value })} required>
+                    <select id="year" value={register.year} onChange={e => setReg({ year: e.target.value })} required disabled={!register.program}>
                       <option value="" disabled>Select</option>
-                      <option value="1st">1st Year</option>
-                      <option value="2nd">2nd Year</option>
-                      <option value="3rd">3rd Year</option>
-                      <option value="4th">4th Year</option>
+                      {yearOptions.map((year: string) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
                     </select>
                   </div>
                 </div>

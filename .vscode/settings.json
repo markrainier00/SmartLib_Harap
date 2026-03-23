@@ -1,3 +1,10 @@
 {
-  "css.validate": false
+  "css.validate": false,
+  "python-envs.pythonProjects": [
+    {
+      "path": "src/lib",
+      "envManager": "ms-python.python:venv",
+      "packageManager": "ms-python.python:pip"
+    }
+  ]
 }

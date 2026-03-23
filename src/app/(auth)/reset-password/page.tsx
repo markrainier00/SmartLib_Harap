@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { IconEye, IconEyeOff } from "@/components/icons";
+import FloatingInput from "@/components/ui/FloatingInput";
+import PasswordStrength from "@/components/ui/PasswordStrength";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -19,14 +21,14 @@ function ResetPasswordForm() {
     showConfirm: false,
   });
 
+  const setForm_ = (fields: Partial<typeof form>) =>
+    setForm(prev => ({ ...prev, ...fields }));
+
   const [ui, setUi] = useState({
     error: "",
     success: "",
     loading: false,
   });
-
-  const setForm_ = (fields: Partial<typeof form>) =>
-    setForm(prev => ({ ...prev, ...fields }));
 
   const setUI = (fields: Partial<typeof ui>) =>
     setUi(prev => ({ ...prev, ...fields }));
@@ -37,14 +39,13 @@ function ResetPasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setUI({ error: "", success: "" });
+    setUI({ error: "", success: "", loading: true });
 
     if (form.password !== form.confirm) {
       setUI({ error: "Passwords do not match" });
       return;
     }
 
-    setUI({ loading: true });
     try {
       const res = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: "POST",
@@ -94,35 +95,34 @@ function ResetPasswordForm() {
 
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>New Password</label>
-            <div className="input-wrap">
-              <input
-                type={form.showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={e => setForm_({ password: e.target.value })}
-                required
-                minLength={8}
-                className="has-icon"
-              />
-              <button type="button" className="pw-toggle" onClick={() => setForm_({ showPassword: !form.showPassword })}>
-                {form.showPassword ? <IconEyeOff /> : <IconEye />}
-              </button>
-            </div>
+            <FloatingInput
+              label="New Password"
+              type={form.showPassword ? "text" : "password"}
+              value={form.password}
+              onChange={e => setForm_({ password: e.target.value })}
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+              required
+              suffix={
+                <button type="button" className="pw-toggle" onClick={() => setForm_({ showPassword: !form.showPassword })}>
+                  {form.showPassword ? <IconEyeOff /> : <IconEye />}
+                </button>
+              }
+            />
+            <PasswordStrength password={form.password}/>
           </div>
           <div className="field">
-            <label>Confirm Password</label>
-            <div className="input-wrap">
-              <input
-                type={form.showConfirm ? "text" : "password"}
-                value={form.confirm}
-                onChange={e => setForm_({ confirm: e.target.value })}
-                required
-                className="has-icon"
-              />
-              <button type="button" className="pw-toggle" onClick={() => setForm_({ showConfirm: !form.showConfirm })}>
-                {form.showConfirm ? <IconEyeOff /> : <IconEye />}
-              </button>
-            </div>
+            <FloatingInput
+              label="Confirm Password"
+              type={form.showConfirm ? "text" : "password"}
+              value={form.confirm}
+              onChange={e => setForm_({ confirm: e.target.value })}
+              required
+              suffix={
+                <button type="button" className="pw-toggle" onClick={() => setForm_({ showConfirm: !form.showConfirm })}>
+                  {form.showConfirm ? <IconEyeOff /> : <IconEye />}
+                </button>
+              }
+            />
           </div>
           <button type="submit" className="btn" disabled={ui.loading}>
             {ui.loading ? <><div className="spinner" /> Resetting…</> : "Reset Password"}

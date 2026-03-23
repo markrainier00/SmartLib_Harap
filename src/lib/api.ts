@@ -30,6 +30,13 @@ export const api = {
     return res.json();
   },
 
+  getPublic: async (endpoint: string) => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return res.json();
+  },
+
   post: async (endpoint: string, body: object) => {
     const res = await fetch(`${API_URL}${endpoint}`, {
       method: "POST",
@@ -57,6 +64,33 @@ export const api = {
       method: "POST",
       headers: getHeaders(true),
       body,
+    });
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
+    return res.json();
+  },
+  
+  delete: async (endpoint: string) => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
+    return res.json();
+  },
+
+  put: async (endpoint: string, body: object) => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: "PUT",
+      headers: getHeaders(),
+      body: JSON.stringify(body),
     });
     if (res.status === 401) {
       localStorage.removeItem("token");

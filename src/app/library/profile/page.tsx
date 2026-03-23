@@ -1,20 +1,36 @@
 "use client";
 
+import { useUser } from "@/lib/user";
+import {api} from "@/lib/api";
 import React, { useState, useEffect } from "react";
+import { IconEye, IconEyeOff } from "@/components/icons";
+import FloatingInput from "@/components/ui/FloatingInput";
+import PasswordStrength from "@/components/ui/PasswordStrength";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("info");
 
-  const [fullName] = useState("Bryan Lumangaya");
-  const [studentId] = useState("2024-00123");
-  const [email, setEmail] = useState("bryan@cmdi.edu");
-  const [program] = useState("Bachelor of Science in Computer Science");
-  const [yearLevel] = useState("2nd Year");
-  const [department] = useState("College of Computer Studies");
+  const { firstName, lastName, fullName, email, school_id, department, program, year, initial } = useUser();
+  const [newEmail, setNewEmail] = useState("");
+  useEffect(() => {
+    if (email) setNewEmail(email);
+  }, [email]);
+  
+  const [pwForm, setPwForm] = useState({
+    current: "",
+    newPw: "",
+    confirm: "",
+    showCurrent: false,
+    showNewPw: false,
+    showConfirm: false,
+  });
+  const setPwForm_ = (fields: Partial<typeof pwForm>) =>
+    setPwForm(prev => ({ ...prev, ...fields }));
 
-  const [currentPw, setCurrentPw] = useState("");
-  const [newPw, setNewPw] = useState("");
-  const [confirmPw, setConfirmPw] = useState("");
+  const [pwUI, setPwUI] = useState({ error: "", success: "", loading: false });
+
+  const setPWUI = (fields: Partial<typeof pwUI>) =>
+    setPwUI(prev => ({ ...prev, ...fields }));
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -27,14 +43,29 @@ export default function ProfilePage() {
 
   const handleProfileSave = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("✅ Profile information updated successfully!");
+    alert("Profile information updated successfully!");
   };
 
-  const handlePasswordChange = (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPw !== confirmPw) { alert("⚠️ New passwords do not match!"); return; }
-    alert("✅ Password changed successfully!");
-    setCurrentPw(""); setNewPw(""); setConfirmPw("");
+    setPWUI({ error: "", success: "", loading: true });
+
+    if (pwForm.newPw !== pwForm.confirm) {
+      setPWUI({ error: "Passwords do not match", success: "", loading: false });
+      return;
+    }
+
+    try {
+      const json = await api.post("/api/auth/change-password", {
+        current_password: pwForm.current,
+        new_password: pwForm.newPw,
+      });
+      if (json.retCode !== "200") throw new Error(json.message || "Failed to update password");
+      setPWUI({ error: "", success: json.message, loading: false });
+      setPwForm_({ current: "", newPw: "", confirm: "", showCurrent: false, showNewPw: false, showConfirm: false, });
+    } catch (err: any) {
+      setPWUI({ error: err.message, success: "", loading: false });
+    }
   };
 
   const changeTab = (tab: string) => {
@@ -58,31 +89,45 @@ export default function ProfilePage() {
           <div className="fadeUp">
             <div style={{ display: "flex", alignItems: "center", gap: 20, paddingBottom: 20, borderBottom: `1px solid var(--color-surface)`, marginBottom: 20 }}>
               <div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "var(--color-primary)", marginBottom: 4 }}>{fullName}</div>
-                <div style={{ fontSize: 13, color: "var(--color-subtext)", display: "flex", gap: 12 }}><span>ID: {studentId}</span></div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "var(--color-primary)" }}>{fullName}</div>
+                <div style={{ fontSize: 15, color: "var(--color-subtext)", display: "flex", gap: 12 }}><span>{school_id}</span></div>
               </div>
             </div>
 
             <form onSubmit={handleProfileSave}>
               <div className="two-col-grid">
                 <div className="field">
-                  <label>Email</label>
-                  <input type="text" value={email} onChange={e => setEmail(e.target.value)} required/>
+                  <FloatingInput
+                    label="Email Address"
+                    type= "email"
+                    value={ newEmail }
+                    onChange={ e => setNewEmail( e.target.value )}
+                    required
+                  />
                 </div>
                 <div className="field">
-                  <label>Program / Course</label>
-                  <input type="text" value={program} disabled/>
+                  <FloatingInput
+                    label="Year Level"
+                    type= "text"
+                    value={ year }
+                  />
                 </div>
                 <div className="field">
-                  <label>Year Level</label>
-                  <input type="text" value={yearLevel} disabled/>
+                  <FloatingInput
+                    label="Program"
+                    type= "text"
+                    value={ program }
+                  />
                 </div>
                 <div className="field">
-                  <label>Department</label>
-                  <input type="text" value={department} disabled/>
+                  <FloatingInput
+                    label="Department"
+                    type= "text"
+                    value={ department }
+                  />
                 </div>
               </div>
-              <div style={{  display: "flex", justifyContent: "center", marginTop: 20 }}>
+              <div style={{  display: "flex", justifyContent: "right" }}>
                 <button type="submit" className="btn" style={{ width: "auto", padding: "12px 24px" }}>Save Changes</button>
               </div>
             </form>
@@ -91,23 +136,79 @@ export default function ProfilePage() {
 
         {activeTab === "password" && (
           <div className="fadeUp" style={{ maxWidth: 450, margin: "0 auto" }}>
-            <h3 style={{ fontSize: 20, color: "var(--color-primary)", margin: "0 0 24px 0", fontFamily: "var(--font-display)", textAlign: "center" }}>
+            <h3 style={{ fontSize: 20, color: "var(--color-primary)", margin: "24px 0 24px 0", fontFamily: "var(--font-display)", textAlign: "center" }}>
               Update Security Credentials
             </h3>
+
+            {pwUI.error && (
+              <div className="alert-error">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0,marginTop:1}}>
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                {pwUI.error}
+              </div>
+            )}
+            {pwUI.success && (
+              <div className="alert-success">
+                <div className="check">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                {pwUI.success}
+              </div>
+            )}
+            
             <form onSubmit={handlePasswordChange}>
               <div className="field">
-                <label>Current Password</label>
-                <input type="password" placeholder="Enter current password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} required />
+                <FloatingInput
+                  label="Current Password"
+                  type={pwForm.showCurrent ? "text" : "password"}
+                  value={pwForm.current}
+                  onChange={e => setPwForm_({ current: e.target.value })}
+                  required
+                  suffix={
+                    <button type="button" className="pw-toggle" onClick={() => setPwForm_({ showCurrent: !pwForm.showCurrent })}>
+                      {pwForm.showCurrent ? <IconEyeOff /> : <IconEye />}
+                    </button>
+                  }
+                />
               </div>
               <div className="field">
-                <label>New Password</label>
-                <input type="password" placeholder="Enter new password" value={newPw} onChange={e => setNewPw(e.target.value)} required />
+                <FloatingInput
+                  label="New Password"
+                  type={pwForm.showNewPw ? "text" : "password"}
+                  value={pwForm.newPw}
+                  onChange={e => setPwForm_({ newPw: e.target.value })}
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+                  required
+                  suffix={
+                    <button type="button" className="pw-toggle" onClick={() => setPwForm_({ showNewPw: !pwForm.showNewPw })}>
+                      {pwForm.showNewPw ? <IconEyeOff /> : <IconEye />}
+                    </button>
+                  }
+                />
+                <PasswordStrength password={pwForm.newPw}/>
               </div>
               <div className="field" style={{ marginBottom: 24 }}>
-                <label>Confirm New Password</label>
-                <input type="password" placeholder="Confirm new password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} required />
+                <FloatingInput
+                  label="Confirm New Password"
+                  type={pwForm.showConfirm ? "text" : "password"}
+                  value={pwForm.confirm}
+                  onChange={e => setPwForm_({ confirm: e.target.value })}
+                  required
+                  suffix={
+                    <button type="button" className="pw-toggle" onClick={() => setPwForm_({ showConfirm: !pwForm.showConfirm })}>
+                      {pwForm.showConfirm ? <IconEyeOff /> : <IconEye />}
+                    </button>
+                  }
+                />
               </div>
-              <button type="submit" className="btn">Update Password</button>
+              <div style={{  display: "flex", justifyContent: "right", marginTop: 20 }}>
+                <button type="submit" className="btn" style={{ width: "auto", padding: "12px 24px" }} disabled={ pwUI.loading }>
+                  {pwUI.loading ? <><div className="spinner" /> Updating…</> : "Update Password"}
+                </button>
+              </div>
             </form>
           </div>
         )}
