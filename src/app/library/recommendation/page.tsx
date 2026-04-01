@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { IconLogo, IconX } from "@/components/icons";
@@ -33,18 +34,38 @@ export default function LibraryPage() {
     }
   }, [router]);
 
-  useEffect(() => {
+  // ── UI state ──
+  const [ui, setUi] = useState({
+    error: "",
+    success: "",
+    info: "",
+    loading: false,
+  });
+  
+  // ── Helpers ──
+  const setUI = (fields: Partial<typeof ui>) => setUi(prev => ({ ...prev, ...fields }));
+
     const fetchBooks = async () => {
+      setUI({ loading: true });
       try {
-        const res = await fetch("http://localhost:8080/api/books");
-        const json = await res.json();
-        if (json.isSuccess && json.data) setBooks(json.data);
-      } catch (err) {
-        console.error("Failed to fetch books:", err);
+        const json = await api.getPublic("/api/books/getBooks");
+        if (json.retCode === "200" || json.isSuccess) {
+          setBooks(json.data || []);
+        } else {
+          setUI({ error: json.message || "Failed to load books" });
+        }
+        console.log(json.data); // Check if actual_image is correctly returned
+      } catch (err: any) {
+        setUI({ error: "Cannot connect to the server." });
+      }
+      finally {
+        setUI({ loading: false });
       }
     };
-    fetchBooks();
-  }, []);
+  
+    useEffect(() => {
+      fetchBooks();
+    }, []);
 
   const toggleSave = (e: React.MouseEvent | null, id: number) => {
     if (e) e.stopPropagation();
@@ -141,25 +162,6 @@ export default function LibraryPage() {
         }
         .rec-scroll::-webkit-scrollbar { height: 6px; }
         .rec-scroll::-webkit-scrollbar-thumb { background: #C3DDD0; border-radius: 3px; }
-
-        /* ── Book cover ── */
-        .bk-cover {
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          overflow: hidden;
-          flex-shrink: 0;
-          box-shadow: 4px 4px 15px rgba(0,0,0,.15), inset -3px 0 8px rgba(0,0,0,.2);
-          transition: transform .25s ease;
-          background: #EBF7F0;
-        }
-        .bk-cover .spine { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
-        .bk-cover .lines {
-          position: absolute; inset: 0;
-          background: repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(255,255,255,.05) 16px,rgba(255,255,255,.05) 17px);
-        }
 
         .rec-book { flex-shrink: 0; width: 140px; cursor: pointer; }
         .rec-book:hover .bk-cover { transform: translateY(-4px); box-shadow: 6px 8px 20px rgba(0,0,0,.2); }
@@ -314,15 +316,11 @@ export default function LibraryPage() {
             {books.slice(0, 4).map(b => (
               <div key={b.id} className="rec-book" onClick={() => openBookDetails(b)}>
                 <div style={{ position: "relative" }}>
-                  <div className="bk-cover" style={{ width: 140, height: 190, background: b.actualImage ? '#fff' : `linear-gradient(150deg, ${b.accent || '#1B5E35'}, ${b.cover || '#4CAF78'}88)` }}>
-                    {b.actualImage ? (
-                      <img src={b.actualImage} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div className="book-cover" style={{ width: 140, height: 190, background: b.actual_image ? '#fff' : `linear-gradient(150deg, ${b.accent || '#1B5E35'}, ${b.cover || '#4CAF78'}88)` }}>
+                    {b.actual_image ? (
+                      <img src={b.actual_image} alt={b.title} style={{ width: "100%", height: "100%", objectFit: "cover" }}  />
                     ) : (
-                      <>
-                        <div className="spine" style={{ background: b.cover || '#4CAF78' }}></div>
-                        <div className="lines"></div>
-                        <span style={{ fontSize: "60px", position: "relative", zIndex: 1 }}>📖</span>
-                      </>
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}><IconLogo className="w-20 h-20 text-primary"/></div>
                     )}
                   </div>
                   <button className="star-btn" onClick={(e) => toggleSave(e, b.id)}>
@@ -366,15 +364,11 @@ export default function LibraryPage() {
             {filteredBooks.length > 0 ? filteredBooks.map(b => (
               <div key={b.id} className="bk-card" onClick={() => openBookDetails(b)}>
                 <div className="bk-card-img">
-                  <div className="bk-cover" style={{ width: 120, height: 165, background: b.actualImage ? '#fff' : `linear-gradient(150deg, ${b.accent || '#1B5E35'}, ${b.cover || '#4CAF78'}88)` }}>
-                    {b.actualImage ? (
-                      <img src={b.actualImage} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div className="bk-cover" style={{ width: 120, height: 165, background: b.actual_image ? '#fff' : `linear-gradient(150deg, ${b.accent || '#1B5E35'}, ${b.cover || '#4CAF78'}88)` }}>
+                    {b.actual_image ? (
+                      <img src={b.actual_image} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <>
-                        <div className="spine" style={{ background: b.cover || '#4CAF78' }}></div>
-                        <div className="lines"></div>
-                        <span style={{ fontSize: "50px", position: "relative", zIndex: 1 }}>📖</span>
-                      </>
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}><IconLogo className="w-20 h-20 text-primary"/></div>
                     )}
                   </div>
                   <button className="star-btn" style={{ top: 10, right: 10 }} onClick={(e) => toggleSave(e, b.id)}>
@@ -410,9 +404,9 @@ export default function LibraryPage() {
             <button className="sp-close" onClick={closePanel}><IconX/></button>
 
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px", paddingTop: "10px" }}>
-              <div className="bk-cover" style={{ width: 130, height: 180, background: selectedBook.actualImage ? '#fff' : `linear-gradient(150deg, ${selectedBook.accent || '#1B5E35'}, ${selectedBook.cover || '#4CAF78'}88)`, boxShadow: "0 10px 30px rgba(0,0,0,.2)" }}>
-                {selectedBook.actualImage ? (
-                  <img src={selectedBook.actualImage} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div className="bk-cover" style={{ width: 130, height: 180, background: selectedBook.actual_image ? '#fff' : `linear-gradient(150deg, ${selectedBook.accent || '#1B5E35'}, ${selectedBook.cover || '#4CAF78'}88)`, boxShadow: "0 10px 30px rgba(0,0,0,.2)" }}>
+                {selectedBook.actual_image ? (
+                  <img src={selectedBook.actual_image} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <>
                     <span style={{ fontSize: "55px", position: "relative", zIndex: 1 }}>📖</span>
@@ -498,5 +492,6 @@ export default function LibraryPage() {
         </aside>
       )}
     </div>
+    
   );
 }
