@@ -55,7 +55,7 @@ export default function HistoryPage() {
   return (
     <div className="page-layout fadeUp">
       <div className="page-header">Library History</div>
-      <div className="page-sub">Your complete borrowing activity recorded in the system</div>
+      <div className="page-sub">Your complete transaction history recorded in the system</div>
 
       {/* Tabs */}
       <div className="page-tabs">

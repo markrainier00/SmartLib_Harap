@@ -3,7 +3,7 @@ import {api} from "@/lib/api";
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { IconEye, IconEyeOff, IconBack, IconMail, IconID } from "@/components/icons";
+import { IconEye, IconEyeOff, IconBack, IconMail, IconID, IconImage } from "@/components/icons";
 import FloatingInput from "@/components/ui/FloatingInput";
 import PasswordStrength from "@/components/ui/PasswordStrength";
 
@@ -202,9 +202,7 @@ export default function AuthPage() {
     setReg({ [field]: v.length > 0 ? v.charAt(0).toUpperCase() + v.slice(1) : "" });
   };
 
-  // ========================================================
-  // 🚀 API CALLS (DITO NATIN INAYOS ANG BOUNCER LOGIC)
-  // ========================================================
+  // API Calls 
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
     clearAlerts();
@@ -592,13 +590,7 @@ export default function AuthPage() {
                   <input id="schoolidImage" aria-label="Upload School ID Photo" ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleSchoolIdImage} />
                   {!schoolIdPreview ? (
                     <div className="upload" onClick={() => fileInputRef.current?.click()}>
-                      <div className="upload-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="5" width="18" height="14" rx="2"/>
-                          <circle cx="8.5" cy="10.5" r="1.5"/>
-                          <path d="M21 15l-5-5L5 19"/>
-                        </svg>
-                      </div>
+                      <div className="upload-icon"><IconImage/></div>
                       <div className="upload-text">Click to upload your School ID photo</div>
                       <div className="upload-hint">JPG, PNG, WEBP — max 2MB</div>
                     </div>

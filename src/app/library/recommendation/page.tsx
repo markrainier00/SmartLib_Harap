@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { IconLogo, IconX } from "@/components/icons";
 
 const CATS = ["All", "Computer Science", "Mathematics", "Chemistry", "Economics", "Medicine", "Engineering"];
 
@@ -113,55 +114,6 @@ export default function LibraryPage() {
 
         .main-content { flex: 1; min-width: 0; }
 
-        /* ── Hero ── */
-        .hero {
-          background: linear-gradient(135deg, #1B5E35 0%, #256D42 55%, #2E8B57 100%);
-          border-radius: 20px;
-          padding: 32px 36px;
-          margin-bottom: 32px;
-          position: relative;
-          overflow: hidden;
-          box-shadow: 0 10px 30px rgba(27,94,53,.2);
-        }
-        .hero::before {
-          content: '';
-          position: absolute;
-          right: -20px; top: -40px;
-          width: 220px; height: 220px;
-          background: radial-gradient(circle, rgba(76,175,120,.35) 0%, transparent 70%);
-        }
-        .hero::after {
-          content: '📚';
-          position: absolute;
-          right: 40px; top: 15px;
-          font-size: 90px;
-          opacity: .12;
-          transform: rotate(-12deg);
-        }
-        .hero-eyebrow {
-          font-size: 11.5px;
-          font-weight: 700;
-          color: rgba(255,255,255,.65);
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          margin-bottom: 8px;
-        }
-        .hero-title {
-          font-family: 'DM Serif Display', serif;
-          font-size: 28px;
-          color: #fff;
-          margin-bottom: 8px;
-          position: relative;
-          z-index: 2;
-        }
-        .hero-sub {
-          font-size: 14px;
-          color: rgba(255,255,255,.75);
-          max-width: 460px;
-          position: relative;
-          z-index: 2;
-          line-height: 1.5;
-        }
 
         /* ── Sections ── */
         .section-head {
@@ -343,10 +295,11 @@ export default function LibraryPage() {
       <div className="main-content">
 
         {/* Hero */}
-        <div className="hero">
-          <div className="hero-eyebrow">Good Morning, {currentUser.firstname || 'Student'}!</div>
+        <div className="hero relative">
+          <div className="hero-eyebrow">Hello, {currentUser.firstname || 'Student'}!</div>
           <div className="hero-title">What will you learn today?</div>
           <div className="hero-sub">Explore available books across different categories tailored for {currentUser.program || 'your'} students.</div>
+          <IconLogo className="absolute right-10 top-4 w-60 h-60 opacity-10 -rotate-12"/>
         </div>
 
         {/* Curated for You */}
@@ -454,7 +407,7 @@ export default function LibraryPage() {
       {selectedBook && (
         <aside className="side-panel">
           <div className="sp-scroll">
-            <button className="sp-close" onClick={closePanel}>✕</button>
+            <button className="sp-close" onClick={closePanel}><IconX/></button>
 
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px", paddingTop: "10px" }}>
               <div className="bk-cover" style={{ width: 130, height: 180, background: selectedBook.actualImage ? '#fff' : `linear-gradient(150deg, ${selectedBook.accent || '#1B5E35'}, ${selectedBook.cover || '#4CAF78'}88)`, boxShadow: "0 10px 30px rgba(0,0,0,.2)" }}>
@@ -462,8 +415,6 @@ export default function LibraryPage() {
                   <img src={selectedBook.actualImage} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <>
-                    <div className="spine" style={{ background: selectedBook.cover || '#4CAF78' }}></div>
-                    <div className="lines"></div>
                     <span style={{ fontSize: "55px", position: "relative", zIndex: 1 }}>📖</span>
                   </>
                 )}
@@ -471,8 +422,8 @@ export default function LibraryPage() {
             </div>
 
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
-              <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "22px", color: "#102A1C", marginBottom: "6px", lineHeight: 1.2 }}>{selectedBook.title}</h3>
-              <p style={{ fontSize: "14px", color: "#4CAF78", fontWeight: 600, marginBottom: "14px" }}>{selectedBook.author}</p>
+              <h3 className="page-header text-black">{selectedBook.title}</h3>
+              <p className="page-sub">{selectedBook.author}</p>
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}>
                 <span className={`badge ${selectedBook.available ? 'badge-green' : 'badge-red'}`}>{selectedBook.available ? 'Available' : 'Unavailable'}</span>
                 <span className="badge" style={{ background: "#EBF7F0", color: "#1B5E35" }}>{selectedBook.pages || '?'} Pages</span>

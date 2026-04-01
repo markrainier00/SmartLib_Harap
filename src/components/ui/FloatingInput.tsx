@@ -25,7 +25,7 @@ export default function FloatingInput({
     id,
 }: Props) {
     const [focused, setFocused] = useState(false);
-    const isFloating = focused || value.length > 0;
+    const isFloating = focused || (value !== undefined && value !== null && value.toString().length > 0);
 
   return (
     <div style={{ position: "relative", marginBottom: 12 }}>

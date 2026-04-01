@@ -99,4 +99,18 @@ export const api = {
     }
     return res.json();
   },
+
+  putForm: async (endpoint: string, body: FormData) => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: "PUT",
+      headers: getHeaders(true),
+      body,
+    });
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    }
+    return res.json();
+  },
 };

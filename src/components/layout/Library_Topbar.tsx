@@ -5,7 +5,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import QRCode from "react-qr-code";
 import html2canvas from "html2canvas";
-import { IconArrowDown, IconID, IconNotif, IconSearch } from "../icons";
+import { IconArrowDown, IconID, IconNotif, IconSearch, IconLogo } from "../icons";
 import { useClickOutside } from "@/app/hooks/useClickOutside";
 
 interface TopbarProps {
@@ -146,14 +146,17 @@ export default function Topbar({ isSidebarOpen }: TopbarProps) {
       `}</style>
 
       <header className="topbar">
-        <div className="smartlib-logo" style={{ fontSize: '20px' }}>SmartLib
-          <span className="smartlib-sub" style={{ fontSize: '13px', display: 'block' }}>STUDENT PORTAL</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <IconLogo style={{ width: "40px", height: "40px", color: "var(--color-primary)" }} />
+          <div className="smartlib-logo" style={{ fontSize: '20px' }}>SmartLib
+            <span className="smartlib-sub" style={{ fontSize: '13px', display: 'block' }}>STUDENT PORTAL</span>
+          </div>
         </div>
 
-        <div className="search-wrap" style={{ flex: 1 }}>
+        {/* <div className="search-wrap" style={{ flex: 1 }}>
           <IconSearch/>
           <input type="text" placeholder="Search books, authors…" />
-        </div>
+        </div> */}
 
         <div className="topbar-actions">
           <button className="action-btn" onClick={() => setShowIdModal(true)} title="Digital ID"><IconID/></button>

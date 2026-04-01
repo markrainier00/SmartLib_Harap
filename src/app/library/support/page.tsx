@@ -136,7 +136,7 @@ export default function SupportPage() {
               { q: "When does my account expire?",       a: "Student accounts are valid for the current academic year." },
             ].map(({ q, a }, i, arr) => (
               <div key={q} style={{ marginBottom: i < arr.length - 1 ? 12 : 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-primary)" }}>{q}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{q}</div>
                 <div style={{ fontSize: 12, color: "var(--color-subtext)", marginTop: 3, lineHeight: 1.5 }}>{a}</div>
               </div>
             ))}

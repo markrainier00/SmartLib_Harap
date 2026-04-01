@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/user";
 import { api } from "@/lib/api"
 
-const TABS = ["Pending", "Borrowed"];
+const TABS = ["Pending Request", "Borrowed", "Wishlist"];
 const PER_PAGE = 10;
 
 export default function MyListPage() {
@@ -58,7 +58,7 @@ export default function MyListPage() {
 
   return (
     <div className="page-layout fadeUp">
-      <div className="page-header">My List</div>
+      <div className="page-header">My Books</div>
       <div className="page-sub">Track your book requests and active borrows</div>
 
       {/* Summary */}
