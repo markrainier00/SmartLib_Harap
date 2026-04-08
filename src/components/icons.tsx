@@ -217,3 +217,17 @@ export const IconEdit = () => (
     </g>
   </svg>
 )
+
+export const IconBookmark = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg {...props} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-5-7 5V4a1 1 0 0 1 1-1z"/>
+  </svg>
+)
+
+export const IconShelf = () => (
+  <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto block">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+    <line x1="3" y1="16" x2="21" y2="16"/>
+  </svg>
+)

@@ -69,7 +69,6 @@ export default function FloatingInput({
                     borderRadius: 11,
                     padding: "11px 13px",
                     fontSize: 13.5,
-                    color: required ? "black" : "var(--color-subtext)",
                     outline: "none",
                     transition: "all 0.2s",
                     boxShadow: focused ? "none" : "none",
