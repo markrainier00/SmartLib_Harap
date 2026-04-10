@@ -1,28 +1,35 @@
-import React from "react";
-import SuperAdminSidebar from "@/components/layout/SuperAdminSidebar";
-import SuperAdminTopbar from "@/components/layout/SuperAdminTopbar";
-import "./superadmin.css"; // 🚀 Gagawa tayo ng file para rito!
+"use client";
 
-export const metadata = {
-  title: "SmartLib - Super Admin",
-  description: "Super Admin Portal for SmartLib",
-};
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Sidebar from "@/components/layout/Sidebar";
+import Topbar from "@/components/layout/Topbar";
+import "./superadmin.css";
 
-export default function SuperAdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) {
+      router.replace("/")
+    }
+  }, [router]);
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
   return (
-    <div className="superadmin-wrapper">
-      <SuperAdminSidebar />
-      <main className="main">
-        <SuperAdminTopbar />
-        {/* Dito papasok yung mga pages natin (Dashboard, Accounts, etc.) */}
-        <div className="page active" style={{ display: 'block' }}>
+    <div className="app" style={{ display: "flex" }}>
+      <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <div className="main" style={{ flex: 1 }}>
+        <Topbar isSidebarOpen={isSidebarOpen} />
+        <div className="content">
           {children}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

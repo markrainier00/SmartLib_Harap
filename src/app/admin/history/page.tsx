@@ -81,7 +81,7 @@ export default function AdminHistoryPage() {
   });
 
   return (
-    <div style={{ animation: "fadeUp .3s ease" }}>
+    <div className="page-layout fadeUp">
       <style>{`
         @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
         .row-hover:hover { background: #f7f5f0 !important; }
@@ -138,7 +138,7 @@ export default function AdminHistoryPage() {
             <div key={h.id} className="row-hover" style={{ display: "grid", gridTemplateColumns: "1fr 1.8fr 2fr 1fr 1fr 1fr 1fr 0.6fr", padding: "14px 20px", borderBottom: i < filtHist.length - 1 ? "1px solid #f2efe8" : "none", alignItems: "center", transition: "background .15s" }}>
               <div style={{ fontSize: 12.5, fontFamily: "monospace", color: "#64748b", fontWeight: 600 }}>{h.id}</div>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", fontFamily: "monospace" }}>{h.student}</div>
-              <div style={{ fontSize: 12.5, color: "#64748b", lineHeight: 1.3 }}>{h.book.length > 28 ? h.book.slice(0, 28) + "…" : h.book}</div>
+              <div style={{ fontSize: 12.5, color: "#64748b", lineHeight: 1.3 }}>{h.book}</div>
               <div style={{ fontSize: 12, color: "#8a8ea8" }}>{h.borrowDate}</div>
               <div style={{ fontSize: 12, color: h.status === "overdue" ? "#c94040" : "#8a8ea8", fontWeight: h.status === "overdue" ? 700 : 400 }}>{h.dueDate}</div>
               <div style={{ fontSize: 12, color: h.returnDate === "—" ? "#cbd5e1" : "#1a2744", fontWeight: 600 }}>{h.returnDate}</div>

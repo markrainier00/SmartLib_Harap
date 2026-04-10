@@ -83,7 +83,7 @@ export default function AdminAnalyticsPage() {
   };
 
   return (
-    <div style={{ animation: "fadeUp .3s ease", paddingBottom: 40 }}>
+    <div className="page-layout fadeUp">
       <style>{`
         @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
         @keyframes growUp { from { height: 0; opacity: 0; } to { opacity: 1; } }

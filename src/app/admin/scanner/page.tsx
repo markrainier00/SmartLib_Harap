@@ -143,7 +143,7 @@ export default function AdminScannerPage() {
           {!isScanning ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <Btn onClick={() => { setScannedResult(null); setStudentInfo(null); setIsScanning(true); }} style={{ width: "100%" }}>
-                {scannedResult ? "📷 Scan Another ID" : "📷 Start Camera"}
+                {scannedResult ? "Scan Another ID" : "Start Camera"}
               </Btn>
               
               {/* 🚨 ANG CUSTOM UPLOAD BUTTON NATIN 🚨 */}
@@ -154,9 +154,7 @@ export default function AdminScannerPage() {
                 onChange={handleFileUpload} 
                 style={{ display: "none" }} 
               />
-              <Btn variant="ghost" onClick={() => fileInputRef.current?.click()} style={{ width: "100%" }}>
-                📂 Upload QR Image
-              </Btn>
+              <Btn variant="ghost" onClick={() => fileInputRef.current?.click()} style={{ width: "100%" }}>Upload QR Image</Btn>
             </div>
           ) : (
             <Btn variant="ghost" onClick={() => setIsScanning(false)} style={{ width: "100%" }}>Stop Camera</Btn>
@@ -188,7 +186,7 @@ export default function AdminScannerPage() {
                 {/* Penalty Card */}
                 <div style={{ background: studentInfo.penalty > 0 ? "#fef2f2" : "#f0fdf4", border: `1px solid ${studentInfo.penalty > 0 ? "#fecaca" : "#bbf7d0"}`, borderRadius: 12, padding: 16 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: studentInfo.penalty > 0 ? "#ef4444" : "#22c55e", marginBottom: 4 }}>PENALTY STATUS</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a2744" }}>{studentInfo.penalty > 0 ? `₱${studentInfo.penalty}` : "Clear ✅"}</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a2744" }}>{studentInfo.penalty > 0 ? `₱${studentInfo.penalty}` : "Clear"}</div>
                 </div>
 
                 {/* Reservation Card */}

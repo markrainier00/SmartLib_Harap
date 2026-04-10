@@ -226,7 +226,7 @@ export default function AuthPage() {
 
       const role = json.data.role;
       if (role === "Admin") {
-        router.push("/admin");
+        router.push("/superadmin");
       } else if (role === "Staff") {
         router.push("/admin");
       } else {
@@ -424,7 +424,7 @@ export default function AuthPage() {
               <Link href="/forgot-password" className="forgot">Forgot password?</Link>
             </div>
             <button type="submit" className="btn" disabled={ui.loading}>
-              {ui.loading ? <><div className="spinner" /> Signing in…</> : "Sign In"}
+              {ui.loading ? <><div className="loading-text" /> Signing in…</> : "Sign In"}
             </button>
           </form>
         )}
@@ -446,7 +446,7 @@ export default function AuthPage() {
                   />
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading}>
-                  {ui.loading ? <><div className="spinner" /> Sending code…</> : "Send Verification Code →"}
+                  {ui.loading ? <><div className="loading-text" /> Sending code…</> : "Send Verification Code →"}
                 </button>
               </form>
             )}
@@ -472,7 +472,7 @@ export default function AuthPage() {
                   ))}
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading || otp.join("").length < 6} style={{marginTop:"18px"}}>
-                  {ui.loading ? <><div className="spinner" /> Verifying…</> : "Verify Code →"}
+                  {ui.loading ? <><div className="loading-text" /> Verifying…</> : "Verify Code →"}
                 </button>
                 <div className="resend">
                   Didn't get it? <button type="button" onClick={handleResendOtp}>Resend code</button>
@@ -494,7 +494,7 @@ export default function AuthPage() {
                   />
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading}>
-                  {ui.loading ? <><div className="spinner" /> Checking…</> : "Continue →"}
+                  {ui.loading ? <><div className="loading-text" /> Checking…</> : "Continue →"}
                 </button>
               </form></>
             )}
@@ -608,7 +608,7 @@ export default function AuthPage() {
                   )}
                 </div>
                 <button type="submit" className="btn" disabled={ui.loading}>
-                  {ui.loading ? <><div className="spinner" /> Creating Account…</> : "Create Account"}
+                  {ui.loading ? <><div className="loading-text" /> Creating Account…</> : "Create Account"}
                 </button>
               </form></>
             )}

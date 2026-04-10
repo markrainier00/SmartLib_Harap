@@ -46,9 +46,6 @@ export default function AdminLibraryPage() {
   const [loadingMessage, setLoadingMessage] = useState("Processing...");
   const [isSystemResponseOpen, setSystemResponseOpen] = useState(false);
   const [systemResponse, setSystemResponse] = useState("");
-
-  const [selectedBook, setSelectedBook] = useState<any>(null);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   
 
@@ -153,6 +150,13 @@ export default function AdminLibraryPage() {
   const handleSaveBook = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const isEdit = modal.mode === "edit";
+    setLoadingMessage(
+      isEdit 
+        ? `Updating "${bookForm.title}"...` 
+        : `Adding "${bookForm.title}" to library...`);
+    setIsLoadingOpen(true);
+
     try {
       const formData = new FormData();
       formData.append("title", bookForm.title);
@@ -169,28 +173,22 @@ export default function AdminLibraryPage() {
         formData.append("actual_image", bookForm.actual_image);
       }
 
-      const isEdit = modal.mode === "edit";
       const json = isEdit
         ? await api.putForm(`/api/books/${modal.book.id}`, formData)
         : await api.postForm("/api/books/addBook", formData);
     
-      setLoadingMessage(
-        isEdit 
-          ? `Updating "${bookForm.title}"...` 
-          : `Adding "${bookForm.title}" to library...`);
-      setIsLoadingOpen(true);
-
-      if (json.RetCode === "200") {
+      if (json.retCode === "200") {
         setSystemResponse(
-        isEdit 
-          ? `"${bookForm.title}" updated successfully.` 
-          : `"${bookForm.title}" added to library.`);
+          isEdit 
+            ? `"${bookForm.title}" updated successfully.` 
+            : `"${bookForm.title}" added to library.`
+        );
         await fetchBooks();
         setModal(null);
       } else {
         setSystemResponse( json.message || "Failed to save book." );
       }
-    } catch (err: any) {
+    } catch (err) {
       setSystemResponse("Server connection failed.");
     } finally {
       setIsLoadingOpen(false);
@@ -244,108 +242,116 @@ export default function AdminLibraryPage() {
   }, [modal]);
 
   const bookColumns = [
-  {
-    header: "Title",
-    render: (b) => (
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        
-        {/* IMAGE BOX */}
-        <div
-          style={{
-            width: 42,
-            height: 54,
-            borderRadius: 6,
-            overflow: "hidden",
-            border: "1px solid #e2dfd6",
-            background: "#f8f8f6",
-            flexShrink: 0,
+    {
+      header: "Title",
+      render: (b) => (
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          
+          {/* IMAGE BOX */}
+          <div
+            style={{
+              width: 42,
+              height: 54,
+              borderRadius: 6,
+              overflow: "hidden",
+              border: "1px solid #e2dfd6",
+              background: "#f8f8f6",
+              flexShrink: 0,
+            }}
+          >
+            {b.actual_image && !imgError[b.id] ? (
+              <img
+                src={b.actual_image}
+                alt={b.title}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+                onError={() =>
+                  setImgError((prev) => ({
+                    ...prev,
+                    [b.id]: true,
+                  }))
+                }
+              />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 11,
+                }}
+              >
+                <IconLogo />
+              </div>
+            )}
+          </div>
+
+          {/* TEXT */}
+          <div>
+            <div>{b.title}</div>
+          </div>
+
+        </div>
+      ),
+    },
+    {
+      header: "ISBN",
+      render: (b: any) => b.isbn
+    },
+    {
+      header: "Author",
+      render: (b: any) => b.author
+    },
+    {
+      header: "Category",
+      render: (b: any) => b.category
+        ? b.category.split(",").join(", ")
+        : "-",
+    },
+    {
+      header: "Copies",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (b: any) => b.copies
+    },
+    {
+      header: "Status",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (b: any) => (
+        <span className={`badge ${b.available > 0 ? "badge-green" : "badge-red"}`}>
+          {b.available > 0 ? "Available" : "Unavailable"}
+        </span>
+      ),
+    },
+    {
+      header: "Action",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (row) => (
+        <button className="badge badge-green" style={{ textDecoration: "underline", cursor: "pointer" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            openView(row);
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--color-subtext)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--color-primary)";
           }}
         >
-          {b.actual_image && !imgError[b.id] ? (
-            <img
-              src={b.actual_image}
-              alt={b.title}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-              onError={() =>
-                setImgError((prev) => ({
-                  ...prev,
-                  [b.id]: true,
-                }))
-              }
-            />
-          ) : (
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 11,
-              }}
-            >
-              <IconLogo />
-            </div>
-          )}
-        </div>
+          See Details
+        </button>
+      )
+    },
+  ];
 
-        {/* TEXT */}
-        <div>
-          <div>{b.title}</div>
-        </div>
-
-      </div>
-    ),
-  },
-  { header: "ISBN", render: (b: any) => b.isbn },
-  { header: "Author", render: (b: any) => b.author },
-  {
-    header: "Category",
-    render: (b: any) =>
-      b.category ? b.category.split(",").join(", ") : "-",
-  },
-  {
-    header: "Copies",
-    thStyle: { textAlign: "center" as const },
-    tdStyle: { textAlign: "center" as const },
-    render: (b: any) => b.copies },
-  {
-    header: "Status",
-    thStyle: { textAlign: "center" as const },
-    tdStyle: { textAlign: "center" as const },
-    render: (b: any) => (
-      <span className={`badge ${b.available > 0 ? "badge-green" : "badge-red"}`}>
-        {b.available > 0 ? "Available" : "Unavailable"}
-      </span>
-    ),
-  },
-  {
-    header: "Action",
-    thStyle: { textAlign: "center" as const },
-    tdStyle: { textAlign: "center" as const },
-    render: (row) => (
-      <button className="badge badge-green" style={{ textDecoration: "underline", cursor: "pointer" }}
-        onClick={(e) => {
-          e.stopPropagation();
-          openView(row);
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = "var(--color-subtext)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = "var(--color-primary)";
-        }}
-
-      >
-        See Details
-      </button>
-    )
-  },
-];
   return (
   <>
     <div className="app">
@@ -375,7 +381,7 @@ export default function AdminLibraryPage() {
           <button className="btn w-auto px-4 py-2" onClick={openAdd}>Add New Book</button>
         </div>
 
-        {/* TABLE */}
+        {/* Table */}
         <DataTable
           columns={bookColumns}
           data={paginated}
@@ -390,7 +396,7 @@ export default function AdminLibraryPage() {
       </div>
     </div>
 
-    {/* BOOK DETAILS PANEL */}
+    {/* Book Details Panel */}
     {modal && modal.mode === "view" && (
       <BookDetails
         book={modal.book}
@@ -402,7 +408,7 @@ export default function AdminLibraryPage() {
       />
     )}
 
-    {/* MODAL: ADD / EDIT BOOK */}
+    {/* Modal: Add / Edit Book */}
     {modal && modal.mode !== "view" && (
       <form onSubmit={handleSaveBook}>
         <div className="overlay" onClick={() => setModal(null)}>
@@ -515,7 +521,7 @@ export default function AdminLibraryPage() {
                       {bookForm.category && bookForm.category.trim() !== "" &&
                         bookForm.category.split(',').map((cat: string, idx: number) => {
                           const trimmed = cat.trim();
-                          if (!trimmed) return null; // skip empty
+                          if (!trimmed) return null;
                           return (
                             <span key={idx} style={{
                               background: "var(--color-success-bg)",
@@ -560,7 +566,7 @@ export default function AdminLibraryPage() {
       </form>
     )}
 
-    {/* MODAL: DELETE CONFIRMATION */}
+    {/* Modal for delete confirmation */}
     <Modal
       isOpen={!!deleteModal}
       title="Delete Book?"

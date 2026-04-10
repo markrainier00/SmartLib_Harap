@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { IconX, IconSearch, IconEllipsis } from "@/components/icons";
 
+const PER_PAGE = 10;
+
 export default function AdminAccountsPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -11,6 +13,7 @@ export default function AdminAccountsPage() {
   const [viewAcc, setViewAcc] = useState<any>(null);
   const [actionModal, setActionModal] = useState<any>(null);
   const [toast, setToast] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fireToast = (type: string, msg: string) => {
     setToast({ type, msg });
@@ -92,6 +95,13 @@ export default function AdminAccountsPage() {
     if (status === "Locked") return "badge-red";
     return "badge-orange";
   };
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, []);
+
+  const totalPages   = Math.ceil(filtered.length / PER_PAGE);
+  const paginated    = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   return (
     <>
@@ -167,9 +177,23 @@ export default function AdminAccountsPage() {
               )}
             </tbody>
           </table>
-          <div className="data-footer">
-            <span>Total {filtered.length} account{filtered.length !== 1 ? "s" : ""}</span>
-          </div>
+
+        <div className="data-footer">
+          <span>
+            {filtered.length > 0
+              ? `Showing ${(currentPage - 1) * PER_PAGE + 1}–${Math.min(currentPage * PER_PAGE, filtered.length)} of ${filtered.length} records`
+              : ""}
+          </span>
+          {totalPages > 1 && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid var(--color-border)`, background: currentPage === 1 ? "var(--color-surface)" : "#fff", color: currentPage === 1 ? "var(--color-muted)" : "var(--color-primary)", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}>←</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button key={page} onClick={() => setCurrentPage(page)} style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid ${page === currentPage ? "var(--color-primary)" : "var(--color-border)"}`, background: page === currentPage ? "var(--color-primary)" : "#fff", color: page === currentPage ? "#fff" : "var(--color-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}>{page}</button>
+              ))}
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}disabled={currentPage === totalPages} style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid var(--color-border)`, background: currentPage === totalPages ? "var(--color-surface)" : "#fff", color: currentPage === totalPages ? "var(--color-muted)" : "var(--color-primary)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}>→</button>
+            </div>
+          )}
+        </div>
         </div>
         {/* TOAST NOTIFICATION */}
         {toast && (

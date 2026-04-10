@@ -153,6 +153,25 @@
     animation: cardIn 1s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
+  /* ── Loading and Message Modal ── */
+  .lm-modal {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  .lm-content {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
   /* ── Rec scroll ── */
   .rec-scroll {
     display: flex;
@@ -164,30 +183,26 @@
   .rec-scroll::-webkit-scrollbar { height: 6px; }
   .rec-scroll::-webkit-scrollbar-thumb { background: #C3DDD0; border-radius: 3px; }
 
-  /* ── Side panel ── */
-  .side-panel {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    width: 400px;
-    height: calc(90vh - 40px);
-    flex-shrink: 0;
+  /* ── Book details panel ── */
+  .book-details {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
     background: #ffffff;
     border-radius: 24px;
     border: 1px solid #C3DDD0;
     box-shadow: 0 12px 40px rgba(27,94,53,.1);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    z-index: 100;
-    animation: slideInRight .3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    overflow: hidden
   }
-  .side-panel-header, .modal-header {
+  .bd-header, .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  .side-panel-footer, .modal-footer {
+  .bd-footer, .modal-footer {
     display: flex;
     gap: 9px;
     padding: 16px;
@@ -196,45 +211,47 @@
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  .sp-scroll, .modal-scroll {
+  .bd-scroll, .modal-scroll {
     flex: 1;
     overflow-y: auto;
     justify-content: center;
-    padding: 32px 28px 20px;
+    padding: 60px 28px 20px;
     position: relative;
   }
-  .sp-scroll::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { width: 5px; }
-  .sp-scroll::-webkit-scrollbar-thumb, .modal-scroll:-webkit-scrollbar-thumb { background: #C3DDD0; border-radius: 3px; }
+  .bd-scroll::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { width: 5px; }
+  .bd-scroll::-webkit-scrollbar-thumb, .modal-scroll:-webkit-scrollbar-thumb { background: #C3DDD0; border-radius: 3px; }
 
-  .sp-horizontal-scroll {
+  .bd-horizontal-scroll {
     display: flex;
     gap: 4px;
     overflow-x: auto;
     white-space: nowrap;
     padding-bottom: 4px;
   }
-  .sp-horizontal-scroll::-webkit-scrollbar { height: 3px; }
-  .sp-horizontal-scroll::-webkit-scrollbar-thumb { background: #C3DDD0; border-radius: 999px; }
-  
-  .sp-footer {
-    padding: 20px 28px;
-    background: #fff;
-    border-top: 1px solid #EBF7F0;
-    flex-shrink: 0;
-    z-index: 10;
-  }
+  .bd-horizontal-scroll::-webkit-scrollbar { height: 3px; }
+  .bd-horizontal-scroll::-webkit-scrollbar-thumb { background: #C3DDD0; border-radius: 999px; }
 
   .close {
-    position: absolute; top: 20px; right: 20px;
-    background: #EBF7F0; border: none; border-radius: 50%;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: #7AAD8E; font-size: 14px;
-    transition: background 0.2s; z-index: 20;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #EBF7F0;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #7AAD8E;
+    font-size: 14px;
+    transition: background 0.2s;
+    z-index: 20;
   }
   .close:hover { background: #D6EDE1; color: #1B5E35; }
 
-  .sp-description {
+  .bd-description {
     background: #EBF7F0;
     padding: 18px;
     border-radius: 14px;
@@ -314,7 +331,7 @@
     width: 48px; height: 56px;
     font-size: 22px;
     border-width: 1.5px;
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
   }
   .otp-cell:focus {
     background: #fff;
@@ -354,7 +371,7 @@
   .book-cover {
     width: 180px;
     aspect-ratio: 2 / 3;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #ffffff;
     display: flex;
     flex-direction: column;
@@ -375,8 +392,9 @@
 
   /* ── Primary button ── */
   .btn {
-    @apply w-full mt-2 text-white border-none rounded-xl text-sm font-semibold cursor-pointer transition-all flex items-center justify-center gap-2;
+    @apply w-full mt-2 text-white border-none text-sm font-semibold cursor-pointer transition-all flex items-center justify-center gap-2;
     padding: 13px;
+    border-radius: 10px;
     background: var(--color-primary);
     box-shadow: 0 4px 16px rgba(27, 94, 53, 0.25);
     font-family: var(--font-sans);
@@ -392,15 +410,16 @@
   /* ── Page layout ── */
   .page-layout {
     width: 100%;
-    max-width: 1200px;
     margin: 0 auto;
+    padding-left: 80px;
     padding-bottom: 40px;
   }
 
   /* ── Page header ── */
   .page-header {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     font-size: 28px;
+    font-weight: 600;
     color: var(--color-primary);
     margin-bottom: 4px;
   }
@@ -452,7 +471,7 @@
     text-align: center;
   }
   .sum-num {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     font-size: 36px;
     line-height: 1;
     margin-bottom: 6px;
@@ -474,14 +493,14 @@
     gap: 12px;
   }
   .section-title {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
+    font-weight: 500;
     font-size: 22px;
-    color: var(--color-primary);
+    color: var(--color-text);
   }
   .section-sub {
     font-size: 13px;
     color: var(--color-muted-light);
-    margin-top: 4px;
   }
 
   /* ── Search ── */
@@ -493,7 +512,7 @@
     width: 100%;
     background: var(--color-success-bg);
     border: 2px solid var(--color-border);
-    border-radius: 50px;
+    border-radius: 10px;
     padding: 10px 14px 10px 42px;
     font-family: var(--font-sans);
     font-size: 13.5px;
@@ -514,7 +533,7 @@
     gap: 10px;
     background: #EBF7F0;
     border: 2px solid var(--color-border);
-    border-radius: 50px;
+    border-radius: 10px;
     padding: 5px;
     cursor: pointer;
     transition: all .2s;font-size: 13.5px;
@@ -523,7 +542,7 @@
 
   /* Ellipsis Button */
   .ellipsis-button {
-    border-radius: 8px;
+    border-radius: 10px;
     width: 34px;
     height: 34px;
     display: flex;
@@ -537,7 +556,7 @@
   /* ── Data card / table ── */
   .data-card {
     background: #fff;
-    border-radius: 16px;
+    border-radius: 10px;
     overflow: hidden;
     border: 1px solid var(--color-border);
     box-shadow: 0 2px 16px rgba(27, 94, 53, 0.07);
@@ -586,7 +605,7 @@
     display: inline-flex;
     align-items: center;
     padding: 4px 12px;
-    border-radius: 20px;
+    border-radius: 5px;
     font-size: 11.5px;
     font-weight: 700;
   }
@@ -685,13 +704,13 @@
 
   /* ── Hero ── */
   .hero {
+    width: 100%;
+    border-radius: 10px;
     background: linear-gradient(135deg, #1B5E35 0%, #256D42 55%, #2E8B57 100%);
-    border-radius: 20px;
     padding: 32px 36px;
     margin-bottom: 32px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(27,94,53,.2);
   }
   .hero::before {
     content: '';
@@ -731,6 +750,19 @@
     z-index: 2;
     line-height: 1.5;
   }
+
+  .profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: #EBF7F0;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .profile-pill:hover, .profile-pill.active { background: #fff; border-color: #C3DDD0; box-shadow: 0 4px 12px rgba(27,94,53,.08); }
+  .profile-pill span { font-size: 13.5px; font-weight: 600; color: #102A1C; }
+
 }
 
 /* ── Utilities ── */
@@ -831,7 +863,7 @@
   padding: 10px 14px;
   font-size: 12.5px;
 }
-@utility spinner {
+@utility loading-text {
   width: 16px;
   height: 16px;
   border-radius: 50%;

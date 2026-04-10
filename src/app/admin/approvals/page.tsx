@@ -34,8 +34,8 @@ export default function AdminApprovalsPage() {
   const [viewAcc, setViewAcc] = useState<any>(null);
  
   const [search, setSearch] = useState("");
-  const [appProgram, setAppProgram] = useState("All");
-  const [appYear, setAppYear] = useState("All");
+  const [appProgram, setAppProgram] = useState("All Programs");
+  const [appYear, setAppYear] = useState("All Year Levels");
 
   const [viewApplicant, setViewApplicant] = useState<any>(null);
   const [rejectModal, setRejectModal] = useState<any>(null);
@@ -80,8 +80,8 @@ export default function AdminApprovalsPage() {
                a.email.toLowerCase().includes(search.toLowerCase()) ||
                a.id.toLowerCase().includes(search.toLowerCase());
     const mt = true;
-    const mc = appProgram === "All" || a.program === appProgram;
-    const my = appYear === "All" || a.year === appYear;
+    const mc = appProgram === "All Programs" || a.program === appProgram;
+    const my = appYear === "All Year Levels" || a.year === appYear;
     return ms && mt && mc && my;
   }).sort((a, b) => a.name.localeCompare(b.name));
 
@@ -134,49 +134,29 @@ export default function AdminApprovalsPage() {
   // const statusLabel: any = { pending: "⏳ Pending", approved: "✓ Approved", rejected: "✗ Rejected" };
 
   return (
-    <div style={{ animation: "fadeUp .3s ease" }}>
-
-      {/* HEADER */}
+    <div className="page-layout fadeUp">
       <div style={{ marginBottom: 20 }}>
         <div className="page-header">Registration Approvals</div>
         <div className="page-sub">Review and approve student registration requests</div>
       </div>
 
-      {/* SUMMARY CARDS */}
-      {/* <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 24 }}>
-        {[
-          { label: "Pending", val: tabCounts.pending, color: "#e8a020", bg: "#fff8e6", icon: "⏳" },
-          { label: "Approved", val: tabCounts.approved, color: "#2d7a4f", bg: "#e6f7ec", icon: "✅" },
-          { label: "Rejected", val: tabCounts.rejected, color: "#c94040", bg: "#fdeaea", icon: "✗" },
-          { label: "Total", val: tabCounts.all, color: "#2563eb", bg: "#e8f1fd", icon: "📋" },
-        ].map((s, i) => (
-          <div key={i} style={{ background: "#fff", borderRadius: 14, border: "1px solid #e2dfd6", padding: "16px 18px", boxShadow: "0 2px 12px rgba(26,39,68,.06)", display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
-            onClick={() => setAppTab(s.label.toLowerCase())}>
-            <div style={{ width: 40, height: 40, borderRadius: 11, background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{s.icon}</div>
-            <div>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: s.color, lineHeight: 1 }}>{s.val}</div>
-              <div style={{ fontSize: 12, color: "#8a8ea8", marginTop: 2 }}>{s.label}</div>
-            </div>
+      <div style={{ display: "flex", marginBottom: 18, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div className="search-wrapper">
+            <IconSearch/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"/>
           </div>
-        ))}
-      </div> */}
-
-      {/* FILTERS */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap", alignItems: "center" }}>
-        <div className="search-wrapper">
-          <IconSearch/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"/>
+          <select className="pills" value={appProgram} onChange={e => setAppProgram(e.target.value)}>
+            {PROGRAMS.map(c => <option key={c}>{c}</option>)}
+          </select>
+          <select className="pills" value={appYear} onChange={e => setAppYear(e.target.value)}>
+            {YEARS.map(y => <option key={y}>{y}</option>)}
+          </select>
+          {(appProgram !== "All Programs" || appYear !== "All Year Levels" || search) && (
+            <button className="pills" onClick={() => { setAppProgram("All Programs"); setAppYear("All Year Levels"); setSearch(""); }} style={{ background: "#f5f5f5", borderColor: "#dadada", color: "#777777" }}>
+              Reset
+            </button>
+          )}
         </div>
-        <select className="pills" value={appProgram} onChange={e => setAppProgram(e.target.value)}>
-          {PROGRAMS.map(c => <option key={c}>{c}</option>)}
-        </select>
-        <select className="pills" value={appYear} onChange={e => setAppYear(e.target.value)}>
-          {YEARS.map(y => <option key={y}>{y}</option>)}
-        </select>
-        {(appProgram !== "All" || appYear !== "All" || search) && (
-          <button className="pills" onClick={() => { setAppProgram("All"); setAppYear("All"); setSearch(""); }} style={{ background: "#f5f5f5", borderColor: "#dadada", color: "#777777" }}>
-            Reset
-          </button>
-        )}
       </div>
 
       {/* TABLE */}
