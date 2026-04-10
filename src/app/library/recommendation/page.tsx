@@ -62,12 +62,12 @@ export default function LibraryPage() {
 
   const fetchRequests = async () => {
     try {
-      const json = await api.get(`/api/transactions/getRequests/${school_id}`);
-      if (json.retCode === "200") {
-        setRequestedBooks(json.data.map((r: any) => String(r.isbn)));
+      const json = await api.get(`/api/transactions/getRequests/${school_id}`);console.log("Response:", json);
+      if (json.isSuccess) {
+        setRequestedBooks(json.data);
       }
     } catch (err) {
-      console.error("Failed to fetch requests");
+      console.error("Failed to fetch requests", err);
     }
   };
   useEffect(() => {
@@ -336,7 +336,7 @@ cat.toLowerCase().includes((program || "").toLowerCase())
                 />
               ))
             ) : (
-              <p style={{ color: "#7AAD8E", fontSize: "14px" }}>
+              <p style={{ color: "var(--color-subtext)", fontSize: "14px" }}>
                 No books found for your program yet.
               </p>
             )}

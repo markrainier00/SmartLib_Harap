@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import FloatingInput from "@/components/ui/FloatingInput";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -68,16 +69,11 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <p className="text-xs mb-4" style={{color: "var(--color-subtext)"}}>
-          Enter your email or student ID to receive a reset link.
-        </p>
-
         <form onSubmit={handleSubmit}>
-          <div className="field">
-            <label>Email Address / Student ID</label>
-            <input
+          <div className="field mt-4">
+            <FloatingInput
+              label="Email Address / Student ID"
               type="text"
-              placeholder="student@university.edu or 2024-00123"
               value={form.identifier}
               onChange={e => setForm(prev => ({ ...prev, identifier: e.target.value }))}
               required
