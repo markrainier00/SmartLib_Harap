@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api"
+import { useUser } from "@/lib/user"
 import React, { useState, useEffect } from "react";
 import { IconSearch, IconX } from "@/components/icons";
 import DataTable from "@/components/DataTable";
@@ -11,9 +12,9 @@ import LoadingModal from "@/components/LoadingModal";
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminRequestsPage() {
+  const { fullName }= useUser();
   const [requests, setRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
   
@@ -25,14 +26,13 @@ export default function AdminRequestsPage() {
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("oldest");
 
-  const [returnDate, setReturnDate] = useState("");
   const [requestModal, setRequestModal] = useState<any>(null);
   const [rejectRequestReason, setRejectRequestReason] = useState("");
 
   const PER_PAGE = 10;
 
   const fetchRequests = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const json = await api.getPublic("/api/transactions/getBookBorrowRequest");
       if (json.retCode === "200" || json.isSuccess) {
@@ -43,7 +43,7 @@ export default function AdminRequestsPage() {
     } catch (err) {
       console.error("Failed to fetch requests", err);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -53,28 +53,37 @@ export default function AdminRequestsPage() {
   const handleRequest = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const isEdit = requestModal.mode === "approve";
+    const requestMode = requestModal.mode === "approve";
     setLoadingMessage(
-      isEdit 
+      requestMode 
         ? "Processing book borrow request approval..." 
-        : "Processing book borrow request rejection...");
+        : "Processing book borrow request rejection..."
+    );
     setIsLoadingOpen(true);
 
     try {
       let json;
 
-      if (isEdit) {
-        const formData = new FormData();
-        json = await api.putForm(`/api/transactions/approveRequest/${requestModal.id}/${requestModal.isbn}`, formData);
+      if (requestMode) {
+        json = await api.put(`/api/transactions/approveBorrowRequest`, {
+          id: requestModal.id,
+          school_id: requestModal.school_id,
+          isbn: requestModal.isbn,
+          staff: fullName,
+        });
       } else {
-        const formData = new FormData();
-        formData.append("reject_reason", rejectRequestReason);
-        json = await api.putForm(`/api/transactions/rejectRequest/${requestModal.id}`, formData);
+        json = await api.put(`/api/transactions/rejectBorrowRequest`, {
+          id: requestModal.id,
+          school_id: requestModal.school_id,
+          isbn: requestModal.isbn,
+          reject_reason: rejectRequestReason,
+          staff: fullName,
+        });
       }
 
       if (json.retCode === "200") {
         setSystemResponse(
-          isEdit 
+          requestMode 
             ? "Book borrow request approved."
             : "Book borrow request rejected."
         );
@@ -142,13 +151,13 @@ export default function AdminRequestsPage() {
       header: "Date of Request",
       thStyle: { textAlign: "center" as const },
       tdStyle: { textAlign: "center" as const },
-      render: (r: any) => new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", }),
+      render: (r: any) => new Date(r.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", }),
     },
     {
       header: "Pickup Date",
       thStyle: { textAlign: "center" as const },
       tdStyle: { textAlign: "center" as const },
-      render: (r: any) => new Date(r.pickup_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", }),
+      render: (r: any) => new Date(r.pickup_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", }),
     },
     {
       header: "Actions",

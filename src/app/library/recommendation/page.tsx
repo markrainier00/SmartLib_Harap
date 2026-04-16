@@ -8,6 +8,7 @@ import BookCard from "@/components/BookCard";
 import LoadingModal from "@/components/LoadingModal";
 import Modal from "@/components/Modal";
 import { BookDetails } from "@/components/BookDetails";
+import { title } from "process";
 
 const CATS = ["All", "Computer Science", "Mathematics", "Chemistry", "Economics", "Medicine", "Engineering"];
 
@@ -92,6 +93,7 @@ export default function LibraryPage() {
 
     try {
       const json = await api.post("/api/transactions/request", {
+          title: selectedBook.title,
           school_id: school_id,
           isbn: selectedBook.isbn,
           pickup_date: pickupDate,
@@ -320,15 +322,17 @@ export default function LibraryPage() {
         </div>
 
         <div>
-          <div className="section-head">
-            <div>
-              <div className="section-title">{program} Related Books</div>
-              <div className="section-sub">Based on your enrolled program</div>
+        {programBooks.length > 0 && (
+          <>
+            <div className="section-head">
+              <div>
+                <div className="section-title">{program} Related Books</div>
+                <div className="section-sub">Based on your enrolled program</div>
+              </div>
             </div>
-          </div>
-          <div className="rec-scroll">
-            {programBooks.length > 0 ? (
-              programBooks.map(b => (
+
+            <div className="rec-scroll">
+              {programBooks.slice(0, 5).map(b => (
                 <BookCard
                   key={b.id}
                   book={b}
@@ -336,13 +340,10 @@ export default function LibraryPage() {
                   handleWishlist={handleWishlist}
                   isSaved={savedBooks.includes(b.isbn)}
                 />
-              ))
-            ) : (
-              <p style={{ color: "var(--color-subtext)", fontSize: "14px" }}>
-                No books found for your program yet.
-              </p>
-            )}
-          </div>
+              ))}
+            </div>
+          </>
+        )}
         </div>
 
         {/* Browse by Category */}

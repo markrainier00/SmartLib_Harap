@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { useUser } from "@/lib/user";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconHamburger, IconBookReq, IconBorrowHis, IconDashboard, IconLibManage, IconManageAcc, IconRegistration, IconRecommendation, IconMyList, IconHistory, IconSupport, IconData } from "../icons";
+import { useState } from "react";
+import { IconHamburger, IconBookReq, IconBorrowHis, IconDashboard, IconLibManage, IconManageAcc, IconRegistration, IconRecommendation, IconMyList, IconHistory, IconSupport, IconData, IconArrowDown } from "../icons";
 
 export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; toggleSidebar: () => void }) {
   const { role, user, id } = useUser() as any; 
   const pathname = usePathname();
+  const [borrowsOpen, setBorrowsOpen] = useState(false);
 
   const [openTickets, setOpenTickets] = useState(0);
   const [studentUnread, setStudentUnread] = useState(0);
@@ -55,14 +57,14 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
   const adminNavItems = [
     { id: "/admin/dashboard", icon: <IconDashboard />, label: "Dashboard" },
     { id: "/admin/books", icon: <IconLibManage />, label: "Library Management" },
-    { id: "/admin/requests", icon: <IconBookReq />, label: "Book Requests" },
-    { id: "/admin/history", icon: <IconBorrowHis />, label: "Borrow History" },
+    { id: "borrows", icon: <IconBookReq />, label: "Borrows", dropdown: true },
     { id: "/admin/approvals", icon: <IconRegistration />, label: "Registration" },
     { id: "/admin/accounts", icon: <IconManageAcc />, label: "Manage Accounts" },
     { id: "/admin/analytics", icon: <IconData />, label: "Data Analytics" },
     { id: "/admin/support", icon: <IconSupport />, label: "Student Support", badge: openTickets > 0 ? openTickets : null },
   ];
-  
+  const isBorrowsActive = pathname?.includes("/admin/requests") || pathname?.includes("/admin/borrows") || pathname?.includes("/admin/history");
+
   const libraryNavItems = [
     { id: "/library/recommendation", icon: <IconRecommendation />, label: "Recommendation" },
     { id: "/library/mylist", icon: <IconMyList />, label: "My List" },
@@ -107,6 +109,39 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
         .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
         .nav-item.active { background: rgba(255,255,255,.15); color: #fff; font-weight: 600; }
         .nav-label { display: ${isSidebarOpen ? "inline" : "none"}; }
+        .dropdown-btn {
+          width: 100%;
+          background: none;
+          border: none;
+          cursor: pointer;
+          justify-content: space-between;
+        }
+        .dropdown-btn .nav-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .dropdown-menu {
+          display: ${isSidebarOpen && borrowsOpen ? "flex" : "none"};
+          flex-direction: column;
+          gap: 2px;
+          padding-left: 36px;
+        }
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 500;
+          color: rgba(255,255,255,.55);
+          text-decoration: none;
+          transition: all .2s;
+        }
+        .dropdown-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+        .dropdown-item.active { background: rgba(255,255,255,.12); color: #fff; font-weight: 600; }
+        
         
         /* 🚀 FIX: Absolute positioning para lumutang siya sa icon kapag naka-close */
         .nav-badge { 
@@ -133,14 +168,52 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
         <div className="sidebar-logo">
           <button className="hamburger-btn" onClick={toggleSidebar}><IconHamburger /></button>
         </div>
+
+        
         <nav className="sidebar-nav">
           {navItems.map((item, index) => {
+            if (item.dropdown) {
+              return (
+                <div key={index}>
+                  <button
+                    className={`nav-item dropdown-btn ${isBorrowsActive ? "active" : ""}`}
+                    onClick={() => setBorrowsOpen(prev => !prev)}
+                  >
+                    <div className="nav-left">
+                      {item.icon}
+                      <span className="nav-label">{item.label}</span>
+                    </div>
+                    <IconArrowDown/>
+                  </button>
+                  <div className="dropdown-menu">
+                    <Link
+                      href="/admin/requests"
+                      className={`dropdown-item ${pathname?.includes("/admin/requests") ? "active" : ""}`}
+                    >
+                      Borrow Requests
+                    </Link>
+                    <Link
+                      href="/admin/borrows"
+                      className={`dropdown-item ${pathname?.includes("/admin/borrows") ? "active" : ""}`}
+                    >
+                      Manage Borrows
+                    </Link>
+                    <Link
+                      href="/admin/history"
+                      className={`dropdown-item ${pathname?.includes("/admin/history") ? "active" : ""}`}
+                    >
+                      Borrows History
+                    </Link>
+                  </div>
+                </div>
+              );
+            }
+
             const isActive = pathname?.includes(item.id);
             return (
               <Link key={index} href={item.id} className={`nav-item ${isActive ? "active" : ""}`}>
                 {item.icon}
                 <span className="nav-label">{item.label}</span>
-                {item.badge && <span className="nav-badge">{item.badge}</span>}
               </Link>
             );
           })}
