@@ -74,7 +74,6 @@ export default function LibraryPage() {
     if (school_id) fetchRequests();
   }, [school_id]);
 
-
   const openBookDetails = (book: any) => {
     setSelectedBook(book);
   };
@@ -167,17 +166,19 @@ export default function LibraryPage() {
 
   if (sortBy === "avail") filtered.sort((a, b) => Number(b.available) - Number(a.available));
   else filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-const programBooks = books.filter(b =>
-  b.category &&
-  b.category.trim() !== "" &&
-  b.category
-    .split(",")
-    .map((c: string) => c.trim())
-    .some((cat: string) =>
-      (program || "").toLowerCase().includes(cat.toLowerCase()) ||
-cat.toLowerCase().includes((program || "").toLowerCase())
-    )
-);
+  
+  const programBooks = books.filter(b =>
+    b.category &&
+    b.category.trim() !== "" &&
+    b.category
+      .split(",")
+      .map((c: string) => c.trim())
+      .some((cat: string) =>
+        (program || "").toLowerCase().includes(cat.toLowerCase()) ||
+  cat.toLowerCase().includes((program || "").toLowerCase())
+      )
+  );
+  
   return (
     <>
       <style>{`
@@ -185,9 +186,9 @@ cat.toLowerCase().includes((program || "").toLowerCase())
         .rec-book:hover .bk-cover { transform: translateY(-4px); box-shadow: 6px 8px 20px rgba(0,0,0,.2); }
         .rb-title { font-size: 14px; font-weight: 500; color: #102A1C; margin-top: 5px; 
 
-  white-space: nowrap;      /* keep it on one line */
-  overflow: hidden;         /* hide the overflow */
-  text-overflow: ellipsis;}
+        white-space: nowrap;      /* keep it on one line */
+        overflow: hidden;         /* hide the overflow */
+        text-overflow: ellipsis;}
 
         .bookmark-btn {
           background: none;
@@ -306,6 +307,7 @@ cat.toLowerCase().includes((program || "").toLowerCase())
           .side-panel { position: fixed; right: 20px; top: 80px; height: calc(100vh - 100px); z-index: 100; }
         }
       `}</style>
+
       {/* ── MAIN CONTENT ── */}
       <div className="page-layout fadeUp" style={{ minWidth: 0 }}>
 

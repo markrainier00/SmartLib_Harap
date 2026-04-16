@@ -28,7 +28,6 @@ const BOOK = {
   actual_image: null as File | string | null,
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminLibraryPage() {
   const [books, setBooks] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -181,7 +180,7 @@ export default function AdminLibraryPage() {
         setSystemResponse(
           isEdit 
             ? `"${bookForm.title}" updated successfully.` 
-            : `"${bookForm.title}" added to library.`
+            : `"${bookForm.title}" added to library. Students will be notified!`
         );
         await fetchBooks();
         setModal(null);
@@ -414,7 +413,7 @@ export default function AdminLibraryPage() {
         <div className="overlay" onClick={() => setModal(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <button className="close" onClick={() => setModal(null)} ><IconX/></button>
+              <button className="close" type="button" onClick={() => setModal(null)} aria-label="Close modal" ><IconX/></button>
             </div>
             <div className="modal-scroll">
               <div style={{ textAlign: "center" }}>
@@ -500,24 +499,27 @@ export default function AdminLibraryPage() {
                       </select>
                       <input type="text" placeholder="Type new category"
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                            const newCat = e.currentTarget.value.trim();
-                            const current = bookForm.category ? bookForm.category.split(',').map((c: string) => c.trim()) : [];
-                            
-                            if (!current.includes(newCat)) {
-                              const newValue = current.length > 0 
-                                ? current.join(',') + ',' + newCat 
-                                : newCat;
-                              updateForm({ category: newValue });
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (e.currentTarget.value.trim()) {
+                              const newCat = e.currentTarget.value.trim();
+                              const current = bookForm.category ? bookForm.category.split(',').map((c: string) => c.trim()) : [];
+                              
+                              if (!current.includes(newCat)) {
+                                const newValue = current.length > 0 
+                                  ? current.join(',') + ',' + newCat 
+                                  : newCat;
+                                updateForm({ category: newValue });
+                              }
+                              e.currentTarget.value = "";
                             }
-                            e.currentTarget.value = "";
                           }
                         }}
                         style={{ flex: 1, padding: "11px 13px", border: "1.5px solid var(--color-primary-deep)", borderRadius: 11 }}
                       />
                     </div>
                     <small className="page-sub text-xs">Select from dropdown or type and press Enter to add new category.</small>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8, marginTop: 10 }}>
                       {bookForm.category && bookForm.category.trim() !== "" &&
                         bookForm.category.split(',').map((cat: string, idx: number) => {
                           const trimmed = cat.trim();
@@ -545,6 +547,7 @@ export default function AdminLibraryPage() {
                                   updateForm({ category: newCats });
                                 }}
                                 style={{ background: "none", border: "none", color: "#c94040", fontSize: 14, cursor: "pointer" }}
+                                aria-label="Remove category"
                               >
                                 <IconX/>
                               </button>
@@ -557,7 +560,7 @@ export default function AdminLibraryPage() {
                 </div>
             </div>
             <div className="modal-footer">
-              <button type="submit" className="btn" disabled={isLoading}>
+              <button type="submit" className="btn" disabled={isLoadingOpen}>
                 {modal.mode === "add" ? "Add Book" : "Save Changes"}
               </button>
             </div>
