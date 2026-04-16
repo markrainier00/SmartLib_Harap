@@ -13,7 +13,7 @@ export default function BookCard({ book, onClick, handleWishlist, isSaved }: Boo
   return (
     <div className="rec-book" onClick={() => onClick(book)}>
       <div style={{ position: "relative" }}>
-        <div className="book-cover" style={{ width: 140, height: 190, background: "linear-gradient(150deg, #1B5E35, #4CAF78)" }}>
+        <div className="book-cover" style={{ width: 140, height: 190 }}>
           {book.actual_image ? (
             <img src={book.actual_image} alt={book.title} style={{ width: "100%", height: "100%", objectFit: "cover" }}/>
           ) : (

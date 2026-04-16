@@ -3,54 +3,129 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/lib/user";
 import { api } from "@/lib/api";
-
-const TABS = ["All", "Active", "Returned", "Overdue"];
-const PER_PAGE = 10;
+import DataTable from "@/components/DataTable";
 
 export default function HistoryPage() {
   const [activeTab, setActiveTab] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  
+  const [isLoading, setIsLoading] = useState(false);
   const { school_id } = useUser();
+  const [books, setBooks] = useState<any[]>([]);
+  const [transactionDetails, setTransactionDetails] = useState<any[]>([]);
+  const [systemResponse, setSystemResponse] = useState("");
+
+  const TABS = ["All", "Approve", "Reject", "Borrow", "Return"];
+  const PER_PAGE = 10;
 
   useEffect(() => {
     if(!school_id) return;
-    const fetchHistory = async () => {
+
+    const fetchData = async () => {
       try {
-        const json = await api.get(`/api/transactions/history?school_id=${school_id}`);
-        if (json.retCode === "200") setHistoryData(json.data || []);
+        setLoading(true);
+          
+        const [historyRes, transactionRes, booksRes] = await Promise.all([
+          api.get(`/api/transactions/history/${school_id}`),
+          api.get(`/api/transactions/details/${school_id}`),
+          api.getPublic(`/api/books/getBooks`),
+        ]);
+
+        if (historyRes.retCode === "200") setHistoryData(historyRes.data || []);
+        if (transactionRes.retCode === "200") setTransactionDetails(transactionRes.data || []);
+        if (booksRes.isSuccess) setBooks(booksRes.data || []);
       } catch (err) {
-        console.error("Failed to fetch history:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchHistory();
+    fetchData();
   }, [school_id]);
 
+  const filtered = historyData.filter(item =>
+    activeTab === "All" ? true : item.event === activeTab
+  );
   // Reset to page 1 when tab changes
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);
 
-  const filteredData = historyData.filter(item =>
-    activeTab === "All" ? true : item.status === activeTab
-  );
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+  const paginated  = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
-  const totalPages = Math.ceil(filteredData.length / PER_PAGE);
-  const paginated  = filteredData.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+  const bookMap = new Map(books.map(b => [b.isbn, b]));
+  const transactionMap = new Map(transactionDetails.map((t) => [t.id, t]));
 
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "Overdue":  return "badge-red";
-      case "Borrowed": return "badge-blue";
-      case "Pending":  return "badge-orange";
-      case "Returned": return "badge-green";
-      case "Rejected": return "badge-red";
-      default:         return "";
-    }
+  const messages = {
+    Request: (title: string) => <>You requested to borrow <strong style={{ color: "var(--color-primary)" }}>{title}</strong>.</>,
+    Approve: (title: string) => <>Your borrow request for <strong style={{ color: "var(--color-primary)" }}>{title}</strong> was approved.</>,
+    Reject: (title: string) => <>Your borrow request for <strong style={{ color: "var(--color-primary)" }}>{title}</strong> was rejected.</>,
+    Borrow: (title: string) => <>You borrowed <strong style={{ color: "var(--color-primary)" }}>{title}</strong>.</>,
+    Return: (title: string) => <>You returned <strong style={{ color: "var(--color-primary)" }}>{title}</strong>.</>,
+    Late: (title: string) => <>You returned <strong style={{ color: "var(--color-primary)" }}>{title}</strong>.</>,
   };
+
+  const messageColumn = [
+    {
+    header: "Message",
+    render: (r: any) => messages[r.event](bookMap.get(r.isbn)?.title),
+    },
+  ];
+
+  const dateTimeColumn = [
+    {
+    header: "Date",
+    thStyle: { textAlign: "center" as const },
+    tdStyle: { textAlign: "center" as const },
+    render: (r: any) => new Date(r.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+    },
+    {
+    header: "Time",
+    thStyle: { textAlign: "center" as const },
+    tdStyle: { textAlign: "center" as const },
+    render: (r: any) => new Date(r.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, }),
+    },
+  ];
+
+  const tabColumn = {
+    All:  [
+      {
+        header: "Event",
+        thStyle: { textAlign: "center" as const },
+        tdStyle: { textAlign: "center" as const },
+        render: (r: any) => r.event === "Late" ? "Return (Late)" : r.event,
+      },
+    ],
+    Reject: [
+      {
+        header: "Reason",
+        render: (r: any) => {
+          const reason = transactionMap.get(r.transaction_id);
+          return reason?.reject_reason ? reason.reject_reason : <em>No Reason Provided</em>
+        }
+      }
+    ],
+    Return:  [
+      {
+        header: "Violation",
+        render: (r: any) => {
+        const transaction = transactionMap.get(r.transaction_id);
+
+        return transaction?.violation ? transaction.violation : <em>No Violation</em>
+      },
+      },
+    ],
+  };
+  const historyColumns = [
+    ...messageColumn,
+    ...(activeTab === "All" ? tabColumn.All : []),
+    ...(activeTab === "Reject" ? tabColumn.Reject : []),
+    ...(activeTab === "Return" ? tabColumn.Return : []),
+    ...dateTimeColumn,
+  ];
 
   return (
     <div className="page-layout fadeUp">
@@ -71,106 +146,17 @@ export default function HistoryPage() {
       </div>
 
       {/* Table */}
-      <div className="data-card">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Book Title</th>
-              <th>Author</th>
-              {activeTab === "All" && <><th>Status</th><th>Date Borrowed</th><th>Return Date</th></>}
-              {activeTab === "Active" && <><th>Date Borrowed</th><th>Expected Return Date</th></>}
-              {activeTab === "Returned" && <><th>Date Borrowed</th><th>Date Returned</th></>}
-              {activeTab === "Overdue" && <><th>Expected Return Date</th><th>Date Returned</th></>}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)" }}>
-                  Loading your records...
-                </td>
-              </tr>
-            ) : paginated.length > 0 ? (
-              paginated.map((item: any, index) => (
-                <tr key={index}>
-                  <td style={{ fontWeight: 600 }}>{item.book_title}</td>
-                  <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.author}</td>
-                  {activeTab === "All" && (
-                    <>
-                      <td><span className={`badge ${getStatusClass(item.status)}`}>{item.status}</span></td>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.borrow_date ? new Date(item.borrow_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.return_date ? new Date(item.return_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                    </>
-                  )}
-                  {activeTab === "Active" && (
-                    <>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.borrow_date ? new Date(item.borrow_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.return_date ? new Date(item.return_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                    </>
-                  )}
-                  {activeTab === "Returned" && (
-                    <>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.borrow_date ? new Date(item.borrow_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.date_returned ? new Date(item.date_returned).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                    </>
-                  )}
-                  {activeTab === "Overdue" && (
-                    <>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.return_date ? new Date(item.return_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                      <td style={{ color: "var(--color-subtext)", fontSize: 13 }}>{item.date_returned ? new Date(item.date_returned).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—"}</td>
-                    </>
-                  )}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)", fontStyle: "italic", background: "var(--color-surface)" }}>
-                  No records found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        <div className="data-footer">
-          <span>
-            {filteredData.length > 0
-              ? `Showing ${(currentPage - 1) * PER_PAGE + 1}–${Math.min(currentPage * PER_PAGE, filteredData.length)} of ${filteredData.length} records`
-              : "No records"}
-          </span>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid var(--color-border)`, background: currentPage === 1 ? "var(--color-surface)" : "#fff", color: currentPage === 1 ? "var(--color-muted)" : "var(--color-primary)", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}
-              >
-                ←
-              </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid ${page === currentPage ? "var(--color-primary)" : "var(--color-border)"}`, background: page === currentPage ? "var(--color-primary)" : "#fff", color: page === currentPage ? "#fff" : "var(--color-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid var(--color-border)`, background: currentPage === totalPages ? "var(--color-surface)" : "#fff", color: currentPage === totalPages ? "var(--color-muted)" : "var(--color-primary)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}
-              >
-                →
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      <DataTable
+        columns={historyColumns}
+        data={paginated}
+        loading={isLoading}
+        emptyText="No books found."
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={filtered.length}
+        perPage={PER_PAGE}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

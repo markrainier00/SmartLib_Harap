@@ -421,7 +421,7 @@ export default function AuthPage() {
                   </button>
                 }
               />
-              <Link href="/forgot-password" className="forgot">Forgot password?</Link>
+              <Link href="/forgot-password" className="hyperlink">Forgot password?</Link>
             </div>
             <button type="submit" className="btn" disabled={ui.loading}>
               {ui.loading ? <><div className="loading-text" /> Signing in…</> : "Sign In"}

@@ -1,19 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
-import { IconX, IconSearch, IconEllipsis } from "@/components/icons";
+import { IconX, IconSearch } from "@/components/icons";
+import DataTable from "@/components/DataTable";
+import { UserDetails } from "@/components/UserDetails";
 
 const PER_PAGE = 10;
 
 export default function AdminAccountsPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [viewAcc, setViewAcc] = useState<any>(null);
+  const [modal, setModal] = useState<any>(null);
   const [actionModal, setActionModal] = useState<any>(null);
   const [toast, setToast] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<string>("All");
+  const [roleFilter, setRoleFilter] = useState<string>("All");
+
+  const STATUS = ["All Status", "Active", "Locked", "Pending"]
+  const ROLES = ["All Roles", "Student", "Staff", "Admin"]
 
   const fireToast = (type: string, msg: string) => {
     setToast({ type, msg });
@@ -21,31 +28,18 @@ export default function AdminAccountsPage() {
   };
 
   const fetchAccounts = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const json = await api.get("/api/admin/registrations");
       
       if (json.data) {
         setAccounts(json.data
-          .filter((u: any) => u.status !== "Pending")
-          .map((u: any) => ({
-            id: u.school_id,
-            name: `${u.firstname} ${u.lastname}`,
-            email: u.email,
-            role: u.role,
-            department: u.department,
-            program: u.program,
-            year: u.year,
-            status: u.status,
-            lastLogin: new Date(u.updated_at).toLocaleDateString(),
-            joined: new Date(u.created_at).toLocaleDateString(),
-            penaltyCount: u.penalty_count || 0
-        })));
+          .filter((u: any) => u.status !== "Pending"));
       }
     } catch (err) {
       fireToast("err", "Failed to load accounts.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -53,11 +47,17 @@ export default function AdminAccountsPage() {
     fetchAccounts();
   }, []);
 
-  const filtered = accounts.filter(a => 
-    a.name.toLowerCase().includes(search.toLowerCase()) || 
-    a.email.toLowerCase().includes(search.toLowerCase()) ||
-    a.id.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = accounts.filter((a) => {
+    const matchesSearch = a.firstname.toLowerCase().includes(search.toLowerCase()) || 
+      a.lastname.toLowerCase().includes(search.toLowerCase()) || 
+      a.email.toLowerCase().includes(search.toLowerCase()) ||
+      a.school_id.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus = statusFilter === "All" || a.status === statusFilter;
+    const matchesRole = roleFilter === "All" || a.role === roleFilter;
+    
+    return matchesSearch && matchesStatus && matchesRole;
+  });
 
   const handleConfirmedAction = async () => {
     if (!actionModal) return;
@@ -87,13 +87,7 @@ export default function AdminAccountsPage() {
     }
 
     setActionModal(null);
-    setViewAcc(null);
-  };
-
-  const statusBadgeClass = (status: string) => {
-    if (status === "Active") return "badge-green";
-    if (status === "Locked") return "badge-red";
-    return "badge-orange";
+    setModal(null);
   };
   
   useEffect(() => {
@@ -103,98 +97,100 @@ export default function AdminAccountsPage() {
   const totalPages   = Math.ceil(filtered.length / PER_PAGE);
   const paginated    = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
+  const accountsColumn = [
+      {
+        header: "School ID",
+        render: (r: any) => r.school_id,
+      },
+      {
+        header: "Name",
+        render: (r: any) => `${r.firstname} ${r.lastname}`,
+      },
+      {
+        header: "Email",
+        render: (r: any) => r.email,
+      },
+      {
+        header: "Role",
+        thStyle: { textAlign: "center" as const },
+        tdStyle: { textAlign: "center" as const },
+        render: (r: any) => {
+          const classColor = r.role === "Student" ? "badge-blue" :
+                              r.role === "Staff" ? "badge-orange" :
+                              "badge-red";
+          return <span className={classColor}>{r.role}</span>;
+        },
+      },
+      {
+        header: "Status",
+        thStyle: { textAlign: "center" as const },
+        tdStyle: { textAlign: "center" as const },
+        render: (r: any) => {
+          const classColor = r.status === "Active" ? "badge-green" :
+                              r.status === "Locked" ? "badge-red" :
+                              "badge-orange";
+          return <span className={classColor}>{r.status}</span>;
+        },
+      },
+      {
+        header: "Joined",
+        thStyle: { textAlign: "center" as const },
+        tdStyle: { textAlign: "center" as const },
+        render: (r: any) => new Date(r.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", }),
+      },
+      {
+        header: "Action",
+        thStyle: { textAlign: "center" as const },
+        tdStyle: { textAlign: "center" as const },
+        render: (user: any) => (
+          <a href="#" className="hyperlink text-primary" style={{ textAlign: "center", textDecoration: "underline" }} onClick={(e) => { e.preventDefault(); setModal({mode: "view", user}); }}>
+              View Details
+          </a>
+        ),
+      },
+  ];
+
   return (
     <>
       <div className="page-layout fadeUp">
-
-        {/* HEADER */}
         <div style={{ marginBottom: 20 }}>
           <div className="page-header">Manage Accounts</div>
           <div className="page-sub">Admin control panel for student users</div>
         </div>
 
-        {/* SEARCH */}
-        <div className="search-wrapper" style={{ marginBottom: 18 }}>
-          <IconSearch/>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search student name, email, or ID..."/>
-        </div>
-
-        {/* TABLE */}
-        <div className="data-card">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>User Details</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} style={{ padding: 60, textAlign: "center" }}>
-                    <div className="spinner" style={{ borderColor: "var(--color-surface)", borderTopColor: "var(--color-primary)", margin: "0 auto 12px" }} />
-                    Loading accounts...
-                  </td>
-                </tr>
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={6} style={{ padding: 40, textAlign: "center", color: "var(--color-subtext)", fontStyle: "italic", background: "var(--color-surface)" }}>
-                    No accounts found.
-                  </td>
-                </tr>
-              ) : (
-                filtered.map(a => (
-                  <tr key={a.id}>
-                    <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-                        <div>
-                          <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--color-primary)" }}>{a.name}</div>
-                          <div style={{ fontSize: 10, color: "var(--color-subtext)", fontFamily: "monospace" }}>{a.id}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ color: "var(--color-subtext)" }}>{a.email}</td>
-                    <td>
-                      <span className={`badge ${a.role === "Admin" ? "badge-blue" : "badge-green"}`}>
-                        {a.role}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`badge ${statusBadgeClass(a.status)}`}>
-                        {a.status}
-                      </span>
-                    </td>
-                    <td style={{ fontSize: 12.5, color: "var(--color-subtext)" }}>{a.joined}</td>
-                    <td>
-                      <button className="ellipsis-button" onClick={() => setViewAcc(a)}><IconEllipsis/></button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-        <div className="data-footer">
-          <span>
-            {filtered.length > 0
-              ? `Showing ${(currentPage - 1) * PER_PAGE + 1}–${Math.min(currentPage * PER_PAGE, filtered.length)} of ${filtered.length} records`
-              : ""}
-          </span>
-          {totalPages > 1 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid var(--color-border)`, background: currentPage === 1 ? "var(--color-surface)" : "#fff", color: currentPage === 1 ? "var(--color-muted)" : "var(--color-primary)", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}>←</button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button key={page} onClick={() => setCurrentPage(page)} style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid ${page === currentPage ? "var(--color-primary)" : "var(--color-border)"}`, background: page === currentPage ? "var(--color-primary)" : "#fff", color: page === currentPage ? "#fff" : "var(--color-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}>{page}</button>
-              ))}
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}disabled={currentPage === totalPages} style={{ padding: "4px 10px", borderRadius: 8, border: `1.5px solid var(--color-border)`, background: currentPage === totalPages ? "var(--color-surface)" : "#fff", color: currentPage === totalPages ? "var(--color-muted)" : "var(--color-primary)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, transition: "all 0.2s" }}>→</button>
+        <div style={{ display: "flex", flexWrap: "wrap", marginBottom: 18, justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 10 }}>
+            <div className="search-wrapper" style={{ flex: 1, maxWidth: 300 }}>
+              <IconSearch/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search student name, email, or ID..."/>
             </div>
-          )}
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="pills">
+              {STATUS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="pills">
+              {ROLES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          
+            {(statusFilter !== "All" || roleFilter !== "All" || search) && (
+              <button className="pills" onClick={() => { setStatusFilter("All"); setRoleFilter("All"); setSearch(""); }} style={{ background: "#f5f5f5", borderColor: "#dadada", color: "#777777" }}>
+                Reset
+              </button>
+            )}
+          </div>
         </div>
-        </div>
+
+        {/* Table */}
+        <DataTable
+            columns={accountsColumn}
+            data={paginated}
+            loading={isLoading}
+            emptyText="No accounts found."
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            perPage={PER_PAGE}
+            onPageChange={setCurrentPage}
+        />
+
         {/* TOAST NOTIFICATION */}
         {toast && (
           <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: toast.type === "err" ? "var(--color-error)" : "var(--color-primary)", color: "#fff", padding: "12px 22px", borderRadius: 12, fontSize: 13.5, fontWeight: 500, boxShadow: "0 8px 24px rgba(0,0,0,.2)", zIndex: 200, animation: "fadeUp .3s ease", display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
@@ -203,28 +199,37 @@ export default function AdminAccountsPage() {
         )}
       </div>
 
+        {/* User Details Panel */}
+        {modal && modal.mode === "view" && (
+          <UserDetails
+            user={modal.user}
+            onClose={() => setModal(null)}
+            mode="view"
+          />
+        )}
+
       {/* ── MODAL: VIEW DETAILS ── */}
-      {viewAcc && (
+      {/* {modal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(16,42,28,.7)", backdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, animation: "fadeIn .2s ease" }}>
           <div className="data-card fadeUp" style={{ maxWidth: 440, width: "100%", padding: 28, borderRadius: 22 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
               <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "var(--color-primary)", letterSpacing: 1 }}>Account Profile</div>
-              <button onClick={() => setViewAcc(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--color-subtext)" }}><IconX/></button>
+              <button onClick={() => setModal(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "var(--color-subtext)" }}><IconX/></button>
             </div>
 
             <div style={{ textAlign: "center", marginBottom: 24 }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--color-primary)" }}>{viewAcc.name}</div>
-              <div style={{ fontSize: 13, color: "var(--color-subtext)" }}>{viewAcc.email}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--color-primary)" }}>{modal.firstname} {modal.lastname}</div>
+              <div style={{ fontSize: 13, color: "var(--color-subtext)" }}>{modal.email}</div>
             </div>
 
             {[
-              { label: "School ID", value: <span style={{ fontWeight: 600}}>{viewAcc.id}</span> },
-              { label: "Role", value: <span className={`badge ${viewAcc.role === "admin" ? "badge-blue" : "badge-green"}`}>{viewAcc.role}</span> },
-              { label: "Department", value: <span style={{ fontWeight: 600}}>{viewAcc.department}</span> },
-              { label: "Program", value: <span style={{ fontWeight: 600}}>{viewAcc.program}</span> },
-              { label: "Year Level", value: <span style={{ fontWeight: 600}}>{viewAcc.year}</span> },
-              { label: "Account Status", value: <span className={`badge ${statusBadgeClass(viewAcc.status)}`}>{viewAcc.status}</span> },
-              { label: "Active Penalties", value: <span style={{ fontWeight: 700, color: viewAcc.penaltyCount >= 3 ? "var(--color-error)" : "var(--color-primary)" }}>{viewAcc.penaltyCount} / 3 {viewAcc.penaltyCount >= 3 && "(Auto-Locked)"}</span> },
+              { label: "School ID", value: <span style={{ fontWeight: 600}}>{modal.id}</span> },
+              { label: "Role", value: <span className={`badge ${modal.role === "admin" ? "badge-blue" : "badge-green"}`}>{modal.role}</span> },
+              { label: "Department", value: <span style={{ fontWeight: 600}}>{modal.department}</span> },
+              { label: "Program", value: <span style={{ fontWeight: 600}}>{modal.program}</span> },
+              { label: "Year Level", value: <span style={{ fontWeight: 600}}>{modal.year}</span> },
+              { label: "Account Status", value: <span className={`badge ${modal.status}`}>{modal.status}</span> },
+              { label: "Active Penalties", value: <span style={{ fontWeight: 700, color: modal.penaltyCount >= 3 ? "var(--color-error)" : "var(--color-primary)" }}>{modal.penaltyCount} / 3 {modal.penaltyCount >= 3 && "(Auto-Locked)"}</span> },
             ].map(({ label, value }, i, arr) => (
               <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, paddingBottom: 8, marginBottom: 8, borderBottom: i < arr.length - 1 ? `1px solid var(--color-surface)` : "none" }}>
                 <span style={{ color: "var(--color-subtext)" }}>{label}</span>
@@ -233,14 +238,14 @@ export default function AdminAccountsPage() {
             ))}
 
             <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              {viewAcc.role === "Student" ? (
+              {modal.role === "Student" ? (
                 <>
-                  {viewAcc.status === "Locked" && (
-                    <button className="btn" style={{ background: "#e8a020", boxShadow: "none" }} onClick={() => setActionModal({ type: "unlock", acc: viewAcc })}>
+                  {modal.status === "Locked" && (
+                    <button className="btn" style={{ background: "#e8a020", boxShadow: "none" }} onClick={() => setActionModal({ type: "unlock", acc: modal })}>
                       Unlock Student
                     </button>
                   )}
-                  <button className="btn" style={{ background: "var(--color-error)", boxShadow: "none", marginTop: 0 }} onClick={() => setActionModal({ type: "delete", acc: viewAcc })}>
+                  <button className="btn" style={{ background: "var(--color-error)", boxShadow: "none", marginTop: 0 }} onClick={() => setActionModal({ type: "delete", acc: modal })}>
                     Delete Record
                   </button>
                 </>
@@ -252,7 +257,7 @@ export default function AdminAccountsPage() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* ── CONFIRMATION MODAL ── */}
       {actionModal && (

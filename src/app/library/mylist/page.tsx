@@ -22,9 +22,7 @@ export default function MyListPage() {
     const fetchData = async () => {
       try {
         const transaction = await api.get(`/api/transactions/history?school_id=${school_id}`);
-        const books = await api.get(`/api/books`);
         if (transaction === "200") setTransactions(transaction.data || []);
-        if (books.isSuccess) setBooks(books.data || []);
       } catch (err) {
         console.error("Failed to fetch data", err);
       } finally {

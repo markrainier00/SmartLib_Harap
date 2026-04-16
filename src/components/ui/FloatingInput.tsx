@@ -11,6 +11,8 @@ interface Props {
     pattern?: string;
     minLength?: number;
     id?: string;
+    min?: string;
+    max?: string;
 }
 
 export default function FloatingInput({
@@ -72,6 +74,7 @@ export default function FloatingInput({
                     outline: "none",
                     transition: "all 0.2s",
                     boxShadow: focused ? "none" : "none",
+                    color: value || focused ? "inherit" : "transparent",
                 }}
             />
         {suffix && (
