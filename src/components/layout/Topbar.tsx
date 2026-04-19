@@ -102,11 +102,75 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
   useClickOutside(notifRef, () => setShowNotifs(false));
   useClickOutside(profileRef, () => setShowProfile(false));
 
-  const notifs = [
-    { id: 1, msg: "Your library account has been approved!", time: "2h ago", read: false },
-    { id: 2, msg: "Calculus: Early Transcendentals due in 2 days", time: "1d ago", read: false },
-  ];
-  const unread = notifs.filter(n => !n.read).length;
+  const [notifs, setNotifs] = useState<any[]>([]);
+  const unread = notifs.filter((n) => !n.read).length;
+
+  // ==========================================
+  // 🔔 REAL-TIME SSE LOGIC
+  // ==========================================
+  useEffect(() => {
+    if (!school_id) return; 
+
+    const safeSchoolId = encodeURIComponent(school_id);
+
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/api/notifications/history/${safeSchoolId}`);
+        const data = await res.json();
+        if (data.isSuccess) {
+          setNotifs(data.data || []); 
+        }
+      } catch (err) {
+        console.error("Failed to fetch notification history", err);
+      }
+    };
+    fetchHistory();
+
+    const eventSource = new EventSource(`http://localhost:8080/api/notifications/stream/${safeSchoolId}`);
+
+    eventSource.onmessage = (event) => {
+      const newNotif = JSON.parse(event.data);
+      setNotifs((prev) => {
+        const isDuplicate = prev.some((notif) => notif.id === newNotif.id);
+        if (isDuplicate) return prev;
+        return [newNotif, ...prev];
+      });
+    };
+
+    eventSource.onerror = () => {
+      console.log("SSE interrupted. Browser is trying to auto-reconnect...");
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [school_id]);
+
+  // 🚀 BAGONG FUNCTION: Para ma-clear ang Notifs
+  const handleClearNotifs = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Para hindi magsara yung dropdown kapag kinlick
+    if (!school_id) return;
+
+    try {
+      const safeSchoolId = encodeURIComponent(school_id);
+      const res = await fetch(`http://localhost:8080/api/notifications/clear/${safeSchoolId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      
+      if (data.isSuccess) {
+        setNotifs([]); // Linisin ang screen
+      }
+    } catch (err) {
+      console.error("Failed to clear notifications", err);
+    }
+  };
+
+  const handleNav = (path: string) => {
+    setShowProfile(false);
+    setShowNotifs(false);
+    router.push(path);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -188,7 +252,7 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         current_password: pwForm.current,
         new_password: pwForm.newPw,
       });
-      if (json.retCode !== "200") {
+      if (json.retCode === "200") {
         setSystemResponse(json.message || "Password updated succesfully.")
       } else {
         setSystemResponse(json.message || "Failed to update password.");
@@ -293,8 +357,25 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         .notif-panel { width: 340px; }
         .notif-head { padding: 5px 10px; border-bottom: 1px solid #C3DDD0; display: flex; justify-content: space-between; align-items: center; background: #EBF7F0; }
         .notif-head h4 { margin: 0; font-size: 14px; font-weight: 700; color: #102A1C; }
-        .notif-item { padding: 14px 20px; border-bottom: 1px solid #EBF7F0; display: flex; gap: 12px; align-items: flex-start; }
+        
+        .clear-btn { background: none; border: none; font-size: 12px; color: #c94040; font-weight: 700; cursor: pointer; transition: all 0.2s; padding: 4px 8px; border-radius: 4px; }
+        .clear-btn:hover { background: #ffebeb; }
+
+        /* 🎨 Notif Item Clickable Styles */
+        .notif-item { 
+          padding: 14px 20px; 
+          border-bottom: 1px solid #EBF7F0; 
+          display: flex; 
+          gap: 12px; 
+          align-items: flex-start; 
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .notif-item:hover { background: #F8FDFB; }
         .notif-item.unread { background: #F0F9F3; }
+        .notif-item.unread:hover { background: #E6F4EB; }
+        .notif-panel { width: 340px; max-height: 400px; overflow-y: auto; }
+        .notif-head { ... position: sticky; top: 0; z-index: 2; }
         .ni-msg { font-size: 13px; color: #102A1C; font-weight: 500; line-height: 1.4; margin: 0; }
         .ni-time { font-size: 11px; color: #7AAD8E; margin-top: 4px; }
 
@@ -317,7 +398,6 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
 
         .id-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; position: relative; z-index: 2; }
         .id-program { font-size: 12px; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; position: relative; z-index: 2; }
-
         .id-footer { background: rgba(0,0,0,.15); margin: 0 -24px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,255,255,.8); border-top: 1px solid rgba(255,255,255,.08); position: relative; z-index: 2; }
       `}</style>
 
@@ -328,36 +408,74 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         </div>
           <IconLogo style={{ width: "40px", height: "40px", color: "var(--color-primary)" }} />
           <div className="smartlib-logo" style={{ fontSize: '20px' }}>SmartLib
-            <span className="smartlib-sub" style={{ fontSize: '13px', display: 'block' }}>{role === 'Staff' ? 'STAFF' : role === 'Admin' ? 'ADMINISTRATOR' : 'STUDENT'} PORTAL</span>
+            <span className="smartlib-sub" style={{ fontSize: '13px', display: 'block' }}>
+              {role === 'Staff' ? 'STAFF' : role === 'Admin' ? 'ADMINISTRATOR' : 'STUDENT'} PORTAL
+            </span>
           </div>
         </div>
-        <div className="topbar-actions">
-          {(role === 'Student') && (
-            <>
-              <button className="action-btn" onClick={() => setShowId(true)} title="Digital ID"><IconID/></button>
 
-              <div style={{ position: "relative" }} ref={notifRef}>
-                <button className={`action-btn ${showNotifs ? 'active' : ''}`} onClick={() => setShowNotifs(!showNotifs)}>
-                  <IconNotif/>
-                  {unread > 0 && <span className="notif-badge">{unread}</span>}
-                </button>
-                {showNotifs && (
-                  <div className="dropdown notif-panel open">
-                    <div className="notif-head"><h4>Notifications</h4></div>
-                    {notifs.map(n => (
-                      <div key={n.id} className={`notif-item ${n.read ? '' : 'unread'}`}>
-                        <div style={{ flex: 1 }}>
-                          <p className="ni-msg">{n.msg}</p>
-                          <div className="ni-time">{n.time}</div>
-                        </div>
-                      </div>
-                    ))}
+        <div className="topbar-actions">
+          {/* 🆔 DIGITAL ID: PARA SA STUDENT LANG */}
+          {role === 'Student' && (
+            <button className="action-btn" onClick={() => setShowId(true)} aria-label="Digital ID">
+              <IconID />
+            </button>
+          )}
+
+          {/* 🔔 SHARED NOTIFICATION BELL */}
+          <div style={{ position: "relative" }} ref={notifRef}>
+            <button className="action-btn" onClick={() => setShowNotifs(!showNotifs)} aria-label="Notifications">
+              <IconNotif />
+              {unread > 0 && <span className="notif-badge">{unread}</span>}
+            </button>
+            {showNotifs && (
+              <div className="dropdown notif-panel open">
+                <div className="notif-head">
+                  <h4>Notifications</h4>
+                  {/* 🚀 BAGONG CLEAR ALL BUTTON */}
+                  {notifs.length > 0 && (
+                    <button className="clear-btn" onClick={handleClearNotifs}>
+                      Clear All
+                    </button>
+                  )}
+                </div>
+                
+                {notifs.map(n => (
+                  <div 
+                    key={n.id} 
+                    className={`notif-item ${n.read ? '' : 'unread'}`}
+                    onClick={() => {
+                      // 🚀 SMART REDIRECTION LOGIC
+                      if (role === 'Admin' || role === 'Staff') {
+                        const message = n.msg.toLowerCase();
+                        
+                        if (message.includes("book request") || message.includes("isbn")) {
+                          handleNav("/admin/requests"); 
+                        } else if (message.includes("register")) {
+                          handleNav("/admin/registration"); 
+                        }
+                      }
+
+                      // Mark locally as read
+                      setNotifs(prev => prev.map(notif => notif.id === n.id ? { ...notif, read: true } : notif));
+                    }}
+                  >
+                    <div className="flex-1">
+                      <p className="ni-msg">{n.msg}</p>
+                      <div className="ni-time">{n.time}</div>
+                    </div>
+                  </div>
+                ))}
+                {notifs.length === 0 && (
+                  <div style={{ padding: "20px", textAlign: "center", fontSize: "13px", color: "#7AAD8E" }}>
+                    No notifications yet.
                   </div>
                 )}
               </div>
-            </>
-          )}
+            )}
+          </div>
 
+          {/* 👤 PROFILE DROPDOWN */}
           <div style={{ position: "relative" }} ref={profileRef}>
             <button className={`profile-pill ${showProfile ? 'active' : ''}`} onClick={() => setShowProfile(!showProfile)}>
               <p className="avatar-icon">{firstName[0]}</p><IconArrowDown className="profile-arrow text-white"/>
@@ -385,13 +503,14 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         </div>
       </header>
 
+      {/* 🆔 DIGITAL ID MODAL */}
       {showId && (
         <div className="overlay" onClick={() => setShowId(false)}>
           <div className="id-card" onClick={e => e.stopPropagation()}>
-            <button className="id-close" onClick={() => setShowId(false)}><IconX/></button>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <IconLogo/>
-              <div className="id-logo">SmartLib</div>
+            <button className="id-close" onClick={() => setShowId(false)} aria-label="Close ID card"><IconX /></button>
+            <div className="flex flex-col items-center">
+              <IconLogo />
+              <div style={{ fontFamily: 'DM Serif Display', fontSize: '22px', marginBottom: '24px' }}>SmartLib</div>
             </div>
             <div className="qr-container">
               <QRCode value={school_id} size={220} bgColor="#fff" fgColor="#1B5E35" level="H" />

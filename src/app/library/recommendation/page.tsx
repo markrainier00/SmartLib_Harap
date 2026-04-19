@@ -73,7 +73,6 @@ export default function LibraryPage() {
     if (school_id) fetchRequests();
   }, [school_id]);
 
-
   const openBookDetails = (book: any) => {
     setSelectedBook(book);
   };
@@ -166,17 +165,19 @@ export default function LibraryPage() {
 
   if (sortBy === "avail") filtered.sort((a, b) => Number(b.available) - Number(a.available));
   else filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-const programBooks = books.filter(b =>
-  b.category &&
-  b.category.trim() !== "" &&
-  b.category
-    .split(",")
-    .map((c: string) => c.trim())
-    .some((cat: string) =>
-      (program || "").toLowerCase().includes(cat.toLowerCase()) ||
-cat.toLowerCase().includes((program || "").toLowerCase())
-    )
-);
+  
+  const programBooks = books.filter(b =>
+    b.category &&
+    b.category.trim() !== "" &&
+    b.category
+      .split(",")
+      .map((c: string) => c.trim())
+      .some((cat: string) =>
+        (program || "").toLowerCase().includes(cat.toLowerCase()) ||
+  cat.toLowerCase().includes((program || "").toLowerCase())
+      )
+  );
+  
   return (
     <>
       <style>{`
@@ -309,6 +310,7 @@ cat.toLowerCase().includes((program || "").toLowerCase())
           .side-panel { position: fixed; right: 20px; top: 80px; height: calc(100vh - 100px); z-index: 100; }
         }
       `}</style>
+
       {/* ── MAIN CONTENT ── */}
       <div className="page-layout fadeUp" style={{ minWidth: 0 }}>
 
