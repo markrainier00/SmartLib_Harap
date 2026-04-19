@@ -8,6 +8,7 @@ import Topbar from "@/components/layout/Topbar";
 export default function LibraryLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -18,13 +19,12 @@ export default function LibraryLayout({ children }: { children: React.ReactNode 
     }
   }, [router]);
 
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   return (
     <div className="app" style={{ display: "flex" }}>
       <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="main" style={{ flex: 1 }}>
-        <Topbar isSidebarOpen={isSidebarOpen} />
+        <Topbar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <div className="content">
           {children}
         </div>

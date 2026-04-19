@@ -3,23 +3,34 @@
 import { useUser } from "@/lib/user";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { IconHamburger, IconBookReq, IconBorrowHis, IconDashboard, IconLibManage, IconManageAcc, IconRegistration, IconRecommendation, IconMyList, IconHistory, IconSupport, IconData, IconArrowDown } from "../icons";
 
 export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; toggleSidebar: () => void }) {
   const { role } = useUser();
   const pathname = usePathname();
-  const [borrowsOpen, setBorrowsOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const adminNavItems = [
     { id: "/admin/dashboard", icon: <IconDashboard />, label: "Dashboard" },
     { id: "/admin/books", icon: <IconLibManage />, label: "Library Management" },
-    { id: "borrows", icon: <IconBookReq />, label: "Borrows", dropdown: true },
-    { id: "/admin/approvals", icon: <IconRegistration />, label: "Registration" },
-    { id: "/admin/accounts", icon: <IconManageAcc />, label: "Manage Accounts" },
+    { id: "borrows", icon: <IconBookReq />, label: "Borrows", dropdown: true,
+      children: [
+        { href: "/admin/requests", label: "Request" },
+        { href: "/admin/borrows", label: "Borrow" },
+        { href: "/admin/history", label: "History" },
+      ],
+    },
+    { id: "users", icon: <IconManageAcc />, label: "User Management", dropdown: true,
+      children: [
+        { href: "/admin/approvals", label: "Registration" },
+        { href: "/admin/accounts", label: "Accounts" },
+      ],
+    },
     { id: "/admin/analytics", icon: <IconData />, label: "Data Analytics" },
   ];
-  const isBorrowsActive = pathname?.includes("/admin/requests") || pathname?.includes("/admin/borrows") || pathname?.includes("/admin/history");
 
   const libraryNavItems = [
     { id: "/library/recommendation", icon: <IconRecommendation />, label: "Recommendation" },
@@ -51,42 +62,30 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           top: 0;
           left: 0;
           height: 100vh;
-          width: ${isSidebarOpen ? "240px" : "64px"};
-          background: #1B5E35;
+          width: ${(isSidebarOpen) ? "240px" : (isHovered ? "240px" : "64px")};
+          background: #FFFFFF;
           display: flex;
           flex-direction: column;
           padding: 0;
-          z-index: 1000; /* on top of main content */
+          z-index: 49; /* on top of main content */
           transition: width 0.25s ease;
           box-shadow: 2px 0 8px rgba(0,0,0,0.3);
-        }
-        .sidebar-logo {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 16px 20px;
-          border-bottom: 1px solid rgba(255,255,255,.1);
-          justify-content: ${isSidebarOpen ? "flex-start" : "center"};
-        }
-        .hamburger-btn {
-          background: #1B5E35;
-          border: none;
-          color: #fff;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 30px;
-          height: 30px;
-          border-radius: 10px;
         }
 
         .sidebar-nav {
           flex: 1;
-          padding: 8px 12px;
+          padding: 70px 12px 12px 12px;
           display: flex;
           flex-direction: column;
           gap: 2px;
+        }
+        
+        .arrow {
+          display: ${(isSidebarOpen || isHovered) ? "block" : "none"};
+          transition: transform 0.2s ease;
+        }
+        .arrow.open {
+          transform: rotate(180deg);
         }
         .nav-item {
           display: flex;
@@ -96,14 +95,14 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           border-radius: 10px;
           font-size: 13.5px;
           font-weight: 500;
-          color: rgba(255,255,255,.65);
+          color: var(--color-primary);
           text-decoration: none;
           transition: all .2s;
         }
-        .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
-        .nav-item.active { background: rgba(255,255,255,.15); color: #fff; font-weight: 600; }
+        .nav-item:hover { background: rgba(27, 94, 53, .08); }
+        .nav-item.active { background: rgba(27, 94, 53, .2); font-weight: 700; }
 
-        .nav-label { display: ${isSidebarOpen ? "inline" : "none"}; }
+        .nav-label { display: ${(isSidebarOpen || isHovered) ? "inline" : "none"}; }
         .dropdown-btn {
           width: 100%;
           background: none;
@@ -117,10 +116,20 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           gap: 10px;
         }
         .dropdown-menu {
-          display: ${isSidebarOpen && borrowsOpen ? "flex" : "none"};
+          max-height: 0;
+          overflow: hidden;
+          display: flex;
           flex-direction: column;
           gap: 2px;
-          padding-left: 36px;
+          background: rgba(27, 94, 53, .08);
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+          transform: translateY(-5px);
+          transition: max-height 0.3s ease, opacity 0.25s ease, transform 0.25s ease;
+        }
+        .dropdown-menu.open {
+          max-height: 200px;
+          transform: translateY(0);
         }
         .dropdown-item {
           display: flex;
@@ -130,55 +139,63 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           border-radius: 8px;
           font-size: 13px;
           font-weight: 500;
-          color: rgba(255,255,255,.55);
-          text-decoration: none;
+          color: var(--color-primary);
           transition: all .2s;
         }
-        .dropdown-item:hover { background: rgba(255,255,255,.08); color: #fff; }
-        .dropdown-item.active { background: rgba(255,255,255,.12); color: #fff; font-weight: 600; }
+        .dropdown-item:hover { background: rgba(27, 94, 53, .08); }
+        .dropdown-item.active { background: rgba(27, 94, 53, .2); font-weight: 700; }
         
       `}</style>
       
-      <aside className="sidebar">
-        <div className="sidebar-logo">
-          <button className="hamburger-btn" onClick={toggleSidebar}><IconHamburger /></button>
-        </div>
+      <aside className="sidebar"
+        onMouseEnter={() => {
+          if (!isSidebarOpen) {
+            if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+            setIsHovered(true);
+          }
+        }}
+        onMouseLeave={() => {
+          if (!isSidebarOpen) {
+            hoverTimeout.current = setTimeout(() => setIsHovered(false), 150);
+          }
+        }}
+      >
 
-        
         <nav className="sidebar-nav">
           {navItems.map((item, index) => {
+
             if (item.dropdown) {
+              const isOpen = openDropdown === item.id;
+
               return (
                 <div key={index}>
                   <button
-                    className={`nav-item dropdown-btn ${isBorrowsActive ? "active" : ""}`}
-                    onClick={() => setBorrowsOpen(prev => !prev)}
+                    className={`nav-item dropdown-btn ${isOpen ? "active" : ""}`}
+                    onClick={() => setOpenDropdown(prev => (prev === item.id ? null : item.id))}
                   >
                     <div className="nav-left">
                       {item.icon}
                       <span className="nav-label">{item.label}</span>
                     </div>
-                    <IconArrowDown/>
+                    <div className={`arrow ${isOpen ? "open" : ""}`}>
+                      <IconArrowDown />
+                    </div>
                   </button>
-                  <div className="dropdown-menu">
-                    <Link
-                      href="/admin/requests"
-                      className={`dropdown-item ${pathname?.includes("/admin/requests") ? "active" : ""}`}
-                    >
-                      Borrow Requests
-                    </Link>
-                    <Link
-                      href="/admin/borrows"
-                      className={`dropdown-item ${pathname?.includes("/admin/borrows") ? "active" : ""}`}
-                    >
-                      Manage Borrows
-                    </Link>
-                    <Link
-                      href="/admin/history"
-                      className={`dropdown-item ${pathname?.includes("/admin/history") ? "active" : ""}`}
-                    >
-                      Borrows History
-                    </Link>
+
+                  <div style={{ marginTop: "3px", paddingLeft: "36px", paddingRight: "10px" }}>
+                    <div className={`dropdown-menu ${(isSidebarOpen || isHovered) && isOpen ? "open" : "" }`}>
+                      {item.children?.map((child: any, i: number) => (
+                        <Link
+                          key={i}
+                          href={child.href}
+                          className={`dropdown-item ${
+                            pathname?.includes(child.href) ? "active" : ""
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
               );
