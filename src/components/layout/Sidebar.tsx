@@ -107,7 +107,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           display: flex;
           flex-direction: column;
           padding: 0;
-          z-index: 49; /* on top of main content */
+          z-index: 49;
           transition: width 0.25s ease;
           box-shadow: 2px 0 8px rgba(0,0,0,0.3);
         }
@@ -127,23 +127,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
         .arrow.open {
           transform: rotate(180deg);
         }
-        .nav-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 12px;
-          border-radius: 10px;
-          font-size: 13.5px;
-          font-weight: 500;
-          color: var(--color-primary);
-          text-decoration: none;
-          transition: all .2s;
-        .sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: ${isSidebarOpen ? "240px" : "64px"}; background: #1B5E35; display: flex; flex-direction: column; padding: 0; z-index: 1000; transition: width 0.25s ease; box-shadow: 2px 0 8px rgba(0,0,0,0.3); }
-        .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); justify-content: ${isSidebarOpen ? "flex-start" : "center"}; }
-        .hamburger-btn { background: #1B5E35; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; }
-        .sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
-        
-        /* 🚀 FIX: Nilagyan ng position: relative para maging anchor ng nakalutang na badge */
+          
         .nav-item { 
           display: flex; 
           align-items: center; 
@@ -152,7 +136,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           border-radius: 10px; 
           font-size: 13.5px; 
           font-weight: 500; 
-          color: rgba(255,255,255,.65); 
+          color: var(--color-primary);
           text-decoration: none; 
           transition: all .2s; 
           position: relative; 
@@ -161,9 +145,6 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
         .nav-item.active { background: rgba(27, 94, 53, .2); font-weight: 700; }
 
         .nav-label { display: ${(isSidebarOpen || isHovered) ? "inline" : "none"}; }
-        .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
-        .nav-item.active { background: rgba(255,255,255,.15); color: #fff; font-weight: 600; }
-        .nav-label { display: ${isSidebarOpen ? "inline" : "none"}; }
         .dropdown-btn {
           width: 100%;
           background: none;
@@ -205,25 +186,22 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
         }
         .dropdown-item:hover { background: rgba(27, 94, 53, .08); }
         .dropdown-item.active { background: rgba(27, 94, 53, .2); font-weight: 700; }
-        
-        
-        /* 🚀 FIX: Absolute positioning para lumutang siya sa icon kapag naka-close */
+      
         .nav-badge { 
           background: #ef4444; 
           color: white; 
-          font-size: ${isSidebarOpen ? "11px" : "9px"}; 
+          font-size: ${(isSidebarOpen || isHovered) ? "11px" : "9px"}; 
           font-weight: bold; 
-          min-width: ${isSidebarOpen ? "20px" : "16px"}; 
-          height: ${isSidebarOpen ? "20px" : "16px"}; 
+          min-width: ${(isSidebarOpen || isHovered) ? "20px" : "16px"}; 
+          height: ${(isSidebarOpen || isHovered) ? "20px" : "16px"}; 
           border-radius: 50%; 
           display: flex; 
           align-items: center; 
           justify-content: center; 
           position: absolute; 
-          /* Kapag bukas: nasa dulo sa kanan. Kapag sara: nasa top-right corner ng icon */
-          right: ${isSidebarOpen ? "12px" : "10px"}; 
-          top: ${isSidebarOpen ? "50%" : "6px"}; 
-          transform: ${isSidebarOpen ? "translateY(-50%)" : "none"}; 
+          right: ${(isSidebarOpen || isHovered) ? "12px" : "10px"}; 
+          top: ${(isSidebarOpen || isHovered) ? "50%" : "6px"}; 
+          transform: ${(isSidebarOpen || isHovered) ? "translateY(-50%)" : "none"}; 
           box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
           transition: all 0.2s ease;
         }
@@ -282,12 +260,12 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
                 </div>
               );
             }
-
-            const isActive = pathname?.includes(item.id);
+            const isActive = item.exact ? pathname === item.id : pathname?.includes(item.id);
             return (
               <Link key={index} href={item.id} className={`nav-item ${isActive ? "active" : ""}`}>
                 {item.icon}
                 <span className="nav-label">{item.label}</span>
+                {item.badge && <span className="nav-badge">{item.badge}</span>}
               </Link>
             );
           })}
