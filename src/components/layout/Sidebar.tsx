@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useUser } from "@/lib/user";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { IconHamburger, IconBookReq, IconBorrowHis, IconDashboard, IconLibManage, IconManageAcc, IconRegistration, IconRecommendation, IconMyList, IconHistory, IconSupport, IconData, IconArrowDown } from "../icons";
 
 export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; toggleSidebar: () => void }) {
@@ -92,7 +91,6 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
         .hamburger-btn { background: #1B5E35; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; }
         .sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
         
-        /* 🚀 FIX: Nilagyan ng position: relative para maging anchor ng nakalutang na badge */
         .nav-item { 
           display: flex; 
           align-items: center; 
@@ -142,7 +140,6 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
         .dropdown-item:hover { background: rgba(255,255,255,.08); color: #fff; }
         .dropdown-item.active { background: rgba(255,255,255,.12); color: #fff; font-weight: 600; }
         
-        
         /* 🚀 FIX: Absolute positioning para lumutang siya sa icon kapag naka-close */
         .nav-badge { 
           background: #ef4444; 
@@ -156,7 +153,6 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           align-items: center; 
           justify-content: center; 
           position: absolute; 
-          /* Kapag bukas: nasa dulo sa kanan. Kapag sara: nasa top-right corner ng icon */
           right: ${isSidebarOpen ? "12px" : "10px"}; 
           top: ${isSidebarOpen ? "50%" : "6px"}; 
           transform: ${isSidebarOpen ? "translateY(-50%)" : "none"}; 
@@ -169,7 +165,6 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
           <button className="hamburger-btn" onClick={toggleSidebar}><IconHamburger /></button>
         </div>
 
-        
         <nav className="sidebar-nav">
           {navItems.map((item, index) => {
             if (item.dropdown) {
@@ -183,7 +178,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
                       {item.icon}
                       <span className="nav-label">{item.label}</span>
                     </div>
-                    <IconArrowDown/>
+                    {isSidebarOpen && <IconArrowDown/>}
                   </button>
                   <div className="dropdown-menu">
                     <Link
@@ -214,6 +209,8 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
               <Link key={index} href={item.id} className={`nav-item ${isActive ? "active" : ""}`}>
                 {item.icon}
                 <span className="nav-label">{item.label}</span>
+                {/* 🚀 IBINALIK KO ITO PARA LALABAS YUNG PULANG BILOG */}
+                {item.badge && <span className="nav-badge">{item.badge}</span>}
               </Link>
             );
           })}

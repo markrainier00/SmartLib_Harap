@@ -70,7 +70,7 @@ export default function Topbar({ isSidebarOpen }: TopbarProps) {
     };
   }, [school_id]);
 
-  // 🚀 BAGONG FUNCTION: Para ma-clear ang Notifs
+  // 🚀 CLEAR ALL NOTIFICATIONS LOGIC
   const handleClearNotifs = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Para hindi magsara yung dropdown kapag kinlick
     if (!school_id) return;
@@ -83,7 +83,7 @@ export default function Topbar({ isSidebarOpen }: TopbarProps) {
       const data = await res.json();
       
       if (data.isSuccess) {
-        setNotifs([]); // Linisin ang screen
+        setNotifs([]); // Linisin ang screen agad
       }
     } catch (err) {
       console.error("Failed to clear notifications", err);
@@ -160,7 +160,6 @@ export default function Topbar({ isSidebarOpen }: TopbarProps) {
         .clear-btn { background: none; border: none; font-size: 12px; color: #c94040; font-weight: 700; cursor: pointer; transition: all 0.2s; padding: 4px 8px; border-radius: 4px; }
         .clear-btn:hover { background: #ffebeb; }
 
-        /* 🎨 Notif Item Clickable Styles */
         .notif-item { 
           padding: 14px 20px; 
           border-bottom: 1px solid #EBF7F0; 
@@ -221,7 +220,6 @@ export default function Topbar({ isSidebarOpen }: TopbarProps) {
               <div className="dropdown notif-panel open">
                 <div className="notif-head">
                   <h4>Notifications</h4>
-                  {/* 🚀 BAGONG CLEAR ALL BUTTON */}
                   {notifs.length > 0 && (
                     <button className="clear-btn" onClick={handleClearNotifs}>
                       Clear All
@@ -233,8 +231,8 @@ export default function Topbar({ isSidebarOpen }: TopbarProps) {
                   <div 
                     key={n.id} 
                     className={`notif-item ${n.read ? '' : 'unread'}`}
-                    onClick={() => {
-                      // 🚀 SMART REDIRECTION LOGIC
+                    onClick={async () => {
+                      // 1. SMART REDIRECTION LOGIC
                       if (role === 'Admin' || role === 'Staff') {
                         const message = n.msg.toLowerCase();
                         
@@ -245,7 +243,16 @@ export default function Topbar({ isSidebarOpen }: TopbarProps) {
                         }
                       }
 
-                      // Mark locally as read
+                      // 2. 🚀 SABIHAN ANG DATABASE NA NABASA NA ITO
+                      try {
+                        await fetch(`http://localhost:8080/api/notifications/read/${n.id}`, {
+                          method: "PUT"
+                        });
+                      } catch (err) {
+                        console.error("Failed to mark as read in DB", err);
+                      }
+
+                      // 3. Mark locally as read (Para mag-update agad yung UI)
                       setNotifs(prev => prev.map(notif => notif.id === n.id ? { ...notif, read: true } : notif));
                     }}
                   >
