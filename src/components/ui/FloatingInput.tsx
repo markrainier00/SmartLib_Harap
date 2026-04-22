@@ -68,7 +68,7 @@ export default function FloatingInput({
                 style={{
                     width: "100%",
                     border: `1.5px solid ${focused ? "var(--color-primary-deep)" : "var(--color-muted)"}`,
-                    borderRadius: 11,
+                    borderRadius: 10,
                     padding: "11px 13px",
                     fontSize: 13.5,
                     outline: "none",

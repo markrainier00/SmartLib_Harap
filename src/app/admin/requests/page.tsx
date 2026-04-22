@@ -20,7 +20,7 @@ export default function AdminRequestsPage() {
   
   const [isLoadingOpen, setIsLoadingOpen] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Processing...");
-  const [isSystemResponseOpen, setSystemResponseOpen] = useState(false);
+  const [systemResponseOpen, setSystemResponseOpen] = useState(false);
   const [systemResponse, setSystemResponse] = useState("");
 
   const [search, setSearch] = useState("");
@@ -279,7 +279,7 @@ export default function AdminRequestsPage() {
       )}
           
       {/* Modal for displaying messages */}
-      <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
+      <Modal isOpen={systemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
       <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
     </>
   );

@@ -20,8 +20,6 @@ export default function AdminHistoryPage() {
   const TABS = ["All", "Approve", "Reject", "Borrow", "Return"];
   const PER_PAGE = 10;
 
-  const [viewTx, setViewTx] = useState<any>(null);
-
   useEffect(() => {
     const fetchData = async () => {
       try {

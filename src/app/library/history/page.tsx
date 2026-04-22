@@ -48,7 +48,6 @@ export default function HistoryPage() {
   const filtered = historyData.filter(item =>
     activeTab === "All" ? true : item.event === activeTab
   );
-  // Reset to page 1 when tab changes
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);

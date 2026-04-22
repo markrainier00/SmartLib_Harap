@@ -3,14 +3,11 @@
 import { api } from "@/lib/api";
 import { useUser } from "@/lib/user";
 import React, { useState, useEffect } from "react";
-import { IconBookmark, IconLogo, IconShelf, IconX } from "@/components/icons";
+import { IconLogo, IconShelf, IconX } from "@/components/icons";
 import BookCard from "@/components/BookCard";
 import LoadingModal from "@/components/LoadingModal";
 import Modal from "@/components/Modal";
 import { BookDetails } from "@/components/BookDetails";
-import { title } from "process";
-
-const CATS = ["All", "Computer Science", "Mathematics", "Chemistry", "Economics", "Medicine", "Engineering"];
 
 export default function LibraryPage() {
   const { firstName, school_id, program } = useUser();
@@ -47,8 +44,8 @@ export default function LibraryPage() {
   const fetchWishlist = async () => {
     try {
       const json = await api.get(`/api/transactions/getWishlist/${school_id}`);
-      if (json.retCode === "200") {
-        setSavedBooks(json.data);
+      if (json.isSuccess) {
+        setSavedBooks(json.data.map((w: any) => w.isbn));
       } else {
         setSystemResponse("Failed to the wishlist");
       }
@@ -57,13 +54,14 @@ export default function LibraryPage() {
     }
   };
   useEffect(() => {
+  console.log("school_id is:", school_id);
     if (!school_id) return;
     fetchWishlist();
   }, [school_id]);
 
   const fetchRequests = async () => {
     try {
-      const json = await api.get(`/api/transactions/getRequests/${school_id}`);console.log("Response:", json);
+      const json = await api.get(`/api/transactions/getRequests/${school_id}`);
       if (json.isSuccess) {
         setRequestedBooks(json.data);
       }
@@ -129,7 +127,6 @@ export default function LibraryPage() {
           school_id,
           isbn: book.isbn,
         });
-
         setSavedBooks(prev => prev.filter(id => id !== book.isbn));
         setSystemResponse("Removed from wishlist");
       } else {
@@ -186,11 +183,15 @@ export default function LibraryPage() {
       <style>{`
         .rec-book { flex-shrink: 0; width: 140px; cursor: pointer; }
         .rec-book:hover .bk-cover { transform: translateY(-4px); box-shadow: 6px 8px 20px rgba(0,0,0,.2); }
-        .rb-title { font-size: 14px; font-weight: 500; color: #102A1C; margin-top: 5px; 
-
-        white-space: nowrap;      /* keep it on one line */
-        overflow: hidden;         /* hide the overflow */
-        text-overflow: ellipsis;}
+        .rb-title { 
+          font-size: 14px;
+          font-weight: 500;
+          color: #102A1C;
+          margin-top: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
 
         .bookmark-btn {
           background: none;
@@ -390,7 +391,7 @@ export default function LibraryPage() {
       </div>
       
       {/* Modal for displaying messages */}
-      <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} />
+      <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
       <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
       
       {/* ── SIDE PANEL ── */}

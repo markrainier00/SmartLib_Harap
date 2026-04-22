@@ -542,24 +542,27 @@ export default function AuthPage() {
             {step === 5 && (<>
               <button className="back" onClick={() => { setStep(4); clearAlerts(); }}><IconBack /> Back</button>
               <form onSubmit={handleRegister}>
-                <div className="form-row">
+                <div style={{ padding: "10px", maxHeight: "400px", overflow: "auto" }}>
+                  <FloatingInput
+                    label="First Name"
+                    type="text"
+                    value={register.firstName}
+                    onChange={e => handleNameChange(e, "firstName")}
+                    required
+                  />
+                  <FloatingInput
+                    label="Last Name"
+                    type="text"
+                    value={register.lastName}
+                    onChange={e => handleNameChange(e, "lastName")}
+                    required
+                  />
                   <div className="field">
-                    <label htmlFor="firstName">First Name</label>
-                    <input id="firstName" type="text" placeholder="Juan" value={register.firstName} onChange={e => handleNameChange(e, "firstName")} required />
-                  </div>
-                  <div className="field">
-                    <label htmlFor="lastName">Last Name</label>
-                    <input id="lastName" type="text" placeholder="Dela Cruz" value={register.lastName} onChange={e => handleNameChange(e, "lastName")} required />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="field">
-                    <label htmlFor="department">Department</label>
-                    <select
-                      id="department"
-                      value={register.department}
-                      onChange={e => setReg({ department: e.target.value, program: "", year: "" })}
-                      required>
+                    <label htmlFor="department" style={{ color: "var(--color-primary)" }}>Department</label>
+                    <select id="department" value={register.department}
+                      style={{ border: "1.5px solid var(--color-muted)" }}
+                      onChange={e => setReg({ department: e.target.value, program: "", year: "" })} required
+                    >
                       <option value="" disabled>Select department</option>
                       {departments.map((dept: string) => (
                         <option key={dept} value={dept}>{dept}</option>
@@ -567,8 +570,11 @@ export default function AuthPage() {
                     </select>
                   </div>
                   <div className="field">
-                    <label htmlFor="program">Program</label>
-                    <select id="program" value={register.program} onChange={e => setReg({ program: e.target.value, year: "" })} required disabled={!register.department}>
+                    <label htmlFor="program" style={{ color: "var(--color-primary)" }}>Program</label>
+                    <select id="program" title="Based on department" value={register.program}
+                      style={{ border: "1.5px solid var(--color-muted)" }}
+                      onChange={e => setReg({ program: e.target.value, year: "" })} required disabled={!register.department}
+                    >
                       <option value="" disabled>Select</option>
                       {programs.map((prog: string) => (
                         <option key={prog} value={prog}>{prog}</option>
@@ -576,38 +582,41 @@ export default function AuthPage() {
                     </select>
                   </div>
                   <div className="field">
-                    <label htmlFor="year">Year Level</label>
-                    <select id="year" value={register.year} onChange={e => setReg({ year: e.target.value })} required disabled={!register.program}>
+                    <label htmlFor="year" style={{ color: "var(--color-primary)" }}>Year Level</label>
+                    <select id="year" title="Based on program" value={register.year}
+                      style={{ border: "1px solid var(--color-muted)" }}
+                      onChange={e => setReg({ year: e.target.value })} required disabled={!register.program}
+                    >
                       <option value="" disabled>Select</option>
                       {yearOptions.map((year: string) => (
                         <option key={year} value={year}>{year}</option>
                       ))}
                     </select>
                   </div>
-                </div>
-                <div className="field">
-                  <label htmlFor="schoolidImage" >School ID Upload (For Identity Verification)</label>
-                  <input id="schoolidImage" aria-label="Upload School ID Photo" ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleSchoolIdImage} />
-                  {!schoolIdPreview ? (
-                    <div className="upload" onClick={() => fileInputRef.current?.click()}>
-                      <div className="upload-icon"><IconImage/></div>
-                      <div className="upload-text">Click to upload your School ID photo</div>
-                      <div className="upload-hint">JPG, PNG, WEBP — max 2MB</div>
-                    </div>
-                  ) : (
-                    <div className="upload has-img">
-                      <div className="img-wrap">
-                        <img src={schoolIdPreview} alt="School ID preview" className="img-preview" />
-                        <button type="button" aria-label="Remove School ID Photo" className="img-remove" onClick={removeSchoolIdImage}>
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                          </svg>
-                        </button>
+                  <div className="field">
+                    <label htmlFor="schoolidImage" style={{ color: "var(--color-primary)" }}>School ID Upload (For Identity Verification)</label>
+                    <input id="schoolidImage" aria-label="Upload School ID Photo" ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleSchoolIdImage} />
+                    {!schoolIdPreview ? (
+                      <div className="upload" onClick={() => fileInputRef.current?.click()}>
+                        <div className="upload-icon"><IconImage/></div>
+                        <div className="upload-text">Click to upload your School ID photo</div>
+                        <div className="upload-hint">JPG, PNG, WEBP — max 2MB</div>
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="upload has-img">
+                        <div className="img-wrap">
+                          <img src={schoolIdPreview} alt="School ID preview" className="img-preview" />
+                          <button type="button" aria-label="Remove School ID Photo" className="img-remove" onClick={removeSchoolIdImage}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <button type="submit" className="btn" disabled={ui.loading}>
+                <button type="submit" className="btn mt-5" disabled={ui.loading}>
                   {ui.loading ? <><div className="loading-text" /> Creating Account…</> : "Create Account"}
                 </button>
               </form></>

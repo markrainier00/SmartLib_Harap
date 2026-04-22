@@ -104,7 +104,7 @@
     text-align: center;
     background: #ffffff;
     padding: 0;
-    border-radius: 24px;
+    border-radius: 10px;
     z-index: 1000;
     max-width: 580px;
     width: 100%;
@@ -146,7 +146,7 @@
     animation: fadeIn .2s ease;
   }
   .card {
-    @apply bg-white rounded-[28px] w-full max-w-110 relative z-10 flex flex-col;
+    @apply bg-white rounded-[10px] w-full max-w-110 relative z-10 flex flex-col;
     padding: 32px 36px;
     box-shadow: 0 32px 80px rgba(27, 94, 53, 0.15);
     transition: all 0.3s ease-in-out;
@@ -432,7 +432,7 @@
   /* ── Page tabs ── */
   .page-tabs {
     display: flex;
-    border-bottom: 2px solid var(--color-primary);
+    border-bottom: 1px solid var(--color-subtext);
     margin-bottom: 24px;
     gap: 8px;
   }
@@ -788,19 +788,6 @@
     z-index: 2;
     line-height: 1.5;
   }
-
-  .profile-pill {
-    display: flex; align-items: center; gap: 10px;
-    background: #EBF7F0;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    padding: 10px;
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .profile-pill:hover, .profile-pill.active { background: #fff; border-color: #C3DDD0; box-shadow: 0 4px 12px rgba(27,94,53,.08); }
-  .profile-pill span { font-size: 13.5px; font-weight: 600; color: #102A1C; }
-
 }
 
 /* ── Utilities ── */

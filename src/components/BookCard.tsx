@@ -25,12 +25,13 @@ export default function BookCard({ book, onClick, handleWishlist, isSaved }: Boo
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div className="rb-title">
+        <div className="rb-title" title={book.title}>
           {book.title?.length > 24 ? book.title.slice(0, 24) + "…" : book.title}
         </div>
 
-        <button className="bookmark-btn" onClick={(e) => handleWishlist(e, book)}>
-          {isSaved ? <IconBookmark className="fill-primary" /> : <IconBookmark />}
+        <button className="bookmark-btn" onClick={(e) => handleWishlist(e, book)}
+          style={{ color: isSaved ? "var(--color-primary, #1B5E35)" : "#fff" }}
+        ><IconBookmark style={{ fill: "currentColor" }}  />
         </button>
       </div>
 
