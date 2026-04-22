@@ -1,5 +1,6 @@
 import React from "react";
 import { IconX, IconEdit, IconTrash, IconLogo } from "@/components/icons";
+import FloatingInput from "./ui/FloatingInput";
 
 interface Book {
   id: string;
@@ -24,9 +25,14 @@ interface BookDetailsProps {
   onEdit?: (book: Book) => void;
   onDelete?: (book: Book) => void;
   handleBookRequest?: (pickupDate: string) => void;
+  handleWishlist?: (e: React.MouseEvent | null, book: Book) => void;
+  isSaved?: boolean;
 }
 
-export const BookDetails: React.FC<BookDetailsProps> = ({ book, mode = "view", onClose, role, onEdit, onDelete, handleBookRequest }) => {
+export const BookDetails: React.FC<BookDetailsProps> = ({ 
+  book, mode = "view", onClose, role, onEdit, onDelete, 
+  handleBookRequest, handleWishlist, isSaved 
+}) => {
     const [imgError, setImgError] = React.useState<{ [key: string]: boolean }>({});
     const [requestStep, setRequestStep] = React.useState<"details" | "form">("details");
     const [pickupDate, setPickupDate] = React.useState("");
@@ -126,53 +132,49 @@ export const BookDetails: React.FC<BookDetailsProps> = ({ book, mode = "view", o
         )}
 
         {role === "Student" && handleBookRequest && (
-        <>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
             {requestStep === "details" && (
-            <div style={{ display: "flex", gap: "10px" }}>
+              <>
                 {book.available ? (
-                <button
-                    style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: "#1B5E35", color: "#fff", fontWeight: 600, cursor: "pointer" }}
-                    onClick={() => setRequestStep("form")}
-                >
-                    Request
-                </button>
+                  <button className="btn" onClick={() => setRequestStep("form")}>Request</button>
                 ) : (
-                <button
-                    style={{ width: "100%", padding: "14px", borderRadius: "12px", border: "none", background: "#e89940", color: "#fff", fontWeight: 600, cursor: "pointer" }}
-                    onClick={() => { alert('You are now in queue!'); onClose(); }}
-                >
-                    Notify When Available
-                </button>
+                  <button
+                    className="btn"
+                    style={{
+                      background: isSaved ? "#fff" : "#1B5E35",
+                      color: isSaved ? "#1B5E35" : "#fff",
+                      border: "2px solid #1B5E35",
+                      boxShadow: "none"
+                    }}
+                    onClick={(e) => handleWishlist && handleWishlist(e, book)}
+                  >
+                    {isSaved ? "Remove from Wishlist" : "Add to Wishlist"}
+                  </button>
                 )}
-            </div>
+              </>
             )}
 
             {requestStep === "form" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                <input
-                type="date"
-                value={pickupDate}
-                onChange={(e) => setPickupDate(e.target.value)}
-                style={{ padding: "10px", borderRadius: "10px", border: "1px solid #C3DDD0" }}
-                />
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <FloatingInput label="Pickup Date" type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)}/>
                 <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                    style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "none", background: "#1B5E35", color: "#fff", fontWeight: 600 }}
+                  <button
+                    style={{ flex: 1, padding: "10px", borderRadius: "12px", border: "none", background: "#1B5E35", color: "#fff", fontWeight: 600 }}
                     onClick={() => handleBookRequest(pickupDate)}
                     disabled={!pickupDate}
-                >
+                  >
                     Confirm
-                </button>
-                <button
-                    style={{ flex: 1, padding: "14px", borderRadius: "12px", border: "2px solid #C3DDD0", background: "#fff", color: "#1B5E35", fontWeight: 600 }}
+                  </button>
+                  <button
+                    style={{ flex: 1, padding: "10px", borderRadius: "12px", border: "2px solid #C3DDD0", background: "#fff", color: "#1B5E35", fontWeight: 600 }}
                     onClick={() => setRequestStep("details")}
-                >
+                  >
                     Cancel
-                </button>
+                  </button>
                 </div>
-            </div>
+              </div>
             )}
-        </>
+          </div>
         )}
         </div>
       </div>

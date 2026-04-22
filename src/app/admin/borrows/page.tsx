@@ -6,7 +6,6 @@ import React, { useState, useEffect } from "react";
 import { IconSearch, IconX } from "@/components/icons";
 import DataTable from "@/components/DataTable";
 import FloatingInput from "@/components/ui/FloatingInput";
-import FloatingTextarea from "@/components/ui/FloatingTextarea";
 import Modal from "@/components/Modal";
 import LoadingModal from "@/components/LoadingModal";
 
@@ -189,7 +188,15 @@ export default function AdminRequestsPage() {
                 render: (r) => (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", justifyContent: "center" }}>
                         <button className="badge" style={{ background: "var(--color-success)", color: "#ffffff", cursor: "pointer", fontWeight: "300" }}
-                            onClick={() => {setBorrowSchoolId(r.school_id); setBorrowIsbn(r.isbn); setBorrowModal({ mode:"process", ...r })}}
+                            onClick={() => {
+                                const student = userMap.get(r.school_id) || null;
+                                const book = bookMap.get(r.isbn) || null;
+                                setSelectedStudent(student);
+                                setSelectedBook(book);
+                                setBorrowSchoolId(r.school_id);
+                                setBorrowIsbn(r.isbn);
+                                setBorrowModal({ mode: "process", ...r });
+                            }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.background = "#1b7d3c";
                             }}
@@ -241,6 +248,7 @@ export default function AdminRequestsPage() {
                 violation_count: violationCount,
                 violation: violation,
                 overdue_point: overduePoint,
+                staff: fullName,
             });
         
             if (json.retCode === "200") {
@@ -342,7 +350,8 @@ export default function AdminRequestsPage() {
                 const q = query.toLowerCase();
 
                 const results = data.filter((item) =>
-                    (item.name?.toLowerCase().includes(q)) ||
+                    (item.firstname?.toLowerCase().includes(q)) ||
+                    (item.lastname?.toLowerCase().includes(q)) ||
                     (item.title?.toLowerCase().includes(q)) ||
                     (item.school_id?.toLowerCase().includes(q)) ||
                     (item.isbn?.toLowerCase().includes(q))
@@ -355,28 +364,51 @@ export default function AdminRequestsPage() {
         }, [query, data]);
 
         return (
-            <div className="search-wrapper">
+            <div className="search-wrapper" style={{ maxWidth: "none" }}>
                 <input placeholder={label} value={query} onChange={(e) => setQuery(e.target.value)} style={{ paddingLeft: "14px", background: "#ffffff", marginBottom: "10px"}}/>
 
                 {filtered.length > 0 && (
                     <div className="borrow-list">
-                        {filtered.map((item) => (
+                    {filtered.map((item) => {
+                        const name = item.firstname && item.lastname
+                        ? `${item.firstname} ${item.lastname}`
+                        : item.title || "Unknown";
+
+                        const meta = item.school_id || item.isbn || "";
+
+                        return (
                             <div
                                 key={item.id}
                                 className="borrow-item"
                                 onClick={() => {
-                                    onSelect(item);
-                                    setQuery("");
-                                    setFiltered([]);
+                                onSelect(item);
+                                setQuery("");
+                                setFiltered([]);
                                 }}
                             >
-                                {item.name || item.title} ({item.school_id || item.isbn})
+                                {name} {meta && `(${meta})`}
                             </div>
-                        ))}
+                        );
+                    })}
                     </div>
                 )}
             </div>
         );
+    };
+
+    const closeBorrowModal = () => {
+        setBorrowModal(null);
+        setBorrowSchoolId("");
+        setBorrowIsbn("");
+        setReturnDate("");
+        setSelectedStudent(null);
+        setSelectedBook(null);
+    };
+    const closeReturnModal = () => {
+        setReturnedModal(null);
+        setCheckboxCondition([]);
+        setOtherCondition([]);
+        setBookCondition("");
     };
 
     return (
@@ -434,10 +466,10 @@ export default function AdminRequestsPage() {
         {/* ── Modal: Borrow ── */}
         {borrowModal && (
             <form onSubmit={handleBorrow}>
-            <div className="overlay" onClick={() => setBorrowModal(null)}>
+            <div className="overlay"  onClick={closeBorrowModal}>
                 <div className="modal" style={{ maxHeight: "700px"}} onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <button className="close" onClick={() => setBorrowModal(null)} ><IconX/></button>
+                    <button className="close"  onClick={closeBorrowModal}><IconX/></button>
                 </div>
                 <div className="modal-scroll">
                     <div style={{ textAlign: "center" }}>
@@ -446,16 +478,10 @@ export default function AdminRequestsPage() {
 
                     <div style={{ marginTop: "20px", marginBottom: "20px", textAlign: "right" }}>
                         {borrowModal.mode === "add" ? (
-                            <div className="form-row">
-                                <div style={{ display:"flex", flexDirection:"column" }}>
-                                    <SearchSelect
-                                        label="Student"
-                                        data={users}
-                                        onSelect={(user) => {
-                                            setSelectedStudent(user);
-                                            setBorrowSchoolId(user.school_id);
-                                        }}
-                                    />
+                            <div>
+                                <div style={{ display:"flex", flexDirection:"column", width:"100%" }}>
+                                    <div><p style={{ color: "var(--color-primary)", textAlign: "center", fontWeight: "700" }}>User Details</p>
+                                    <SearchSelect label="Student" data={users} onSelect={(user) => { setSelectedStudent(user); setBorrowSchoolId(user.school_id); }} />
                                     {selectedStudent && (
                                         <div className="book-preview">
                                             <div><strong>Name:</strong> {selectedStudent.firstname} {selectedStudent.lastname}</div>
@@ -465,16 +491,10 @@ export default function AdminRequestsPage() {
                                             <div><strong>Offense:</strong> {selectedStudent.offense_count ?? 0}</div>
                                         </div>
                                     )}
-                                </div>
-                                <div style={{ display:"flex", flexDirection:"column" }}>
-                                    <SearchSelect
-                                        label="Book"
-                                        data={books}
-                                        onSelect={(book) => {
-                                            setSelectedBook(book);
-                                            setBorrowIsbn(book.isbn);
-                                        }}
-                                    />
+                                </div></div>
+                                <div style={{ display:"flex", flexDirection:"column", width:"100%" }}>
+                                    <div><p style={{ color: "var(--color-primary)", textAlign: "center", fontWeight: "700" }}>Book Details</p>
+                                    <SearchSelect label="Book" data={books} onSelect={(book) => { setSelectedBook(book); setBorrowIsbn(book.isbn); }} />
                                     {selectedBook && (
                                         <div className="book-preview">
                                             <div><strong>Title:</strong> {selectedBook.title}</div>
@@ -485,28 +505,29 @@ export default function AdminRequestsPage() {
                                             <div><strong>Copies Available:</strong> {selectedBook.available}</div>
                                         </div>
                                     )}
-                                </div>
+                                </div></div>
                             </div>
                         ) : (
-                            <div className="form-row">
+                            <div style={{ display: "flex", flexDirection: "column", marginBottom: "10px" }}>
+                                <div><p style={{ color: "var(--color-primary)", textAlign: "center", fontWeight: "700" }}>User Details</p>
                                 <div className="book-preview">
                                     <div><strong>Name:</strong> {selectedStudent.firstname} {selectedStudent.lastname}</div>
                                     <div><strong>School ID:</strong> {selectedStudent.school_id}</div>
                                     <div><strong>Department:</strong> {selectedStudent.department}</div>
                                     <div><strong>Program:</strong> {selectedStudent.program}</div>
                                     <div><strong>Offense:</strong> {selectedStudent.offense_count ?? 0}</div>
-                                </div>
+                                </div></div>
+                                <div><p style={{ color: "var(--color-primary)", textAlign: "center", fontWeight: "700" }}>Book Details</p>
                                 <div className="book-preview">
                                     <div><strong>Title:</strong> {selectedBook.title}</div>
                                     <div><strong>Author:</strong> {selectedBook.author}</div>
                                     <div><strong>ISBN:</strong> {selectedBook.isbn}</div>
                                     <div><strong>Edition:</strong> {selectedBook.edition}</div>
                                     <div><strong>Pages:</strong> {selectedBook.pages}</div>
-                                    <div><strong>Copies Available:</strong> {selectedBook.available}</div>
-                                </div>
+                                </div></div>
                             </div>
                         )}
-                        <div className="form-row">
+                        <div className="form-row mt-3">
                             <FloatingInput label="Borrow Date" type="text" value={new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", })}/>
                             <FloatingInput label="Return Date" type="date" placeholder=" " value={returnDate}
                                 onChange={handleChange}
@@ -528,20 +549,38 @@ export default function AdminRequestsPage() {
         {/* ── Modal: Return ── */}
         {returnedModal && (
             <form onSubmit={handleReturn}>
-            <div className="overlay" onClick={() => setReturnedModal(null)}>
+            <div className="overlay" onClick={closeReturnModal}>
                 <div className="modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <button className="close" onClick={() => setReturnedModal(null)} ><IconX/></button>
+                    <button className="close" onClick={closeReturnModal}><IconX/></button>
                 </div>
                 <div className="modal-scroll">
                     <div style={{ textAlign: "center" }}>
                         <div className="page-header">Book Return</div>
                     </div>
-                    <div style={{ marginTop: "20px", marginBottom: "20px", textAlign: "right" }}>
-                        <div className="form-row">
-                            <FloatingInput label="School ID" type="text" value={returnedModal.school_id}/>
-                            <FloatingInput label="Book ISBN" type="text" value={returnedModal.isbn}/>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <div>
+                            <p style={{ color: "var(--color-primary)", textAlign: "center", fontWeight: "700" }}>User Details</p>
+                            <div className="book-preview">
+                                <div><strong>Name:</strong> {userMap.get(returnedModal.school_id)?.firstname} {userMap.get(returnedModal.school_id)?.lastname}</div>
+                                <div><strong>School ID:</strong> {returnedModal.school_id}</div>
+                                <div><strong>Department:</strong> {userMap.get(returnedModal.school_id)?.department}</div>
+                                <div><strong>Program:</strong> {userMap.get(returnedModal.school_id)?.program}</div>
+                                <div><strong>Offense:</strong> {userMap.get(returnedModal.school_id)?.offense_count ?? 0}</div>
+                            </div>
                         </div>
+                        <div>
+                            <p style={{ color: "var(--color-primary)", textAlign: "center", fontWeight: "700" }}>Book Details</p>
+                            <div className="book-preview">
+                                <div><strong>Title:</strong> {bookMap.get(returnedModal.isbn)?.title}</div>
+                                <div><strong>Author:</strong> {bookMap.get(returnedModal.isbn)?.author}</div>
+                                <div><strong>ISBN:</strong> {returnedModal.isbn}</div>
+                                <div><strong>Edition:</strong> {bookMap.get(returnedModal.isbn)?.edition}</div>
+                                <div><strong>Pages:</strong> {bookMap.get(returnedModal.isbn)?.pages}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ marginTop: "10px", marginBottom: "10px", textAlign: "right" }}>
                         <div className="form-row">
                             <FloatingInput label="Borrow Date" type="text" value={returnedModal?.created_at
                                 ? new Date(returnedModal.borrow_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", }) 

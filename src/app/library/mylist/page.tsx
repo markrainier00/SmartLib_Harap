@@ -5,8 +5,10 @@ import { useUser } from "@/lib/user";
 import { api } from "@/lib/api"
 import DataTable from "@/components/DataTable";
 import { IconLogo } from "@/components/icons";
+import Modal from "@/components/Modal";
+import LoadingModal from "@/components/LoadingModal";
 
-const TABS = ["Pending Request", "Active Borrow", "Wishlist"];
+const TABS = ["Active Borrow", "Pending Request", "Wishlist"];
 const PER_PAGE = 10;
 
 export default function MyListPage() {
@@ -15,10 +17,15 @@ export default function MyListPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [books, setBooks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("Pending Request");
+  const [activeTab, setActiveTab] = useState("Active Borrow");
   const [imgError, setImgError] = useState<{ [key: string]: boolean }>({});
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [isLoadingOpen, setIsLoadingOpen] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Processing...");
+  const [isSystemResponseOpen, setSystemResponseOpen] = useState(false);
+  const [systemResponse, setSystemResponse] = useState("");
+  
   useEffect(() => {
     if (!school_id) return;
 
@@ -37,7 +44,7 @@ export default function MyListPage() {
         if (booksRes.isSuccess || booksRes.retCode === "200") setBooks(booksRes.data || []);
         
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch requests", err);
       } finally {
         setIsLoading(false);
       }
@@ -49,8 +56,8 @@ export default function MyListPage() {
   const activeBorrows = transactions.filter( t => t.status === "Borrowed" );
 
   let filtered = [];
-  if (activeTab === "Pending Request") filtered = pendingRequests;
   if (activeTab === "Active Borrow") filtered = activeBorrows;
+  if (activeTab === "Pending Request") filtered = pendingRequests;
   if (activeTab === "Wishlist") filtered = wish;
 
   useEffect(() => {
@@ -128,10 +135,10 @@ export default function MyListPage() {
   const tabColumn = {
     Requested: [
       {
-        header: "Copies Available",
+        header: "Pickup Date",
         thStyle: { textAlign: "center" as const },
         tdStyle: { textAlign: "center" as const },
-        render: (r: any) => bookMap.get(r.isbn)?.available,
+        render: (r: any) => new Date(r.pickup_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
       },
       {
         header: "Date of Request",
@@ -165,42 +172,49 @@ export default function MyListPage() {
   };
   const bookColumns = [
     ...listColumn,
-    ...(activeTab === "Pending Request" ? tabColumn.Requested : []),
     ...(activeTab === "Active Borrow" ? tabColumn.Borrowed : []),
+    ...(activeTab === "Pending Request" ? tabColumn.Requested : []),
     ...(activeTab === "Wishlist" ? tabColumn.Wishlist : []),
   ];
 
   return (
-    <div className="page-layout fadeUp">
-      <div className="page-header">My Books</div>
-      <div className="page-sub">Track your book requests and active borrows</div>
+    <>
+    <div className="app">
+      <div className="page-layout fadeUp">
+        <div className="page-header">My Books</div>
+        <div className="page-sub">Track your book requests and active borrows</div>
 
-      {/* Tabs */}
-      <div className="page-tabs">
-        {TABS.map(tab => (
-          <button
-            key={tab}
-            className={`page-tab ${activeTab === tab ? "active" : ""}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
+        {/* Tabs */}
+        <div className="page-tabs">
+          {TABS.map(tab => (
+            <button
+              key={tab}
+              className={`page-tab ${activeTab === tab ? "active" : ""}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={bookColumns}
+          data={paginated}
+          loading={isLoading}
+          emptyText="No books found."
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={paginated.length}
+          perPage={PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
-
-      {/* Table */}
-      <DataTable
-        columns={bookColumns}
-        data={paginated}
-        loading={isLoading}
-        emptyText="No books found."
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={paginated.length}
-        perPage={PER_PAGE}
-        onPageChange={setCurrentPage}
-      />
-
     </div>
+
+    {/* Modal for displaying messages */}
+    <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
+    <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
+    </>
   );
 }

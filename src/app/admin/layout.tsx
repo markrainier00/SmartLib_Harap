@@ -24,7 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="app" style={{ display: "flex" }}>
       <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="main" style={{ flex: 1 }}>
-        <Topbar isSidebarOpen={isSidebarOpen} />
+        <Topbar isSidebarOpen={isSidebarOpen}  toggleSidebar={toggleSidebar}/>
         <div className="content">
           {children}
         </div>

@@ -2,7 +2,8 @@
 import { api } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { IconActiveBorrow, IconBookRequests, IconRegistrationRequests, IconLogo } from "@/components/icons";
+import { IconScan, IconRegistration, IconBooks } from "@/components/icons";
+import ScannerModal from "@/components/ui/ScannerModal";
 
 export default function StaffDashboard() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function StaffDashboard() {
   const [requests, setRequests] = useState<any[]>([]);
   const [borrows, setBorrows] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
   
   const [currentUser, setCurrentUser] = useState<any>(null);
 
@@ -24,70 +26,93 @@ export default function StaffDashboard() {
         router.replace("/");
       }
     }
-      const fetchData = async () => {
-          setIsLoading(true);
-          try {
-              const [registrationRes, requestRes, borrowRes] = await Promise.all([
-                  api.get(`/api/admin/registrations`),
-                  api.get("/api/transactions/getBookBorrowRequest"),
-                  api.get("/api/transactions/getActiveBorrow"),
-              ]);
-  
-              if (registrationRes.data) setRequests(registrationRes.data.filter((u: any) => u.status === "Pending" && u.role === "Student").length);
-              if (requestRes.data) setRegistrations(requestRes.data.length);
-              if (borrowRes.data) setBorrows(borrowRes.data.length);
-          } catch (err) {
-              console.error("Failed to fetch requests", err);
-          } finally {
-              setIsLoading(false);
-          }
-      };
-      fetchData();
+    
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const [registrationRes, requestRes, borrowRes] = await Promise.all([
+                api.get(`/api/admin/pendingUsers`),
+                api.get("/api/transactions/getBookBorrowRequest"),
+                api.get("/api/transactions/getActiveBorrow"),
+            ]);
+
+            if (requestRes.data) setRequests(requestRes.data.length);
+            if (registrationRes.data) setRegistrations(registrationRes.data.length);
+            if (borrowRes.data) setBorrows(borrowRes.data.length);
+        } catch (err) {
+            console.error("Failed to fetch requests", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    fetchData();
   }, [router]);
 
 
   if (!currentUser) return null;
 
+  const Spinner = () => (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+      <div style={{
+        width: "28px", height: "28px",
+        border: "3px solid rgba(42,112,64,0.2)",
+        borderTop: "3px solid #2a7040",
+        borderRadius: "50%",
+        animation: "spin 0.8s linear infinite",
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+
   return (
-    <div className="page-layout fadeUp">
-      <div className="hero relative">
-        <div className="page-header text-white">Hello, {currentUser.firstname || 'Student'}!</div>
-        
-        <p className="page-sub text-white">
-          You have pending tasks that need your attention. Review new student registrations and book borrowing requests to keep the library moving.
-        </p>
-        <div className="summary-grid">
-          <div className="sum-card">
-            <div className="sum-num">{registrations}</div>
-            <div className="sum-label">Registration Requests</div>
-          </div>
-          <div className="sum-card">
-            <div className="sum-num">{requests}</div>
-            <div className="sum-label">Borrow Requests</div>
-          </div>
-          <div className="sum-card">
-            <div className="sum-num">{borrows}</div>
-            <div className="sum-label">Active Borrows</div>
+    <>
+    <div className="app">
+      <div className="page-layout fadeUp">
+        <div className="hero relative">
+          <div className="page-header text-white">Hello, {currentUser.firstname || 'Student'}!</div>
+          
+          <p className="page-sub text-white">Here's the overview of library activity</p>
+          <div className="summary-grid">
+            <div className="sum-card">
+              <div className="sum-num">{isLoading ? <Spinner /> : registrations}</div>
+              <div className="sum-label">Registration Requests</div>
+            </div>
+            <div className="sum-card">
+              <div className="sum-num">{isLoading ? <Spinner /> : requests}</div>
+              <div className="sum-label">Borrow Requests</div>
+            </div>
+            <div className="sum-card">
+              <div className="sum-num">{isLoading ? <Spinner /> : borrows}</div>
+              <div className="sum-label">Active Borrows</div>
+            </div>
           </div>
         </div>
-        <IconLogo className="absolute right-2 bottom-0 w-60 h-60 opacity-10 -rotate-12"/>
-      </div>
 
-      {/* QUICK ACTIONS */}
-      <div>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", marginBottom: 5 }}>Quick Actions</h3>
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap"}}>
-          <button className="btn"style={{ flex: "1 1 200px" }} onClick={() => router.push("/admin/scanner")}>
-            Scan QR
-          </button>
-          <button className="btn"style={{ flex: "1 1 200px" }} onClick={() => router.push("/admin/approvals")}>
-            Review Registrations
-          </button>
-          <button className="btn"style={{ flex: "1 1 200px" }} onClick={() => router.push("/admin/requests")}>
-            View Book Requests
-          </button>
+        <div style={{ padding: "32px 36px", background: "#ffffff", border: "1px solid var(--color-border)", borderRadius: "10px"}}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", marginBottom: 5 }}>Quick Actions</h3>
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap"}}>
+            <button className="btn"style={{ flex: "1 1 200px", flexDirection: "column", justifyContent: "center" }} onClick={() => setScannerOpen(true)}>
+              <IconScan/>
+              <p style={{ fontSize: "large" }}>Scan QR</p>
+            </button>
+            <button className="btn"style={{ flex: "1 1 200px", flexDirection: "column", justifyContent: "center" }} onClick={() => router.push("/admin/approvals")}>
+              <IconRegistration/>
+              <p style={{ fontSize: "large" }}>Review Registrations</p>
+            </button>
+            <button className="btn"style={{ flex: "1 1 200px", flexDirection: "column", justifyContent: "center" }} onClick={() => router.push("/admin/requests")}>
+              <IconBooks/><p style={{ fontSize: "large" }}>View Book Requests</p>
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
+    <ScannerModal
+      isOpen={scannerOpen}
+      onClose={() => setScannerOpen(false)}
+      onScan={(id) => console.log("Scanned:", id)}
+      onConfirmRelease={(reservation) => console.log("Released:", reservation)}
+    />
+    </>
   );
 }

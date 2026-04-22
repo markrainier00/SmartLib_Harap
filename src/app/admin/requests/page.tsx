@@ -9,9 +9,12 @@ import FloatingInput from "@/components/ui/FloatingInput";
 import FloatingTextarea from "@/components/ui/FloatingTextarea";
 import Modal from "@/components/Modal";
 import LoadingModal from "@/components/LoadingModal";
+import { useSearchParams, useRouter } from "next/navigation";
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminRequestsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { fullName }= useUser();
   const [requests, setRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,6 +52,17 @@ export default function AdminRequestsPage() {
   useEffect(() => {
     fetchRequests();
   }, []);
+
+  useEffect(() => {
+    const openId = searchParams.get("openRequest");
+    if (!openId || requests.length === 0) return;
+
+    const found = requests.find((r) => String(r.id) === openId);
+    if (found) {
+        setRequestModal({ mode: "approve", ...found });
+        router.replace("/admin/requests");
+    }
+  }, [requests, searchParams]);
 
   const handleRequest = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,256 +1,418 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { api } from "@/lib/api";
+import { useState, useEffect } from "react";
+import DataTable from "@/components/DataTable";
+import { IconSearch, IconX } from "@/components/icons";
+import Modal from "@/components/Modal";
+import LoadingModal from "@/components/LoadingModal";
+import FloatingInput from "@/components/ui/FloatingInput";
+import FloatingTextarea from "@/components/ui/FloatingTextarea";
+import { UserDetails } from "@/components/UserDetails";
+
+const STATUS = ["All Status", "Active", "Pending", "Locked"];
+const ROLES  = ["All Roles", "Student", "Staff", "Admin"];
 
 export default function SuperAdminAccounts() {
-  const [admins, setAdmins] = useState<any[]>([]);
-  const [students, setStudents] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [course, setCourse] = useState("");
-  const [year, setYear] = useState("");
-  const [modal, setModal] = useState<{ type: string | null; target: any }>({ type: null, target: null });
-  const [toast, setToast] = useState<{ show: boolean; msg: string; type: string }>({ show: false, msg: "", type: "ok" });
+  const [statusFilter, setStatusFilter] = useState("All Status");
+  const [roleFilter, setRoleFilter]     = useState("All Roles");
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectModal, setRejectModal] = useState<any>(null);
+  
+  const [isLoadingOpen, setIsLoadingOpen] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Processing...");
+  const [isSystemResponseOpen, setSystemResponseOpen] = useState(false);
+  const [systemResponse, setSystemResponse] = useState("");
 
-  // 🚀 STATE PARA SA ADD ADMIN FORM
-  const [adminForm, setAdminForm] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
-    password: "",
-    role: "Library Admin"
-  });
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [adminForm, setAdminForm] = useState({ firstname: "", lastname: "", email: "" });
+  
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    message: string | React.ReactNode;
+    onConfirm: () => void;
+    confirmLabel: string;
+    confirmColor: string;
+  }>({ open: false, title: "", message: "", onConfirm: () => {}, confirmLabel: "Confirm", confirmColor: "" });
 
-  const fireToast = (msg: string, type = "ok") => {
-    setToast({ show: true, msg, type });
-    setTimeout(() => setToast({ show: false, msg: "", type: "ok" }), 3000);
-  };
-  const closeModal = () => setModal({ type: null, target: null });
+  const closeConfirm = () => setConfirmModal(prev => ({ ...prev, open: false }));
 
-  // ==========================================
-  // 🚀 1. KUNIN ANG TOTOONG DATA SA DATABASE
-  // ==========================================
   const fetchAccounts = async () => {
+    setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/api/users/all");
-      const json = await res.json();
+      const json = await api.get("/api/admin/allUsers");
       
-      if (json.isSuccess && json.data) {
-        // Ihiwalay ang Admins
-        const dbAdmins = json.data
-          .filter((u: any) => u.role === "Admin" || u.role === "Superadmin")
-          .map((u: any) => ({
-            id: u.school_id, 
-            name: `${u.firstname} ${u.lastname}`,
-            email: u.email,
-            role: u.program || "Admin", // Display role
-            locked: u.status === "Locked",
-            added: new Date(u.created_at).toLocaleDateString()
-          }));
-        
-        // Ihiwalay ang Students
-        const dbStudents = json.data
-          .filter((u: any) => u.role === "Student")
-          .map((u: any) => ({
-            id: u.school_id,
-            name: `${u.firstname} ${u.lastname}`,
-            email: u.email,
-            course: u.program,
-            year: u.year,
-            locked: u.status === "Locked"
-          }));
-
-        setAdmins(dbAdmins);
-        setStudents(dbStudents);
+      if (json.retCode === "200") {
+        setAccounts(json.data);
       }
     } catch (error) {
-      fireToast("Failed to connect to server.", "err");
+      setSystemResponse("Failed to connect to server.");
+      setSystemResponseOpen(true);
+    } finally {
+      setIsLoading(false);
     }
   };
-
   useEffect(() => {
     fetchAccounts();
   }, []);
 
-  // ==========================================
-  // 🚀 2. API ACTIONS (ADD, LOCK, DELETE)
-  // ==========================================
   const handleAddAdminSubmit = async () => {
+    setLoadingMessage("Processing staff registration...");
+    setIsLoadingOpen(true);
     try {
-      const res = await fetch("http://localhost:8080/api/users/admin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(adminForm),
-      });
-      const json = await res.json();
-      
-      if (res.ok && json.isSuccess) {
-        fireToast("Admin account created successfully!", "ok");
-        setAdminForm({ firstname: "", lastname: "", email: "", password: "", role: "Library Admin" });
-        closeModal();
-        fetchAccounts(); // I-refresh ang table
+      const json = await api.post("/api/admin/addStaff", adminForm);
+      if (json.retCode === "201") {
+        setSystemResponse("Staff registered successfully.");
+        setAdminForm({ firstname: "", lastname: "", email: "" });
+        setShowAddAdmin(false);
+        fetchAccounts();
       } else {
-        fireToast(json.message || "Failed to add admin", "err");
+        setSystemResponse(json.message);
       }
-    } catch (error) {
-      fireToast("Server error.", "err");
+    } catch {
+      setSystemResponse("Failed to connect to server.");
+    } finally {
+      setIsLoadingOpen(false);
+      setSystemResponseOpen(true);
     }
   };
 
-  const handleAction = async (actionType: "delete" | "lock", targetId: string, currentLockedStatus?: boolean) => {
-    try {
-      if (actionType === "delete") {
-        const res = await fetch(`http://localhost:8080/api/users/${targetId}`, { method: "DELETE" });
-        if (res.ok) {
-          fireToast("Account deleted permanently.", "ok");
-          fetchAccounts();
+  const handleLock = (a: any) => {
+    const isLocked = a.status === "Locked";
+    setConfirmModal({
+      open: true,
+      title: isLocked ? "Unlock Account" : "Lock Account",
+      message: isLocked
+        ? <>Restore access for <b>{a.firstname} {a.lastname}</b>?</>
+        : <><b>{a.firstname} {a.lastname}</b> won't be able to log in.</>,
+      confirmLabel: isLocked ? "Unlock" : "Lock",
+      confirmColor: "bg-warning",
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, open: false }));
+        const newStatus = isLocked ? "Active" : "Locked";
+        setLoadingMessage(isLocked ? "Unlocking account..." : "Locking account...");
+        setIsLoadingOpen(true);
+        try {
+          const json = await api.put("/api/admin/status", { school_id: a.school_id, status: newStatus });
+          if (json.retCode === "200") {
+            setAccounts(prev => prev.map(x => x.school_id === a.school_id ? { ...x, status: newStatus } : x));
+            setSelectedUser((prev: any) => prev ? { ...prev, status: newStatus } : null);
+            setSystemResponse(`Account ${newStatus.toLowerCase()} successfully.`);
+          } else {
+            setSystemResponse("Failed to update account status.");
+          }
+        } catch {
+          setSystemResponse("Failed to connect to server.");
+        } finally {
+          setIsLoadingOpen(false);
+          setSystemResponseOpen(true);
         }
-      } else if (actionType === "lock") {
-        const newStatus = currentLockedStatus ? "Active" : "Locked";
-        const res = await fetch("http://localhost:8080/api/users/status", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ school_id: targetId, status: newStatus }),
-        });
-        if (res.ok) {
-          fireToast(`Account ${newStatus.toLowerCase()} successfully.`, "ok");
-          fetchAccounts();
-        }
-      }
-    } catch (error) {
-      fireToast("Failed to process action.", "err");
-    }
-    closeModal();
+      },
+    });
   };
 
+  const handleArchive = (a: any) => {
+    setConfirmModal({
+      open: true,
+      title: "Archive Account",
+      message: <>Archive <b>{a.firstname} {a.lastname}</b>'s account? This will disable their access.</>,
+      confirmLabel: "Archive",
+      confirmColor: "bg-error",
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, open: false }));
+        setLoadingMessage("Archiving account...");
+        setIsLoadingOpen(true);
+        try {
+          const json = await api.put("/api/admin/status", { school_id: a.school_id, status: "Archived" });
+          if (json.retCode === "200") {
+            setAccounts(prev => prev.filter(x => x.school_id !== a.school_id));
+            setSelectedUser(null);
+            setSystemResponse("Account archived successfully.");
+          } else {
+            setSystemResponse("Failed to archive account.");
+          }
+        } catch {
+          setSystemResponse("Failed to connect to server.");
+        } finally {
+          setIsLoadingOpen(false);
+          setSystemResponseOpen(true);
+        }
+      },
+    });
+  };
 
-  const filteredStudents = students.filter(s =>
-    (!search || s.name.toLowerCase().includes(search.toLowerCase()) || s.email.toLowerCase().includes(search.toLowerCase())) &&
-    (!course || s.course === course) && (!year || s.year === year)
+  const handleApprove = (a: any) => {
+    setConfirmModal({
+      open: true,
+      title: "Approve Registration",
+      message: <>Approve <strong>{a.firstname} {a.lastname}</strong>'s registration?</>,
+      confirmLabel: "Approve",
+      confirmColor: "bg-primary",
+      onConfirm: async () => {
+        closeConfirm();
+        setSelectedUser(null);
+        setLoadingMessage("Approving registration...");
+        setIsLoadingOpen(true);
+        try {
+          const json = await api.put("/api/admin/approve", { school_id: a.school_id });
+          if (json.retCode === "200") {
+            setAccounts(prev => prev.filter(x => x.school_id !== a.school_id));
+            setSystemResponse("Registration approved successfully.");
+          } else {
+            setSystemResponse("Failed to approve registration.");
+          }
+        } catch {
+          setSystemResponse("Server error. Try again later.");
+        } finally {
+          setIsLoadingOpen(false);
+          setSystemResponseOpen(true);
+        }
+      },
+    });
+  };
+
+  const handleReject = (a: any) => {
+    setRejectModal(a);
+    setSelectedUser(null);
+  };
+
+  const handleRejectConfirm = () => {
+    if (!rejectReason.trim()) {
+      setSystemResponse("Please provide a reason for rejection.");
+      setSystemResponseOpen(true);
+      return;
+    }
+    const a = rejectModal;
+    setConfirmModal({
+      open: true,
+      title: "Reject Registration",
+      message: <>Reject <strong>{a.firstname} {a.lastname}</strong>'s registration? They will be notified.</>,
+      confirmLabel: "Reject",
+      confirmColor: "bg-error",
+      onConfirm: async () => {
+        closeConfirm();
+        setRejectModal(null);
+        setLoadingMessage("Rejecting registration...");
+        setIsLoadingOpen(true);
+        try {
+          const json = await api.put("/api/admin/reject", { school_id: a.school_id, reason: rejectReason });
+          if (json.retCode === "200") {
+            setAccounts(prev => prev.filter(x => x.school_id !== a.school_id));
+            setSystemResponse("Registration rejected successfully.");
+            setRejectReason("");
+          } else {
+            setSystemResponse("Failed to reject registration.");
+          }
+        } catch {
+          setSystemResponse("Server error. Try again later.");
+        } finally {
+          setIsLoadingOpen(false);
+          setSystemResponseOpen(true);
+        }
+      },
+    });
+  };
+
+  const filteredAccounts = accounts.filter(a =>
+    (statusFilter === "All Status" || a.status === statusFilter) &&
+    (roleFilter   === "All Roles" || a.role   === roleFilter) &&
+    (!search || (
+      `${a.firstname} ${a.lastname}`.toLowerCase().includes(search.toLowerCase()) ||
+      a.email.toLowerCase().includes(search.toLowerCase()) ||
+      a.school_id.toLowerCase().includes(search.toLowerCase())
+    ))
   );
 
+  const accountColumns = [
+    {
+      header: "Name",
+      render: (a: any) => `${a.firstname} ${a.lastname}`,
+    },
+    {
+      header: "School ID",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (a: any) => a.school_id,
+    },
+    {
+      header: "Email",
+      render: (a: any) => a.email,
+    },
+    {
+      header: "Role",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (a: any) => (
+        <span className={ `badge ${
+          a.role === "Student" ? "badge-blue" :
+          a.role === "Staff"   ? "badge-orange" :
+          "badge-red"}`
+        }>
+          {a.role}
+        </span>
+      ),
+    },
+    {
+      header: "Status",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (a: any) => (
+        <span className={`badge ${
+          a.status === "Active"  ? "badge-green"  :
+          a.status === "Pending" ? "badge-orange" :
+          "badge-red"
+        }`}>
+          {a.status}
+        </span>
+      ),
+    },
+    {
+      header: "Joined",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (r: any) => new Date(r.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+    },
+    {
+      header: "Actions",
+      thStyle: { textAlign: "center" as const },
+      tdStyle: { textAlign: "center" as const },
+      render: (a: any) => (
+        <a href="#" className="hyperlink text-primary" style={{ textDecoration: "underline" }}
+          onClick={(e) => { e.preventDefault(); setSelectedUser(a); }}>
+          View Details
+        </a>
+      ),
+    },
+  ];
+
   return (
-    <div className="sa-page-anim">
-      <div className="page-title">Manage Accounts</div>
-      <div className="page-sub">Only Super Admin can create and manage admin accounts. Student accounts are managed via the Student Portal.</div>
-      <div style={{ background: "#fef9c3", border: "1px solid #fde68a", borderRadius: "var(--radius-sm)", padding: "11px 16px", display: "flex", gap: "10px", alignItems: "center", marginBottom: "18px", fontSize: "12.5px", color: "#854d0e" }}>
-        <span style={{ fontSize: "16px" }}>ℹ️</span>
-        <span><strong>Super Admin Only:</strong> Only you can create, lock, or delete admin accounts. Students register through the Student Portal independently.</span>
+  <>
+  <div className="app">
+    <div className="page-layout fadeUp">
+      <div style={{ marginBottom: 20 }}>
+        <div className="page-header">Manage Accounts</div>
+        <div className="page-sub">Administrator control panel for student and staff users.</div>
       </div>
 
-      {/* ADMINS TABLE */}
-      <div className="sa-card" style={{ marginBottom: "16px" }}>
-        <div className="sa-card-header">
-          <div><div className="sa-card-title">Admin Accounts</div><div className="sa-card-sub">Library staff with admin access</div></div>
-          <button className="sa-btn sa-btn-green" onClick={() => setModal({ type: 'addAdmin', target: null })}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg> Add Admin
+      <div style={{ display: "flex", flexWrap: "wrap", marginBottom: 18, justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 10 }}>
+          <div className="search-wrapper" style={{ flex: 1, maxWidth: 300 }}>
+            <IconSearch/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"/>
+          </div>
+          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="pills">
+            {ROLES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="pills">
+            {STATUS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        
+          {(statusFilter !== "All Status" || roleFilter !== "All Roles" || search) && (
+            <button className="pills" onClick={() => { setStatusFilter("All Status"); setRoleFilter("All Roles"); setSearch(""); }} style={{ background: "#f5f5f5", borderColor: "#dadada", color: "#777777" }}>
+              Reset
+            </button>
+          )}
+        </div>
+        <button className="btn w-auto px-4 py-2" onClick={() => setShowAddAdmin(true)}>Add Staff</button>
+      </div>
+
+      {/* Table */}
+      <DataTable
+        columns={accountColumns}
+        data={filteredAccounts}
+        loading={isLoading}
+        emptyText="No accounts found."
+        currentPage={1}
+        totalPages={1}
+        totalItems={filteredAccounts.length}
+        perPage={filteredAccounts.length}
+        onPageChange={() => {}}
+      />
+    </div>
+  </div>
+  {/* ── MODALS ── */}
+  {showAddAdmin && (
+    <div className="overlay" onClick={() => setShowAddAdmin(false)}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <button className="close" onClick={() => setShowAddAdmin(false)} ><IconX/></button>
+        </div>
+        <div className="modal-scroll">
+          <div className="page-header">Create Staff Account</div>
+          <div style={{ marginTop: "20px", marginBottom: "20px", textAlign: "right" }}>
+              <FloatingInput label="First Name" type="text" value={adminForm.firstname} onChange={e => setAdminForm({ ...adminForm, firstname: e.target.value })} required/>
+              <FloatingInput label="Last Name" type="text" value={adminForm.lastname} onChange={e => setAdminForm({ ...adminForm, lastname: e.target.value })} required/>
+              <FloatingInput label="Email Address" type="email" value={adminForm.email} onChange={e => setAdminForm({ ...adminForm, email: e.target.value })} required/>
+          </div>
+        </div>
+        <div className="modal-footer" style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <button className="btn" style={{ background: "var(--color-primary)", color: "#fff" }} onClick={handleAddAdminSubmit}>
+            Create Account
           </button>
         </div>
-        <div className="sa-tbl-wrap">
-          <table className="sa-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Date Added</th><th>Actions</th></tr></thead>
-            <tbody>
-              {admins.length === 0 ? (
-                <tr><td colSpan={6} style={{textAlign: "center", padding: "20px", color: "var(--text3)"}}>No admin accounts found.</td></tr>
-              ) : admins.map((a) => (
-                <tr key={a.id}>
-                  <td style={{ fontWeight: 600 }}>{a.name}</td><td style={{ color: "var(--text2)" }}>{a.email}</td>
-                  <td><span className="pill sa-pill-admin">{a.role}</span></td>
-                  <td><span className={`pill ${a.locked ? 'sa-pill-locked' : 'sa-pill-active'}`}>{a.locked ? 'Locked' : 'Active'}</span></td>
-                  <td style={{ color: "var(--text3)" }}>{a.added}</td>
-                  <td>
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <button className="sa-btn sa-btn-warn sa-btn-sm" onClick={() => setModal({ type: 'lockAdmin', target: a })}>{a.locked ? ' Unlock' : ' Lock'}</button>
-                      <button className="sa-btn sa-btn-danger sa-btn-sm" onClick={() => setModal({ type: 'delAdmin', target: a })}> Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
-
-      {/* STUDENTS TABLE */}
-      <div className="sa-card">
-        <div className="sa-card-header">
-          <div><div className="sa-card-title">Student Accounts</div><div className="sa-card-sub">View-only — managed by Student Portal</div></div>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <div className="sa-search-wrap">
-              <span className="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg></span>
-              <input type="text" className="sa-input" style={{ width: "190px" }} placeholder="Search student…" aria-label="Search Student" title="Search Student" value={search} onChange={(e) => setSearch(e.target.value)} />
-            </div>
-            <select className="sa-sel" aria-label="Course Filter" title="Course Filter" value={course} onChange={(e) => setCourse(e.target.value)}><option value="">All Courses</option><option>BSIT</option><option>BSCS</option><option>BSED</option><option>BSBA</option><option>BSN</option><option>BSCE</option></select>
-            <select className="sa-sel" aria-label="Year Filter" title="Year Filter" value={year} onChange={(e) => setYear(e.target.value)}><option value="">All Years</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select>
-          </div>
-        </div>
-        <div className="sa-tbl-wrap">
-          <table className="sa-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Course</th><th>Year</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
-              {filteredStudents.length === 0 ? (
-                <tr><td colSpan={6} style={{textAlign: "center", padding: "20px", color: "var(--text3)"}}>No students found.</td></tr>
-              ) : filteredStudents.map((s) => (
-                <tr key={s.id}>
-                  <td style={{ fontWeight: 600 }}>{s.name}</td><td style={{ color: "var(--text2)" }}>{s.email}</td><td>{s.course}</td><td>{s.year}</td>
-                  <td><span className={`pill ${s.locked ? 'sa-pill-locked' : 'sa-pill-active'}`}>{s.locked ? 'Locked' : 'Active'}</span></td>
-                  <td>
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <button className="sa-btn sa-btn-warn sa-btn-sm" onClick={() => setModal({ type: 'lockStu', target: s })}>{s.locked ? ' Unlock' : ' Lock'}</button>
-                      <button className="sa-btn sa-btn-danger sa-btn-sm" onClick={() => setModal({ type: 'delStu', target: s })}> Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* ── MODALS ── */}
-      {modal.type === 'addAdmin' && (
-        <div className="sa-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}>
-          <div className="sa-modal" style={{ minWidth: "460px" }}>
-            <div className="sa-modal-title">Create Admin Account</div>
-            <div className="sa-modal-desc">Fill in the details to create a new library admin account.</div>
-            
-            {/* 🚀 INAYOS NA FORM PARA PUMASOK SA DATABASE NATIN */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-              <div className="sa-form-group"><label className="sa-form-label">First Name</label>
-                <input className="sa-form-input" placeholder="Maria" value={adminForm.firstname} onChange={e => setAdminForm({...adminForm, firstname: e.target.value})} />
-              </div>
-              <div className="sa-form-group"><label className="sa-form-label">Last Name</label>
-                <input className="sa-form-input" placeholder="Santos" value={adminForm.lastname} onChange={e => setAdminForm({...adminForm, lastname: e.target.value})} />
-              </div>
-              <div className="sa-form-group"><label className="sa-form-label">Email Address</label>
-                <input type="email" className="sa-form-input" placeholder="admin@smartlib.edu" value={adminForm.email} onChange={e => setAdminForm({...adminForm, email: e.target.value})} />
-              </div>
-              <div className="sa-form-group"><label className="sa-form-label">Admin Role</label>
-                <select className="sa-form-input" value={adminForm.role} onChange={e => setAdminForm({...adminForm, role: e.target.value})}>
-                  <option>Library Admin</option><option>Assistant Admin</option><option>Cataloger</option>
-                </select>
-              </div>
-              <div className="sa-form-group" style={{ gridColumn: "span 2" }}><label className="sa-form-label">Temporary Password</label>
-                <input type="password" className="sa-form-input" placeholder="Enter temporary password" value={adminForm.password} onChange={e => setAdminForm({...adminForm, password: e.target.value})} />
-              </div>
-            </div>
-
-            <div className="sa-modal-actions">
-              <button className="sa-btn sa-btn-ghost" onClick={closeModal}>Cancel</button>
-              <button className="sa-btn sa-btn-green" onClick={handleAddAdminSubmit}>Create Admin Account</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {modal.type === 'delAdmin' && (<div className="sa-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}><div className="sa-modal"><div className="sa-modal-title">Delete Admin Account</div><div className="sa-modal-desc">This will permanently delete <strong>{modal.target?.name}</strong>'s account. This cannot be undone.</div><div className="sa-modal-actions"><button className="sa-btn sa-btn-ghost" onClick={closeModal}>Cancel</button><button className="sa-btn sa-btn-danger" onClick={() => handleAction("delete", modal.target.id)}>Delete Account</button></div></div></div>)}
-      
-      {modal.type === 'lockAdmin' && (<div className="sa-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}><div className="sa-modal"><div className="sa-modal-title">{modal.target?.locked ? 'Unlock Account' : 'Lock Account'}</div><div className="sa-modal-desc">{modal.target?.locked ? `Unlock ${modal.target?.name}'s account to restore access.` : `Locking ${modal.target?.name}'s account will prevent login.`}</div><div className="sa-modal-actions"><button className="sa-btn sa-btn-ghost" onClick={closeModal}>Cancel</button><button className="sa-btn sa-btn-warn" onClick={() => handleAction("lock", modal.target.id, modal.target.locked)}>{modal.target?.locked ? ' Unlock Account' : ' Lock Account'}</button></div></div></div>)}
-      
-      {modal.type === 'delStu' && (<div className="sa-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}><div className="sa-modal"><div className="sa-modal-title">Delete Student Account</div><div className="sa-modal-desc">Delete <strong>{modal.target?.name}</strong>'s account? This cannot be undone.</div><div className="sa-modal-actions"><button className="sa-btn sa-btn-ghost" onClick={closeModal}>Cancel</button><button className="sa-btn sa-btn-danger" onClick={() => handleAction("delete", modal.target.id)}>Delete Account</button></div></div></div>)}
-      
-      {modal.type === 'lockStu' && (<div className="sa-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}><div className="sa-modal"><div className="sa-modal-title">{modal.target?.locked ? 'Unlock Student Account' : 'Lock Student Account'}</div><div className="sa-modal-desc">{modal.target?.locked ? `Restore access for ${modal.target?.name}.` : `This will prevent ${modal.target?.name} from logging in.`}</div><div className="sa-modal-actions"><button className="sa-btn sa-btn-ghost" onClick={closeModal}>Cancel</button><button className="sa-btn sa-btn-warn" onClick={() => handleAction("lock", modal.target.id, modal.target.locked)}>{modal.target?.locked ? ' Unlock' : ' Lock'}</button></div></div></div>)}
-      
-      <div className={`sa-toast ${toast.type === 'err' ? 'sa-toast-err' : ''} ${toast.show ? 'show' : ''}`} style={toast.type === 'err' ? { background: '#ef4444', color: '#fff' } : {}}> {toast.msg}</div>
     </div>
+  )}
+
+  <UserDetails
+    user={selectedUser}
+    mode="view"
+    onClose={() => setSelectedUser(null)}
+    onLock={handleLock}
+    onArchive={handleArchive}
+    onApprove={handleApprove}
+    onReject={handleReject}
+  />
+
+  {rejectModal && (
+    <div className="overlay" onClick={() => setRejectModal(null)}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+              <button className="close" type="button" onClick={() => { setRejectModal(null); setRejectReason(""); }} aria-label="Close modal" ><IconX/></button>
+        </div>
+        <div className="modal-scroll">
+          <div className="page-header">Reject Registration</div>
+          <div style={{ textAlign: "center", margin: 20 }}>
+            <h1 className="page-sub">You are about to reject <strong>{rejectModal.firstname} {rejectModal.lastname}</strong>'s registration.</h1>
+          </div>
+
+          <div style={{ marginTop: 20 }}>
+            <FloatingTextarea
+              label="Rejection Reason"
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <div className="modal-footer" style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <button className="btn" style={{ background: "var(--color-error)", color: "#fff" }}
+            onClick={() => handleReject(rejectModal)}>
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <Modal
+    isOpen={confirmModal.open}
+    title={confirmModal.title}
+    message={confirmModal.message}
+    onClose={closeConfirm}
+    onConfirm={confirmModal.onConfirm}
+    confirmText={confirmModal.confirmLabel}
+    confirmColor={confirmModal.confirmColor}
+    cancelText="Cancel"
+    cancelColor="bg-subtext"
+  />
+
+  <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close" />
+  <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
+  </>
   );
 }

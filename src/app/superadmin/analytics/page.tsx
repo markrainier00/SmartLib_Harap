@@ -62,7 +62,9 @@ export default function SuperAdminAnalytics() {
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: "#8a8ea8" }}>Loading analytics data...</div>;
 
   return (
-    <div className="sa-page-anim">
+  <>
+  <div className="app">
+    <div className="page-layout fadeUp">
       <div className="page-title">Data Analytics</div>
       <div className="page-sub">Borrowing insights, active students, and collection performance</div>
       
@@ -102,5 +104,7 @@ export default function SuperAdminAnalytics() {
         <div className="sa-card"><div className="sa-card-header"><div><div className="sa-card-title">Borrows by Course</div><div className="sa-card-sub">Which departments borrow most</div></div></div><div style={{ position: "relative", height: "240px", width: "100%" }}><Bar data={courseBarData} options={{ ...globalChartOptions, indexAxis: 'y' }} /></div></div>
       </div>
     </div>
+    </div>
+    </>
   );
 }

@@ -47,7 +47,7 @@ export default function LibraryPage() {
       if (json.isSuccess) {
         setSavedBooks(json.data.map((w: any) => w.isbn));
       } else {
-        setSystemResponse("Failed to the wishlist");
+        setSystemResponse("Failed to fetch the wishlist.");
       }
     } catch (err) {
       setSystemResponse("Cannot connect to the server.");
@@ -64,7 +64,7 @@ export default function LibraryPage() {
       const json = await api.get(`/api/transactions/getRequests/${school_id}`);
       if (json.isSuccess) {
         setRequestedBooks(json.data);
-      }
+      }console.log(json.data)
     } catch (err) {
       console.error("Failed to fetch requests", err);
     }
@@ -114,7 +114,7 @@ export default function LibraryPage() {
   const handleWishlist = async (e: React.MouseEvent | null, book: any) => {
     if (e) e.stopPropagation();
     if (isLoadingOpen) return;
-
+    setSelectedBook(null)
     setIsLoadingOpen(true);
 
     const isSaved = savedBooks.includes(book.isbn);
@@ -401,6 +401,8 @@ export default function LibraryPage() {
           onClose={() => setSelectedBook(null)}
           role="Student"
           handleBookRequest={handleBookRequest}
+          handleWishlist={handleWishlist}
+          isSaved={savedBooks.includes(selectedBook.isbn)}
         />
       )}
     </>

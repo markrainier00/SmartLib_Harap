@@ -60,8 +60,8 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
     { id: "/admin/books", icon: <IconLibManage />, label: "Library Management" },
     { id: "borrows", icon: <IconBookReq />, label: "Borrows", dropdown: true,
       children: [
-        { href: "/admin/requests", label: "Request" },
-        { href: "/admin/borrows", label: "Borrow" },
+        { href: "/admin/requests", label: "Requests" },
+        { href: "/admin/borrows", label: "Manage" },
         { href: "/admin/history", label: "History" },
       ],
     },
@@ -83,10 +83,9 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
   ];
   
   const superAdminNavItems = [
-    { id: "/superadmin", icon: <IconDashboard />, label: "Dashboard" },
+    { id: "/superadmin/dashboard", icon: <IconDashboard />, label: "Dashboard" },
     { id: "/superadmin/accounts", icon: <IconManageAcc />, label: "Manage Accounts" },
     { id: "/superadmin/analytics", icon: <IconData />, label: "Data Analytics" },
-    { id: "/superadmin/concerns", icon: <IconSupport />, label: "Student Concerns", badge: openTickets > 0 ? openTickets : null },
   ];
   
   let navItems: any[] = [];
