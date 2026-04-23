@@ -293,7 +293,7 @@ export default function AdminRequestsPage() {
       )}
           
       {/* Modal for displaying messages */}
-      <Modal isOpen={systemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
+      <Modal isOpen={systemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-primmary" cancelText="Okay"/>
       <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
     </>
   );

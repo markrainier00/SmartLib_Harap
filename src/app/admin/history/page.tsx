@@ -127,7 +127,7 @@ export default function AdminHistoryPage() {
   <div className="app">
     <div className="page-layout fadeUp">
       <div style={{ marginBottom: 20 }}>
-          <div className="page-header">Borrow History</div>
+          <div className="page-header">History</div>
           <div className="page-sub">Log of all library transactions</div>
       </div>
                 

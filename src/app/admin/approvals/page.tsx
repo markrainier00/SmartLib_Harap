@@ -7,6 +7,7 @@ import Modal from "@/components/Modal";
 import LoadingModal from "@/components/LoadingModal";
 import DataTable from "@/components/DataTable";
 import FloatingTextarea from "@/components/ui/FloatingTextarea";
+import { UserDetails } from "@/components/UserDetails";
 
 const PROGRAMS = ["All Programs", "BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE", "BSBio", "BSPharma"];
 const YEARS = ["All Year Levels", "1st", "2nd", "3rd", "4th", "5th"];
@@ -213,34 +214,20 @@ export default function AdminApprovalsPage() {
 
     {/* View Applicant Modal */}
     {viewApplicant && (
-      <div className="overlay" onClick={() => setViewApplicant(null)}>
-        <div className="modal" onClick={e => e.stopPropagation()}>
-          <div className="modal-header">
-            <button className="close" type="button" onClick={() => setViewApplicant(null)} aria-label="Close modal" ><IconX/></button>
-          </div>
-          <div className="modal-scroll">
-            <div className="page-header mb-5">Registration Request</div>
-            {[
-              { label: "Name", value: `${viewApplicant.firstname} ${viewApplicant.lastname}` },
-              { label: "School ID", value: viewApplicant.school_id },
-              { label: "Email", value: viewApplicant.email },
-              { label: "Department", value: viewApplicant.department },
-              { label: "Program",    value: viewApplicant.program },
-              { label: "Year Level", value: viewApplicant.year },
-              { label: "Date Applied", value: new Date(viewApplicant.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) },
-            ].map(({ label, value }) => (
-              <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "8px 0", borderBottom: "1px solid var(--color-surface)" }}>
-                <span style={{ color: "var(--color-subtext)" }}>{label}</span>
-                <span style={{ color: "var(--color-subtext)", fontWeight: 600 }}>{value}</span>
-              </div>
-            ))}
-          </div>
-          <div className="modal-footer" style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <button className="btn" style={{ background: "var(--color-primary)", color: "#fff" }} onClick={() => handleApprove(viewApplicant)}>Approve</button>
-            <button className="btn" style={{ background: "var(--color-error)", color: "#fff" }} onClick={() => { setRejectModal(viewApplicant); setViewApplicant(null); }}>Reject</button>
-          </div>
-        </div>
-      </div>
+      <UserDetails
+        user={viewApplicant}
+        mode="view"
+        onClose={() => setViewApplicant(null)}
+        onApprove={(a) => {
+          setViewApplicant(null);
+          handleApprove(a);
+        }}
+        onReject={(a) => {
+          setViewApplicant(null);
+          setRejectModal(a);
+          setRejectReason("");
+        }}
+      />
     )}
     {rejectModal && (
       <div className="overlay" onClick={() => setRejectModal(null)}>
@@ -286,7 +273,7 @@ export default function AdminApprovalsPage() {
       cancelColor="bg-subtext"
     />
 
-    <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close" />
+    <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-primary" cancelText="Okay" />
     <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
     </>
   );

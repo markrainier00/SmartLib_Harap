@@ -50,7 +50,7 @@ export const IconBorrowHis = () => (
 )
 
 export const IconRegistration = () => (
-  <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 2h14l4 4v16H3V2z" />
     <path d="M17 2v4h4" />
     <circle cx="12" cy="8" r="3" />
@@ -77,6 +77,14 @@ export const IconNotif = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
     <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+  </svg>
+);
+
+export const IconNotNotif = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    <line x1="4" y1="4" x2="20" y2="20" />
   </svg>
 );
 
@@ -220,7 +228,7 @@ export const IconEdit = () => (
 )
 
 export const IconBookmark = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg {...props} width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-5-7 5V4a1 1 0 0 1 1-1z"/>
   </svg>
 )
@@ -234,7 +242,7 @@ export const IconShelf = () => (
 )
 
 export const IconScan = () => (
-  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  width="129" height="120" viewBox="0 0 542.000000 542.000000"  preserveAspectRatio="xMidYMid meet">
+  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  width="60" height="60" viewBox="0 0 542.000000 542.000000"  preserveAspectRatio="xMidYMid meet">
     <g transform="translate(0.000000,542.000000) scale(0.050000,-0.050000)" fill="#ffffff" stroke="none">
       <path d="M465 8165 l5 -2215 2172 -5 c1814 -4 2177 -1 2196 22 16 20 21 611 17 2215 l-5 2188 -2195 5 -2195 5 5 -2215z m3830 1639 c34 -22 37 -3235 3 -3277 -19 -23 -283 -26 -1646 -22 l-1622 5 -5 1630 c-3 897 -1 1641 4 1655 11 29 3221 37 3266 9z"/>
       <path d="M2111 8704 c-18 -17 -12 -1032 6 -1059 16 -27 1033 -46 1074 -20 12 7 15 224 9 548 l-10 537 -534 2 c-294 1 -540 -2 -545 -8z"/>
@@ -248,7 +256,7 @@ export const IconScan = () => (
 )
 
 export const IconBooks = () => (
-  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  width="120" height="120" viewBox="0 0 329.000000 312.000000"  preserveAspectRatio="xMidYMid meet">
+  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"  width="60" height="60" viewBox="0 0 329.000000 312.000000"  preserveAspectRatio="xMidYMid meet">
     <g transform="translate(0.000000,312.000000) scale(0.100000,-0.100000)" fill="#ffffff" stroke="none">
       <path d="M271 3012 c-19 -9 -44 -30 -55 -45 -21 -28 -21 -31 -24 -1335 -2 -1229 -1 -1309 15 -1341 10 -19 31 -44 46 -55 28 -20 39 -21 445 -20 229 0 432 1 450 1 17 0 220 0 450 0 229 -1 428 0 442 0 14 1 213 -1 442 -3 401 -4 419 -4 456 15 77 39 72 -66 72 1388 0 1216 -1 1300 -18 1332 -9 19 -30 44 -45 55 -28 20 -42 21 -440 24 -455 3 -454 3 -501 -61 -20 -27 -21 -44 -24 -273 l-3 -244 -379 0 -379 0 -3 243 c-3 237 -3 243 -27 276 -43 60 -49 61 -488 61 -359 0 -401 -2 -432 -18z m819 -1392 l0 -1280 -385 0 -385 0 0 1280 0 1280 385 0 385 0 0 -1280z m1790 0 l0 -1280 -385 0 -385 0 0 1280 0 1280 385 0 385 0 0 -1280z m-899 498 c0 -112 0 -354 0 -538 -1 -184 -1 -539 -1 -787 l0 -453 -380 0 -380 0 -1 478 c0 262 0 648 0 857 1 209 1 440 1 513 l0 132 380 0 380 0 1 -202z"/>
       <path d="M485 2508 c-27 -15 -35 -28 -35 -59 0 -55 16 -59 253 -59 204 0 218 1 237 20 26 26 25 62 -1 86 -19 17 -40 19 -228 21 -140 2 -212 -1 -226 -9z"/>
@@ -272,3 +280,4 @@ export const IconCameraOff = () => (
     </g>
   </svg>
 )
+

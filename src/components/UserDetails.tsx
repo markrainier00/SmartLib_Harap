@@ -21,12 +21,13 @@ interface UserDetailsProps {
   onClose: () => void;
   onLock?: (user: User) => void;
   onArchive?: (user: User) => void;
+  onUnarchive?: (user: User) => void;
   onApprove?: (user: User) => void;
   onReject?: (user: User) => void;
 }
 
 export const UserDetails: React.FC<UserDetailsProps> = ({ 
-  user, mode = "view", onClose, onLock, onArchive, onApprove, onReject 
+  user, mode = "view", onClose, onLock, onArchive, onUnarchive, onApprove, onReject 
 }) => {
   if (!user || mode !== "view") return null;
 
@@ -69,35 +70,26 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
           {isPending ? (
             <>
               {onApprove && (
-                <button className="btn w-auto" style={{ background: "var(--color-primary)", color: "#fff" }} onClick={() => onApprove(user)}>
-                  Approve
-                </button>
+                <button className="btn bg-primary" onClick={() => onApprove(user)}>Approve</button>
               )}
               {onReject && (
-                <button className="btn bg-error w-auto" onClick={() => onReject(user)}>
-                  Reject
-                </button>
+                <button className="btn bg-error" onClick={() => onReject(user)}>Reject</button>
               )}
             </>
           ) : (
             <>
               {onLock && (
-                <button className="btn w-auto"
-                  style={{ background: isLocked ? "#f59e0b" : "var(--color-primary)" }}
-                  onClick={() => onLock(user)}
-                >
-                  {isLocked ? "Unlock Account" : "Lock Account"}
-                </button>
+                <button className="btn bg-warning" onClick={() => onLock(user)}>{isLocked ? "Unlock Account" : "Lock Account"}</button>
               )}
               {onArchive && (
-                <button className="btn bg-error w-auto" onClick={() => onArchive(user)}>
-                  Archive
-                </button>
+                <button className="btn bg-error" onClick={() => onArchive(user)}>Archive</button>
+              )}
+              {onUnarchive && (
+                <button className="btn bg-primary" onClick={() => onUnarchive(user)}>Restore Account</button>
               )}
             </>
           )}
         </div>
-
       </div>
     </div>
   );

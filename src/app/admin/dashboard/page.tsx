@@ -91,7 +91,7 @@ export default function StaffDashboard() {
         <div style={{ padding: "32px 36px", background: "#ffffff", border: "1px solid var(--color-border)", borderRadius: "10px"}}>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", marginBottom: 5 }}>Quick Actions</h3>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap"}}>
-            <button className="btn"style={{ flex: "1 1 200px", flexDirection: "column", justifyContent: "center" }} onClick={() => setScannerOpen(true)}>
+            <button className="btn"style={{ flex: "1 1 200px", flexDirection: "column", justifyContent: "center", padding: "30px" }} onClick={() => setScannerOpen(true)}>
               <IconScan/>
               <p style={{ fontSize: "large" }}>Scan QR</p>
             </button>

@@ -32,61 +32,63 @@ export default function DataTable({
 }: DataTableProps) {
   return (
     <div className="data-card">
-      <table className="data-table">
-        <thead>
-          <tr>
-            {columns.map((col, i) => (
-              <th key={i} style={col.thStyle}>{col.header}</th>
-            ))}
-          </tr>
-        </thead>
+      <div className="data-scroll"> 
+        <table className="data-table">
+          <thead>
+            <tr>
+              {columns.map((col, i) => (
+                <th key={i} style={col.thStyle}>{col.header}</th>
+              ))}
+            </tr>
+          </thead>
 
-        <tbody>
-          {loading ? (
-            <tr>
-              <td
-                colSpan={columns.length}
-                style={{
-                  padding: 40,
-                  textAlign: "center",
-                  color: "var(--color-subtext)",
-                }}
-              >
-                Loading...
-              </td>
-            </tr>
-          ) : data.length > 0 ? (
-            data.map((row, i) => (
-              <tr
-                key={row.id || i}
-                onClick={() => onRowClick?.(row)}
-                style={{ cursor: onRowClick ? "pointer" : "default" }}
-              >
-                {columns.map((col, j) => (
-                  <td key={j} style={col.tdStyle}>
-                    {col.render(row)}
-                  </td>
-                ))}
+          <tbody>
+            {loading ? (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  style={{
+                    padding: 40,
+                    textAlign: "center",
+                    color: "var(--color-subtext)",
+                  }}
+                >
+                  Loading...
+                </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={columns.length}
-                style={{
-                  padding: 40,
-                  textAlign: "center",
-                  color: "var(--color-subtext)",
-                  fontStyle: "italic",
-                  background: "var(--color-surface)",
-                }}
-              >
-                {emptyText}
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ) : data.length > 0 ? (
+              data.map((row, i) => (
+                <tr
+                  key={row.id || i}
+                  onClick={() => onRowClick?.(row)}
+                  style={{ cursor: onRowClick ? "pointer" : "default" }}
+                >
+                  {columns.map((col, j) => (
+                    <td key={j} style={col.tdStyle}>
+                      {col.render(row)}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  style={{
+                    padding: 40,
+                    textAlign: "center",
+                    color: "var(--color-subtext)",
+                    fontStyle: "italic",
+                    background: "var(--color-surface)",
+                  }}
+                >
+                  {emptyText}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Footer */}
       <div className="data-footer">

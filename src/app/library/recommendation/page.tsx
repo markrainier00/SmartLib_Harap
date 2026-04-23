@@ -133,6 +133,7 @@ export default function LibraryPage() {
         await api.post("/api/transactions/addWishlist", {
           school_id,
           isbn: book.isbn,
+          title: book.title,
         });
 
         setSavedBooks(prev => [...prev, book.isbn]);
@@ -391,7 +392,7 @@ export default function LibraryPage() {
       </div>
       
       {/* Modal for displaying messages */}
-      <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
+      <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-primary" cancelText="Done"/>
       <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
       
       {/* ── SIDE PANEL ── */}

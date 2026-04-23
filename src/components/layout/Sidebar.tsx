@@ -69,6 +69,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
       children: [
         { href: "/admin/approvals", label: "Registration" },
         { href: "/admin/accounts", label: "Accounts" },
+        { href: "/admin/archives", label: "Archives" },
       ],
     },
     { id: "/admin/analytics", icon: <IconData />, label: "Data Analytics" },
@@ -84,7 +85,13 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: { isSidebarOpe
   
   const superAdminNavItems = [
     { id: "/superadmin/dashboard", icon: <IconDashboard />, label: "Dashboard" },
-    { id: "/superadmin/accounts", icon: <IconManageAcc />, label: "Manage Accounts" },
+    { id: "user", icon: <IconBookReq />, label: "User Management", dropdown: true,
+      children: [
+        { href: "/superadmin/approvals", label: "Registration" },
+        { href: "/superadmin/accounts", label: "Accounts" },
+        { href: "/superadmin/archives", label: "Archives" },
+      ],
+    },
     { id: "/superadmin/analytics", icon: <IconData />, label: "Data Analytics" },
   ];
   

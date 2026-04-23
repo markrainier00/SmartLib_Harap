@@ -46,6 +46,7 @@ export default function AdminLibraryPage() {
   const [isSystemResponseOpen, setSystemResponseOpen] = useState(false);
   const [systemResponse, setSystemResponse] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [newCategory, setNewCategory] = useState("");
   
 
   const fetchBooks = async () => {
@@ -173,7 +174,7 @@ export default function AdminLibraryPage() {
       }
 
       const json = isEdit
-        ? await api.putForm(`/api/books/${modal.book.id}`, formData)
+        ? await api.putForm(`/api/books/updateBook/${modal.book.id}`, formData)
         : await api.postForm("/api/books/addBook", formData);
     
       if (json.retCode === "200") {
@@ -497,22 +498,26 @@ export default function AdminLibraryPage() {
                           </option>
                         ))}
                       </select>
-                      <input type="text" placeholder="Type new category"
+                      <input
+                        type="text"
+                        placeholder="Type new category"
+                        value={newCategory}
+                        onChange={e => setNewCategory(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
-                            if (e.currentTarget.value.trim()) {
-                              const newCat = e.currentTarget.value.trim();
-                              const current = bookForm.category ? bookForm.category.split(',').map((c: string) => c.trim()) : [];
-                              
-                              if (!current.includes(newCat)) {
-                                const newValue = current.length > 0 
-                                  ? current.join(',') + ',' + newCat 
-                                  : newCat;
-                                updateForm({ category: newValue });
-                              }
-                              e.currentTarget.value = "";
+                            const trimmed = newCategory.trim();
+                            if (!trimmed) return;
+                            const current = bookForm.category
+                              ? bookForm.category.split(',').map((c: string) => c.trim())
+                              : [];
+                            if (!current.includes(trimmed)) {
+                              const newValue = current.length > 0
+                                ? current.join(',') + ',' + trimmed
+                                : trimmed;
+                              updateForm({ category: newValue });
                             }
+                            setNewCategory("");
                           }
                         }}
                         style={{ flex: 1, padding: "11px 13px", border: "1.5px solid var(--color-primary-deep)", borderRadius: 11 }}

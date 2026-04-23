@@ -179,59 +179,49 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
   };
 
   const handleInformationChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const noChanges = infoForm.newEmail === email &&
-    ( role !== "Student" ||
-      (
-        infoForm.newDept === department &&
-        infoForm.newProg === program &&
-        infoForm.newYear === year
-      )
-    );
+      e.preventDefault();
 
-    if (noChanges) {
-        setSystemResponse( "No changes made." );
-        setSystemResponseOpen(true);
-      return;
-    }
-
-    setLoadingMessage("Requesting information update...");
-    setIsLoadingOpen(true);
-
-    try {
-      const payload = {
-        school_ID: school_id,
-        email: infoForm.newEmail,
-        ...(role === "Student" && {
-          department: infoForm.newDept,
-          program: infoForm.newProg,
-          year: infoForm.newYear,
-        }),
+      const payload: Record<string, string> = {
+          school_ID: school_id,
       };
 
-      const json = await api.post("/api/auth/change-information", payload );
+      if (infoForm.newEmail !== email) payload.email = infoForm.newEmail;
 
-      if (json.retCode === "200") {
-        setSystemResponse(json.message || "Information edit requested.")
-      } else {
-        setSystemResponse(json.message || "Failed to request information edit.");
+      if (role === "Student") {
+          if (infoForm.newDept !== department) payload.department = infoForm.newDept;
+          if (infoForm.newProg !== program) payload.program = infoForm.newProg;
+          if (infoForm.newYear !== year) payload.year = infoForm.newYear;
       }
-    } catch (err) {
-      setSystemResponse("Server connection failed.");
-    } finally {
-      setShowChangeInformation(false);
-      setInfoForm_({ newEmail: email,
-        ...(role === "Student" && {
-          newDept: department,
-          newProg: program,
-          newYear: year,
-        }),
-      });
 
-      setIsLoadingOpen(false);
-      setSystemResponseOpen(true);
-    }
+      // only school_ID means nothing changed
+      if (Object.keys(payload).length === 1) {
+          setSystemResponse("No changes made.");
+          setSystemResponseOpen(true);
+          return;
+      }
+
+      setLoadingMessage("Requesting information update...");
+      setIsLoadingOpen(true);
+
+      try {
+          const json = await api.post("/api/auth/change-information", payload);
+
+          if (json.retCode === "200") {
+              setSystemResponse(json.message || "Information edit requested.");
+          } else {
+              setSystemResponse(json.message || "Failed to request information edit.");
+          }
+      } catch (err) {
+          setSystemResponse("Server connection failed.");
+      } finally {
+          setShowChangeInformation(false);
+          setInfoForm_({
+              newEmail: email,
+              ...(role === "Student" && { newDept: department, newProg: program, newYear: year }),
+          });
+          setIsLoadingOpen(false);
+          setSystemResponseOpen(true);
+      }
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -660,7 +650,7 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
       )}
 
       {/* Modal for displaying messages */}
-      <Modal isOpen={systemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
+      <Modal isOpen={systemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-primary" cancelText="Okay"/>
       <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
     </>
   );

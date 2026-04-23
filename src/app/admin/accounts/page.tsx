@@ -1,23 +1,40 @@
 "use client";
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
-import { IconSearch } from "@/components/icons";
+import { IconSearch, IconX } from "@/components/icons";
 import DataTable from "@/components/DataTable";
 import { UserDetails } from "@/components/UserDetails";
 import Modal from "@/components/Modal";
 import LoadingModal from "@/components/LoadingModal";
+import FloatingTextarea from "@/components/ui/FloatingTextarea";
 
 const PER_PAGE = 10;
-const STATUS = ["All Status", "Active", "Locked", "Archived"];
+const STATUS = ["All Status", "Active", "Locked"];
 
 export default function AdminAccountsPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All Status");
 
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [reasonModal, setReasonModal] = useState<{
+    open: boolean;
+    title: string;
+    placeholder: string;
+    required: boolean;
+    onSubmit: (reason: string) => void;
+  }>({ open: false, title: "", placeholder: "", required: true, onSubmit: () => {} });
+  const [reasonInput, setReasonInput] = useState("");
+  const openReasonModal = (
+    title: string,
+    placeholder: string,
+    required: boolean,
+    onSubmit: (reason: string) => void
+  ) => {
+    setReasonInput("");
+    setReasonModal({ open: true, title, placeholder, required, onSubmit });
+  };
 
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean;
@@ -28,6 +45,7 @@ export default function AdminAccountsPage() {
     confirmColor: string;
   }>({ open: false, title: "", message: "", onConfirm: () => {}, confirmLabel: "Confirm", confirmColor: "bg-error" });
 
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingOpen, setIsLoadingOpen] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Processing...");
   const [isSystemResponseOpen, setSystemResponseOpen] = useState(false);
@@ -45,10 +63,138 @@ export default function AdminAccountsPage() {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
 
-  useEffect(() => { fetchAccounts(); }, []);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
+  
+  const handleLock = (user: any) => {
+    const isLocked = user.status === "Locked";
 
-  useEffect(() => { setCurrentPage(1); }, [search, statusFilter]);
+    if (isLocked) {
+      setConfirmModal({
+        open: true,
+        title: "Unlock Account",
+        message: <>Restore access for <b>{user.firstname} {user.lastname}</b>?</>,
+        confirmLabel: "Unlock",
+        confirmColor: "bg-warning",
+        onConfirm: async () => {
+          setConfirmModal(prev => ({ ...prev, open: false }));
+          setLoadingMessage("Unlocking account...");
+          setIsLoadingOpen(true);
+          try {
+            const json = await api.put("/api/admin/status", { school_id: user.school_id, status: "Active" });
+            if (json.retCode === "200") {
+              setAccounts(prev => prev.map(x => x.school_id === user.school_id ? { ...x, status: "Active" } : x));
+              setSelectedUser(prev => prev ? { ...prev, status: "Active" } : null);
+              setSystemResponse("Account unlocked successfully.");
+            } else {
+              setSystemResponse("Failed to update account status.");
+            }
+          } catch {
+            setSystemResponse("Server error. Try again later.");
+          } finally {
+            setIsLoadingOpen(false);
+            setSystemResponseOpen(true);
+          }
+        },
+      });
+      return;
+    }
+
+    openReasonModal(
+      "Lock Account",
+      "Lock Account Reason",
+      true,
+      (reason) => {
+        setReasonModal(prev => ({ ...prev, open: false }));
+        setConfirmModal({
+          open: true,
+          title: "Lock Account",
+          message: (
+            <>
+              <b>{user.firstname} {user.lastname}</b> won't be able to sign in.
+            </>
+          ),
+          confirmLabel: "Lock",
+          confirmColor: "bg-warning",
+          onConfirm: async () => {
+            setConfirmModal(prev => ({ ...prev, open: false }));
+            setLoadingMessage("Locking account...");
+            setIsLoadingOpen(true);
+            try {
+              const json = await api.put("/api/admin/status", {
+                school_id: user.school_id,
+                status: "Locked",
+                reason,
+              });
+              if (json.retCode === "200") {
+                setAccounts(prev => prev.map(x => x.school_id === user.school_id ? { ...x, status: "Locked" } : x));
+                setSelectedUser(prev => prev ? { ...prev, status: "Locked" } : null);
+                setSystemResponse("Account locked successfully.");
+              } else {
+                setSystemResponse("Failed to update account status.");
+              }
+            } catch {
+              setSystemResponse("Server error. Try again later.");
+            } finally {
+              setIsLoadingOpen(false);
+              setSystemResponseOpen(true);
+            }
+          },
+        });
+      }
+    );
+  };
+
+  const handleArchive = (user: any) => {
+    openReasonModal(
+      "Archive Account",
+      "Archive Account Reason",
+      true,
+      (reason) => {
+        setReasonModal(prev => ({ ...prev, open: false }));
+        setConfirmModal({
+          open: true,
+          title: "Archive Account",
+          message: (
+            <>
+              <b>{user.firstname} {user.lastname}</b> will be disabled.
+            </>
+          ),
+          confirmLabel: "Archive",
+          confirmColor: "bg-error",
+          onConfirm: async () => {
+            setConfirmModal(prev => ({ ...prev, open: false }));
+            setLoadingMessage("Archiving account...");
+            setIsLoadingOpen(true);
+            try {
+              const json = await api.put("/api/admin/status", {
+                school_id: user.school_id,
+                status: "Archived",
+                reason,
+              });
+              if (json.retCode === "200") {
+                setAccounts(prev => prev.filter(x => x.school_id !== user.school_id));
+                setSelectedUser(null);
+                setSystemResponse("Account archived successfully.");
+              } else {
+                setSystemResponse("Failed to archive account.");
+              }
+            } catch {
+              setSystemResponse("Server error. Try again later.");
+            } finally {
+              setIsLoadingOpen(false);
+              setSystemResponseOpen(true);
+            }
+          },
+        });
+      }
+    );
+  };
 
   const filtered = accounts.filter((a) => {
     const matchesSearch =
@@ -63,86 +209,11 @@ export default function AdminAccountsPage() {
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const paginated  = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
-  
-  const handleLock = (user: any) => {
-    const isLocked = user.status === "Locked";
-    setConfirmModal({
-      open: true,
-      title: isLocked ? "Unlock Account" : "Lock Account",
-      message: isLocked
-        ? <>Restore access for <b>{user.firstname} {user.lastname}</b>?</>
-        : <><b>{user.firstname} {user.lastname}</b> won't be able to log in.</>,
-      confirmLabel: isLocked ? "Unlock" : "Lock",
-      confirmColor: isLocked ? "bg-warning" : "bg-warning",
-      onConfirm: async () => {
-        setConfirmModal(prev => ({ ...prev, open: false }));
-        setLoadingMessage(isLocked ? "Unlocking account..." : "Locking account...");
-        setIsLoadingOpen(true);
-        try {
-          const newStatus = isLocked ? "Active" : "Locked";
-          const json = await api.put("/api/admin/status", { school_id: user.school_id, status: newStatus });
-          if (json.retCode === "200") {
-            setAccounts(prev => prev.map(x => x.school_id === user.school_id ? { ...x, status: newStatus } : x));
-            setSelectedUser(prev => prev ? { ...prev, status: newStatus } : null);
-            setSystemResponse(`Account ${newStatus.toLowerCase()} successfully.`);
-          } else {
-            setSystemResponse("Failed to update account status.");
-          }
-        } catch {
-          setSystemResponse("Server error. Try again later.");
-        } finally {
-          setIsLoadingOpen(false);
-          setSystemResponseOpen(true);
-        }
-      },
-    });
-  };
-
-  const handleArchive = (user: any) => {
-    setConfirmModal({
-      open: true,
-      title: "Archive Account",
-      message: <>Archive <b>{user.firstname} {user.lastname}</b>'s account? This cannot be undone.</>,
-      confirmLabel: "Archive",
-      confirmColor: "bg-error",
-      onConfirm: async () => {
-        setConfirmModal(prev => ({ ...prev, open: false }));
-        setLoadingMessage("Archiving account...");
-        setIsLoadingOpen(true);
-        try {
-          const json = await api.put("/api/admin/status", { school_id: user.school_id, status: "Archived" });
-          if (json.retCode === "200") {
-            setAccounts(prev => prev.filter(x => x.school_id !== user.school_id));
-            setSelectedUser(null);
-            setSystemResponse("Account archived successfully.");
-          } else {
-            setSystemResponse("Failed to archive account.");
-          }
-        } catch {
-          setSystemResponse("Server error. Try again later.");
-        } finally {
-          setIsLoadingOpen(false);
-          setSystemResponseOpen(true);
-        }
-      },
-    });
-  };
 
   const accountsColumn = [
     { header: "School ID", render: (r: any) => r.school_id },
     { header: "Name", render: (r: any) => `${r.firstname} ${r.lastname}` },
     { header: "Email", render: (r: any) => r.email },
-    {
-      header: "Role",
-      thStyle: { textAlign: "center" as const },
-      tdStyle: { textAlign: "center" as const },
-      render: (r: any) => (
-        <span className={`badge ${
-          r.role === "Student" ? "badge-blue" :
-          r.role === "Staff"   ? "badge-orange" : "badge-red"
-        }`}>{r.role}</span>
-      ),
-    },
     {
       header: "Status",
       thStyle: { textAlign: "center" as const },
@@ -150,7 +221,7 @@ export default function AdminAccountsPage() {
       render: (r: any) => (
         <span className={`badge ${
           r.status === "Active"  ? "badge-green" :
-          r.status === "Locked"  ? "badge-red"   : "badge-orange"
+          r.status === "Locked"  ? "badge-orange"   : "badge-red"
         }`}>{r.status}</span>
       ),
     },
@@ -212,7 +283,6 @@ export default function AdminAccountsPage() {
         </div>
       </div>
 
-      {/* User Details with Lock / Archive actions */}
       <UserDetails
         user={selectedUser}
         mode="view"
@@ -220,6 +290,31 @@ export default function AdminAccountsPage() {
         onLock={handleLock}
         onArchive={handleArchive}
       />
+
+      {/* Reason Modal */}
+      {reasonModal.open && (
+        <div className="overlay" onClick={() => setReasonModal(prev => ({ ...prev, open: false }))}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 440 }}>
+            <div className="modal-header">
+                <button className="close" onClick={() => setReasonModal(prev => ({ ...prev, open: false }))}><IconX/></button>
+            </div>
+            <div className="modal-scroll">
+              <div className="page-header mb-5">{reasonModal.title}</div>
+
+              <FloatingTextarea
+                label={reasonModal.placeholder}
+                value={reasonInput}
+                onChange={e => { setReasonInput(e.target.value); }}
+                required
+              />
+            </div>
+            
+            <div className="modal-footer">
+              <button className="btn bg-error" onClick={() => {reasonModal.onSubmit(reasonInput.trim());}}>{reasonModal.title}</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirm Modal */}
       <Modal
@@ -234,7 +329,7 @@ export default function AdminAccountsPage() {
         cancelColor="bg-subtext"
       />
 
-      <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close" />
+      <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-primary" cancelText="Okay" />
       <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
     </>
   );
