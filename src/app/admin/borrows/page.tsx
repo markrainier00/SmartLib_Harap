@@ -12,7 +12,7 @@ import LoadingModal from "@/components/LoadingModal";
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminRequestsPage() {
     const { fullName }= useUser();
-    const [activeTab, setActiveTab] = useState("Requests");
+    const [activeTab, setActiveTab] = useState("Approved");
     const [currentPage, setCurrentPage] = useState(1);
     const [borrows, setBorrows] = useState<any[]>([]);
     const [requests, setRequests] = useState<any[]>([]);
@@ -42,7 +42,7 @@ export default function AdminRequestsPage() {
         "Torn Pages", "Folded Pages", "Food Stains", "Written Marks",
         "Damaged Cover", "Water Damage", "Missing Pages", "Loose Binding"
     ];
-    const TABS = ["Requests", "Borrows"]
+    const TABS = ["Approved", "Borrows"]
     const DATE = ["Recent Borrow", "Oldest Borrow", "Return Soon", "Return Late"]
     const PER_PAGE = 10;
     
@@ -68,6 +68,43 @@ export default function AdminRequestsPage() {
     };
     useEffect(() => {
         fetchData();
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+
+        const prefillBook = localStorage.getItem("prefillBook");
+        const prefillStudent = localStorage.getItem("prefillStudent");
+
+        if (prefillBook || prefillStudent) {
+            if (prefillBook) {
+                const book = JSON.parse(prefillBook);
+                setSelectedBook(book);
+                setBorrowIsbn(book.isbn);
+                localStorage.removeItem("prefillBook");
+            }
+            if (prefillStudent) {
+                const student = JSON.parse(prefillStudent);
+                setSelectedStudent(student);
+                setBorrowSchoolId(student.school_id);
+                localStorage.removeItem("prefillStudent");
+            }
+            setBorrowModal({ mode: "add" });
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+
+        // Autofill from library page redirect
+        const prefill = localStorage.getItem("prefillBook");
+        if (prefill) {
+            const book = JSON.parse(prefill);
+            setSelectedBook(book);
+            setBorrowIsbn(book.isbn);
+            setBorrowModal({ mode: "add" });
+            localStorage.removeItem("prefillBook");
+        }
     }, []);
 
     // Determine if the book is overdue or still on time
@@ -168,7 +205,7 @@ export default function AdminRequestsPage() {
                 )
             },
         ],
-        Requests: [
+        Approved: [
             {
                 header: "Date Approved",
                 thStyle: { textAlign: "center" as const },
@@ -214,7 +251,7 @@ export default function AdminRequestsPage() {
     const columns = [
         ...idColumn,
         ...(activeTab === "Borrows" ? tabColumn.Borrows : []),
-        ...(activeTab === "Requests" ? tabColumn.Requests : []),
+        ...(activeTab === "Approved" ? tabColumn.Approved : []),
     ];
 
     const handleReturn = async (e: React.FormEvent) => {

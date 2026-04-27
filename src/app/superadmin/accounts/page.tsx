@@ -66,7 +66,11 @@ export default function SuperAdminAccounts() {
       const json = await api.get("/api/admin/allUsers");
       
       if (json.retCode === "200") {
-        setAccounts(json.data);
+      const filtered = (json.data || []).filter(
+        (user) => user.status !== "Pending"
+      );
+
+      setAccounts(filtered);
       }
     } catch (error) {
       setSystemResponse("Failed to connect to server.");

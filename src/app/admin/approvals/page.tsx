@@ -181,7 +181,7 @@ export default function AdminApprovalsPage() {
         <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
           <div className="search-wrapper" style={{ maxWidth: 300 }}>
             <IconSearch />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, email, or ID..." />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search" />
           </div>
           <select className="pills" value={appProgram} onChange={e => setAppProgram(e.target.value)}>
             {PROGRAMS.map(c => <option key={c}>{c}</option>)}

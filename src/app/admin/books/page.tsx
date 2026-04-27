@@ -1,7 +1,8 @@
 "use client";
 
 import { api } from "@/lib/api"
-import { IconImage, IconTrash, IconX, IconSearch, IconLogo, IconEdit } from "@/components/icons";
+import { useRouter } from "next/navigation";
+import { IconImage, IconX, IconSearch, IconLogo } from "@/components/icons";
 import React, { useState, useRef, useEffect } from "react";
 import { BookDetails } from "@/components/BookDetails";
 import DataTable from "@/components/DataTable";
@@ -29,6 +30,7 @@ const BOOK = {
 };
 
 export default function AdminLibraryPage() {
+  const router = useRouter();
   const [books, setBooks] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
@@ -195,25 +197,29 @@ export default function AdminLibraryPage() {
       setSystemResponseOpen(true);
     }
   };
-
+    
   const openDelete = async () => {
     if (!deleteModal?.id) return;
-
-    setIsLoading(true);
+    setLoadingMessage(`Deleteing "${bookForm.title}" to library...`);
+    setIsLoadingOpen(true);
 
     try {
-      const json = await api.delete(`${"/api/books"}/${deleteModal.id}`);
+      const json = await api.delete(`/api/books/deleteBook/${deleteModal.id}`);
 
       if (json.retCode === "200" || json.isSuccess) {
         await fetchBooks();
         setDeleteModal(null);
       } else {
-        setSystemResponse("Failed to delete book.");
+        setDeleteModal(null);
+        setSystemResponse(json.message || "Failed to delete book.")
+        setSystemResponseOpen(true);
       }
     } catch (err: any) {
+      setDeleteModal(null);
       setSystemResponse("Failed to delete book.");
     } finally {
-      setIsLoading(false);
+      setIsLoadingOpen(false);
+      setSystemResponseOpen(true);
     }
   };
 
@@ -405,6 +411,10 @@ export default function AdminLibraryPage() {
         role="Staff"
         onEdit={openEdit}
         onDelete={setDeleteModal}
+        onProcessBorrow={(book) => {
+          localStorage.setItem("prefillBook", JSON.stringify(book));
+          router.push("/admin/borrows");
+        }}
       />
     )}
 
@@ -594,7 +604,7 @@ export default function AdminLibraryPage() {
     />
         
     {/* Modal for displaying messages */}
-    <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-subtext" cancelText="Close"/>
+    <Modal isOpen={isSystemResponseOpen} message={systemResponse} onClose={() => setSystemResponseOpen(false)} cancelColor="bg-primary" cancelText="Okay"/>
     <LoadingModal isOpen={isLoadingOpen} message={loadingMessage} />
   </>
   );

@@ -250,6 +250,22 @@ export default function ScannerModal({ isOpen, onClose, onScan, onConfirmRelease
                     </>
                     ) : (
                         <div style={{ display: "flex", gap: 10, width: "100%" }}>
+                            <button className="btn"
+                                onClick={() => {
+                                    localStorage.setItem("prefillStudent", JSON.stringify({
+                                        school_id: studentInfo.school_id,
+                                        firstname: studentInfo.name.split(" ")[0],
+                                        lastname: studentInfo.name.split(" ").slice(1).join(" "),
+                                        department: studentInfo.department,
+                                        program: studentInfo.program,
+                                        offense_count: studentInfo.offense_count,
+                                    }));
+                                    onClose();
+                                    router.push("/admin/borrows");
+                                }}
+                            >
+                                Process Borrow
+                            </button>
                             <button className="btn" onClick={handleScanAnother}>Scan Again</button>
                         </div>
                     )}

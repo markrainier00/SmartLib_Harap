@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@/lib/api";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/user";
@@ -31,18 +32,15 @@ export default function NotificationBell() {
 
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/notifications/history/${safeChannelId}`);
-        const data = await res.json();
-        if (data.isSuccess) {
-          setNotifs(data.data || []); 
-        }
+        const data = await api.get(`/api/notifications/history/${safeChannelId}`);
+        if (data.isSuccess) setNotifs(data.data || []);
       } catch (err) {
         console.error("Failed to fetch notification history", err);
       }
     };
     fetchHistory();
 
-    const eventSource = new EventSource(`http://localhost:8080/api/notifications/stream/${safeChannelId}`);
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/stream/${safeChannelId}`);
 
     eventSource.onmessage = (event) => {
       const newNotif = JSON.parse(event.data);
@@ -64,19 +62,12 @@ export default function NotificationBell() {
 
 
   const handleClearNotifs = async (e: React.MouseEvent) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     if (!notifChannel) return;
-
     try {
       const safeChannelId = encodeURIComponent(notifChannel);
-      const res = await fetch(`http://localhost:8080/api/notifications/clear/${safeChannelId}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      
-      if (data.isSuccess) {
-        setNotifs([]); 
-      }
+      const data = await api.delete(`/api/notifications/clear/${safeChannelId}`);
+      if (data.isSuccess) setNotifs([]);
     } catch (err) {
       console.error("Failed to clear notifications", err);
     }
@@ -121,9 +112,7 @@ export default function NotificationBell() {
                   }
 
                   try {
-                    await fetch(`http://localhost:8080/api/notifications/read/${n.id}`, {
-                      method: "PUT"
-                    });
+                    await api.put(`/api/notifications/read/${n.id}`, {});
                   } catch (err) {
                     console.error("Failed to mark as read in DB", err);
                   }

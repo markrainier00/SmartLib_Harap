@@ -6,13 +6,15 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import QRCode from "react-qr-code";
 import html2canvas from "html2canvas";
-import { IconHamburger, IconArrowDown, IconID, IconLogo, IconX, IconEye, IconEyeOff } from "../icons";
+import { IconHamburger, IconArrowDown, IconSupport, IconID, IconLogo, IconX, IconEye, IconEyeOff } from "../icons";
 import { useClickOutside } from "@/app/hooks/useClickOutside";
 import FloatingInput from "@/components/ui/FloatingInput";
 import PasswordStrength from "@/components/ui/PasswordStrength";
 import Modal from "@/components/Modal";
 import LoadingModal from "@/components/LoadingModal";
 import NotificationBell from "../notifications/NotificationBell"; 
+import ChatSupport from "@/components/chatsupport/ChatSupport";
+import AdminChat from "@/components/chatsupport/AdminChat";
 
 interface TopbarProps {
   isSidebarOpen: boolean;
@@ -23,10 +25,13 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
   const { role, firstName, fullName, email, school_id, department, program, year } = useUser() as any;
   const router = useRouter();
 
+  const [showAdminSupport, setShowAdminSupport] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showId, setShowId] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showChangeInformation, setShowChangeInformation] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
+  const [studentUnread, setStudentUnread] = useState(0);
 
   const profileRef = useRef(null);
 
@@ -41,6 +46,59 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
 
   const setInfoForm_ = (fields: Partial<typeof infoForm>) =>
     setInfoForm(prev => ({ ...prev, ...fields }));
+
+  const [openTickets, setOpenTickets] = useState(0);
+
+  useEffect(() => {
+    if (role !== "Staff") return;
+
+    const fetchUnread = async () => {
+      try {
+        const data = await api.get("/api/chat/admin/all");
+        if (data.isSuccess && data.data) {
+          const checks = await Promise.all(
+            data.data.map(async (c: any) => {
+              try {
+                const chatData = await api.get(`/api/chat/student/${c.student_id}`);
+                if (chatData.isSuccess && chatData.data.messages) {
+                  return chatData.data.messages.some(
+                    (m: any) => m.sender_role?.toLowerCase() === "student" && !(m.is_read || m.IsRead)
+                  );
+                }
+              } catch {}
+              return false;
+            })
+          );
+          const count = checks.filter(Boolean).length;
+          setOpenTickets(count);
+        }
+      } catch {}
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 3000);
+    return () => clearInterval(interval);
+  }, [role]);
+
+  useEffect(() => {
+    if (role !== "Student" || !school_id) return;
+
+    const fetchUnread = async () => {
+      try {
+        const data = await api.get(`/api/chat/student/${school_id}`);
+        if (data.isSuccess && data.data.messages) {
+          const unreadCount = data.data.messages.filter((m: any) =>
+            m.sender_role.toLowerCase() === "admin" && !(m.is_read || m.IsRead)
+          ).length;
+          setStudentUnread(unreadCount);
+        }
+      } catch (e) {}
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 3000);
+    return () => clearInterval(interval);
+  }, [role, school_id]);
 
   useEffect(() => {
     setInfoForm_({
@@ -80,11 +138,6 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
   
   useClickOutside(profileRef, () => setShowProfile(false));
 
-  const handleNav = (path: string) => {
-    setShowProfile(false);
-    router.push(path);
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -106,7 +159,6 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
           if (infoForm.newYear !== year) payload.year = infoForm.newYear;
       }
 
-      // only school_ID means nothing changed
       if (Object.keys(payload).length === 1) {
           setSystemResponse("No changes made.");
           setSystemResponseOpen(true);
@@ -236,19 +288,53 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         </div>
 
         <div className="topbar-actions">
-          {/* 🆔 DIGITAL ID: PARA SA STUDENT LANG */}
           {role === 'Student' && (
+            <>
             <button className="action-btn" onClick={() => setShowId(true)} title="Digital ID" aria-label="Digital ID">
               <IconID />
             </button>
+            
+            <button className="action-btn" onClick={() => setShowSupport(true)} title="Support" aria-label="Support" style={{ position: "relative" }}>
+              <IconSupport />
+              {studentUnread > 0 && (
+                <span style={{
+                  position: "absolute", top: "4px", right: "4px",
+                  background: "#ef4444", color: "white",
+                  fontSize: "9px", fontWeight: "bold",
+                  minWidth: "16px", height: "16px",
+                  borderRadius: "50%", display: "flex",
+                  alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
+                }}>
+                </span>
+              )}
+            </button>
+            </>
           )}
 
-          {/* 🔔 NOTIFICATION BELL: PARA SA STUDENT NA LANG DIN! */}
+          {(role === 'Staff') && (
+            <button className="action-btn" onClick={() => setShowAdminSupport(true)} title="Support" aria-label="Support" style={{ position: "relative" }}>
+              <IconSupport />
+              {openTickets > 0 && (
+                <span style={{
+                  position: "absolute", top: "4px", right: "4px",
+                  background: "#ef4444", color: "white",
+                  fontSize: "9px", fontWeight: "bold",
+                  minWidth: "16px", height: "16px",
+                  borderRadius: "50%", display: "flex",
+                  alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
+                }}>
+                  {openTickets}
+                </span>
+              )}
+            </button>
+          )}
+
           {role === 'Student' && (
             <NotificationBell />
           )}
 
-          {/* 👤 PROFILE DROPDOWN */}
           <div style={{ position: "relative" }} ref={profileRef}>
             <button className={`profile-pill ${showProfile ? 'active' : ''}`} onClick={() => setShowProfile(!showProfile)} title="Profile Menu" aria-label="Profile Menu">
               <p className="avatar-icon">{firstName ? firstName[0] : "U"}</p><IconArrowDown className="profile-arrow text-white"/>
@@ -276,7 +362,6 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         </div>
       </header>
 
-      {/* 🆔 DIGITAL ID MODAL */}
       {showId && (
         <div className="overlay" onClick={() => setShowId(false)}>
           <div className="id-card" onClick={e => e.stopPropagation()}>
@@ -298,7 +383,6 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         </div>
       )}
 
-      {/* 🔐 CHANGE PASSWORD MODAL */}
       {showChangePassword && (
         <form onSubmit={handlePasswordChange}>
         <div className="overlay" onClick={() => setShowChangePassword(false)}>
@@ -321,7 +405,6 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
         </form>
       )}
 
-      {/* 📄 CHANGE INFORMATION MODAL */}
       {showChangeInformation && (
         <form onSubmit={handleInformationChange}>
         <div className="overlay" onClick={() => {setInfoForm_({ newEmail: email, newDept: department, newProg: program, newYear: year}); setShowChangeInformation(false)}}>
@@ -348,6 +431,14 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
           </div>
         </div>
         </form>
+      )}
+
+      {showSupport && (
+        <ChatSupport studentId={school_id} onClose={() => setShowSupport(false)} />
+      )}
+
+      {showAdminSupport && (
+        <AdminChat onClose={() => setShowAdminSupport(false)} />
       )}
 
       {/* Modal for displaying messages */}

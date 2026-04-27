@@ -129,7 +129,7 @@ function ResetPasswordForm() {
           </button>
         </form>
 
-        <Link href="/" className="forgot text-center mt-4">← Back to Sign In</Link>
+        <Link href="/" className="hyperlink text-center mt-4">← Back to Sign In</Link>
       </div>
     </div>
   );

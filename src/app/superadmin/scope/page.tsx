@@ -188,22 +188,22 @@ export default function SuperAdminAccounts() {
     <div className="app">
         <div className="page-layout fadeUp">
         <div style={{ marginBottom: 20 }}>
-            <div className="page-header">Manage Programs</div>
+            <div className="page-header">Manage Scope</div>
             <div className="page-sub">Control which departments and programs are allowed to register.</div>
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", marginBottom: 18, justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", gap: 10 }}>
-            <div className="search-wrapper" style={{ flex: 1, maxWidth: 300 }}>
-                <IconSearch/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"/>
+                <div className="search-wrapper" style={{ flex: 1, maxWidth: 300 }}>
+                    <IconSearch/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"/>
+                </div>
+                {(search) && (
+                    <button className="pills" onClick={() => { setSearch(""); }} style={{ background: "#f5f5f5", borderColor: "#dadada", color: "#777777" }}>
+                    Reset
+                    </button>
+                )}
             </div>
             <button className="btn w-auto px-4 py-2" onClick={() => setShowAddProgram(true)}>Add Program</button>
-            {(search) && (
-                <button className="pills" onClick={() => { setSearch(""); }} style={{ background: "#f5f5f5", borderColor: "#dadada", color: "#777777" }}>
-                Reset
-                </button>
-            )}
-            </div>
         </div>
 
         {/* Table */}

@@ -24,13 +24,14 @@ interface BookDetailsProps {
   role?: "Student" | "Staff";
   onEdit?: (book: Book) => void;
   onDelete?: (book: Book) => void;
+  onProcessBorrow?: (book: Book) => void;
   handleBookRequest?: (pickupDate: string) => void;
   handleWishlist?: (e: React.MouseEvent | null, book: Book) => void;
   isSaved?: boolean;
 }
 
 export const BookDetails: React.FC<BookDetailsProps> = ({ 
-  book, mode = "view", onClose, role, onEdit, onDelete, 
+  book, mode = "view", onClose, role, onEdit, onDelete, onProcessBorrow,
   handleBookRequest, handleWishlist, isSaved 
 }) => {
     const [imgError, setImgError] = React.useState<{ [key: string]: boolean }>({});
@@ -116,7 +117,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
             <button
                 className="btn px-4 py-2 text-sm"
                 style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}
-                onClick={() => onEdit && onEdit(book)}
+                onClick={() => onProcessBorrow && onProcessBorrow(book)}
                 disabled={(book.available || 0) === 0}
             >
                 <span>Process Borrow</span>

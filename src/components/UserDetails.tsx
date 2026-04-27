@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { IconX } from "@/components/icons";
 
 interface User {
@@ -13,6 +13,7 @@ interface User {
   status: string;
   violation_count?: number;
   offense_count?: number;
+  school_id_image?: string;
 }
 
 interface UserDetailsProps {
@@ -33,6 +34,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
 
   const isLocked = user.status === "Locked";
   const isPending = user.status === "Pending";
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="overlay" onClick={onClose}>
@@ -48,7 +50,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
           <div style={{ textAlign: "center", marginBottom: 20 }}>
             <h3 className="page-header">User Information</h3>
           </div>
-
+          
           {[
             { label: "Name",      value: `${user.firstname} ${user.lastname}` },
             { label: "School ID", value: user.school_id },
@@ -64,8 +66,25 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
               <span style={{ fontWeight: 600 }}>{value}</span>
             </div>
           ))}
-        </div>
 
+          {/* School ID Image */}
+          {user.school_id_image && !imgError && (
+            <div className="field" style={{ marginTop: 12 }}>
+              <label style={{ color: "var(--color-primary)", fontSize: 13 }}>School ID</label>
+              <div className="upload has-img">
+                <div className="img-wrap">
+                  <img
+                    src={user.school_id_image}
+                    alt="School ID"
+                    className="img-preview"
+                    onError={() => setImgError(true)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
         <div className="bd-footer" style={{ justifyContent: "center", gap: 8 }}>
           {isPending ? (
             <>

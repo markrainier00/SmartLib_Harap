@@ -9,13 +9,13 @@ import DataTable from "@/components/DataTable";
 import FloatingTextarea from "@/components/ui/FloatingTextarea";
 import { UserDetails } from "@/components/UserDetails";
 
-const PER_PAGE = 10;
-const [currentPage, setCurrentPage] = useState(1);
-
-const PROGRAMS = ["All Programs", "BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE", "BSBio", "BSPharma"];
-const YEARS = ["All Year Levels", "1st", "2nd", "3rd", "4th", "5th"];
-
 export default function AdminApprovalsPage() {
+    const PER_PAGE = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const PROGRAMS = ["All Programs", "BSCS", "BSIT", "BSCpE", "BSMATH", "BSBA", "BSAcc", "BSECE", "BSCHE", "BSN", "BSCE", "BSBio", "BSPharma"];
+    const YEARS = ["All Year Levels", "1st", "2nd", "3rd", "4th", "5th"];
+
     const [accounts, setAccounts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -189,7 +189,7 @@ export default function AdminApprovalsPage() {
         <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
           <div className="search-wrapper" style={{ maxWidth: 300 }}>
             <IconSearch />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, email, or ID..." />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search" />
           </div>
           <select className="pills" value={appProgram} onChange={e => setAppProgram(e.target.value)}>
             {PROGRAMS.map(c => <option key={c}>{c}</option>)}

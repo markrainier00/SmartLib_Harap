@@ -36,6 +36,7 @@ export default function AdminHistoryPage() {
         if (transactionRes.retCode === "200") setTransactionDetails(transactionRes.data || []);
         if (usersRes.retCode === "200") setUsers(usersRes.data || []);
         if (booksRes.isSuccess || booksRes.retCode === "200") setBooks(booksRes.data || []);
+        console.log(usersRes.data)
       } catch (err) {
         console.error(err);
       } finally {

@@ -317,8 +317,7 @@ export default function LibraryPage() {
 
         {/* Hero */}
         <div className="hero relative">
-          <div className="hero-eyebrow">Hello, {firstName || 'Student'}!</div>
-          <div className="hero-title">What will you read today?</div>
+          <div className="page-header text-white">What will you read today?</div>
           <div className="hero-sub">Explore available books across different categories tailored for {program || 'your'} students.</div>
           <IconLogo className="absolute right-10 top-4 w-60 h-60 opacity-10 -rotate-12"/>
         </div>
