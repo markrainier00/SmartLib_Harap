@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { IconX, IconSend, IconSendPhoto } from '@/components/icons';
 import { api } from '@/lib/api';
 
@@ -21,28 +21,35 @@ const ChatSupport = ({ studentId, onClose }: { studentId: string; onClose?: () =
     } catch (e) {}
   };
 
+  const fetchChatHistory = useCallback(async () => {
+    try {
+      const data = await api.get(`/api/chat/student/${studentId}`);
+      if (data.isSuccess) {
+        setConversation(data.data);
+        setMessages(data.data.messages || []);
+        markAsRead(data.data.id || data.data.ID);
+        setIsInitialLoad(false);
+      }
+    } catch (error) {}
+    finally {
+      setIsLoading(false);
+    }
+  }, [studentId]);
+
   useEffect(() => {
     if (!studentId) return;
 
-    const fetchChatHistory = async () => {
-      try {
-        const data = await api.get(`/api/chat/student/${studentId}`);
-        if (data.isSuccess) {
-          setConversation(data.data);
-          setMessages(data.data.messages || []);
-          markAsRead(data.data.id || data.data.ID);
-          setIsInitialLoad(false);
-        }
-      } catch (error) {}
-      finally {
-        setIsLoading(false);
+    fetchChatHistory();
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/events`);
+    eventSource.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === "new_message" && data.sender_role?.toLowerCase() === "admin") {
+        fetchChatHistory();
       }
     };
-
-    fetchChatHistory();
-    const interval = setInterval(fetchChatHistory, 3000);
-    return () => clearInterval(interval);
-  }, [studentId]);
+    eventSource.onerror = () => fetchChatHistory();
+    return () => eventSource.close();
+  }, [studentId, fetchChatHistory]);
 
 useEffect(() => {
   if (isInitialLoad) return;
@@ -132,22 +139,39 @@ useEffect(() => {
                 const isStudent = msg.sender_role?.toLowerCase() === 'student';
                 const time = formatTime(msg.created_at || msg.CreatedAt);
                 const status = msg.is_read || msg.IsRead ? "Seen" : "Sent";
+                const date = new Date(msg.created_at || msg.CreatedAt).toLocaleDateString([], {
+                  month: "short", day: "numeric", year: "numeric"
+                });
+                const prevMsg = messages[index - 1];
+                const prevDate = prevMsg
+                  ? new Date(prevMsg.created_at || prevMsg.CreatedAt).toLocaleDateString([], {
+                      month: "short", day: "numeric", year: "numeric"
+                    })
+                  : null;
+                const showDate = date !== prevDate;
 
                 return (
-                  <div key={`msg-${index}`} style={{ display: 'flex', justifyContent: isStudent ? 'flex-end' : 'flex-start' }}>
-                    <div style={{ maxWidth: '75%' }}>
-                      <div style={{
-                        padding: '12px 18px', fontSize: '14px', lineHeight: '1.5',
-                        backgroundColor: isStudent ? '#1a5c2e' : 'white',
-                        color: isStudent ? 'white' : '#1e293b',
-                        border: isStudent ? 'none' : '1px solid #b6dfc2',
-                        borderRadius: isStudent ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)', wordBreak: 'break-word'
-                      }}>
-                        {renderMessage(msg.content)}
+                  <div key={`msg-${index}`}>
+                    {showDate && (
+                      <div style={{ textAlign: "center", fontSize: "11px", color: "#9ca3af", margin: "8px 0" }}>
+                        {date}
                       </div>
-                      <div style={{ fontSize: '10px', marginTop: '4px', textAlign: isStudent ? 'right' : 'left', color: '#9ca3af', fontWeight: '500' }}>
-                        {time} {isStudent && `• ${status}`}
+                    )}
+                    <div style={{ display: 'flex', justifyContent: isStudent ? 'flex-end' : 'flex-start' }}>
+                      <div style={{ maxWidth: '75%' }}>
+                        <div style={{
+                          padding: '12px 18px', fontSize: '14px', lineHeight: '1.5',
+                          backgroundColor: isStudent ? '#1a5c2e' : 'white',
+                          color: isStudent ? 'white' : '#1e293b',
+                          border: isStudent ? 'none' : '1px solid #b6dfc2',
+                          borderRadius: isStudent ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.05)', wordBreak: 'break-word'
+                        }}>
+                          {renderMessage(msg.content)}
+                        </div>
+                        <div style={{ fontSize: '10px', marginTop: '4px', textAlign: isStudent ? 'right' : 'left', color: '#9ca3af', fontWeight: '500' }}>
+                          {time} {isStudent && `• ${status}`}
+                        </div>
                       </div>
                     </div>
                   </div>

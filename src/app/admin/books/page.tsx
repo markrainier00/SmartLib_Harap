@@ -428,7 +428,7 @@ export default function AdminLibraryPage() {
             </div>
             <div className="modal-scroll">
               <div style={{ textAlign: "center" }}>
-                <div className="page-header">{modal.mode === "add" ? "New Library Book" : "Edit Book"}</div>
+                <div className="page-header text-xl">{modal.mode === "add" ? "New Library Book" : "Edit Book"}</div>
               </div>
                 <div className="field" style={{ display:"flex", justifyContent: "center", margin: 30 }}>
                   <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} style={{ display: "none" }}/>

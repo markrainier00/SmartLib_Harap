@@ -510,10 +510,10 @@ export default function AdminRequestsPage() {
                 </div>
                 <div className="modal-scroll">
                     <div style={{ textAlign: "center" }}>
-                        <div className="page-header">Book Borrow</div>
+                        <div className="page-header text-xl">Book Borrow</div>
                     </div>
 
-                    <div style={{ marginTop: "20px", marginBottom: "20px", textAlign: "right" }}>
+                    <div style={{ marginTop: "10px", marginBottom: "20px", textAlign: "right" }}>
                         {borrowModal.mode === "add" ? (
                             <div>
                                 <div style={{ display:"flex", flexDirection:"column", width:"100%" }}>
@@ -593,9 +593,9 @@ export default function AdminRequestsPage() {
                 </div>
                 <div className="modal-scroll">
                     <div style={{ textAlign: "center" }}>
-                        <div className="page-header">Book Return</div>
+                        <div className="page-header text-xl">Book Return</div>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div style={{  marginTop: "10px", display: "flex", flexDirection: "column" }}>
                         <div>
                             <p style={{ color: "var(--color-primary)", textAlign: "center", fontWeight: "700" }}>User Details</p>
                             <div className="book-preview">

@@ -257,9 +257,9 @@ export default function AdminRequestsPage() {
               </div>
               <div className="modal-scroll">
                 <div style={{ textAlign: "center" }}>
-                  <div className="page-header">{requestModal.mode === "approve" ? "Approve" : "Reject"} Borrow Request</div>
+                  <div className="page-header text-xl">{requestModal.mode === "approve" ? "Approve" : "Reject"} Borrow Request</div>
                 </div>
-                <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+                <div style={{ marginTop: "20px", marginBottom: "10px" }}>
                   <div className="form-row">
                     <FloatingInput label="School ID" type="text" value={requestModal.school_id}/>
                     <FloatingInput label="Book ISBN" type="text" value={requestModal.isbn}/>

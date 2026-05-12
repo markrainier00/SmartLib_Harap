@@ -18,7 +18,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, title, message, onClose, onConfir
   return (<>
     <div className="overlay" onClick={onClose}>
       <div className="lm-modal" onClick={(e) => e.stopPropagation()}>
-        {title && <div className="page-header">{title}</div>}
+        {title && <div className="page-header text-xl">{title}</div>}
         
         <div className="lm-content">
           <div className="page-sub">{message}</div>

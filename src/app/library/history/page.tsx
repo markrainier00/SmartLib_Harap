@@ -149,7 +149,7 @@ export default function HistoryPage() {
         columns={historyColumns}
         data={paginated}
         loading={isLoading}
-        emptyText="No books found."
+        emptyText="No library history yet."
         currentPage={currentPage}
         totalPages={totalPages}
         totalItems={filtered.length}

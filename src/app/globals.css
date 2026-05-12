@@ -238,7 +238,7 @@
     right: 20px;
     background: #EBF7F0;
     border: none;
-    border-radius: 50%;
+    border-radius: 7px;
     width: 32px;
     height: 32px;
     display: flex;
@@ -468,7 +468,7 @@
     background: #fff;
     border: 1px solid var(--color-border);
     border-radius: 16px;
-    padding: 24px 20px;
+    padding: 10px 20px;
     text-align: center;
   }
   .sum-num {
@@ -572,10 +572,11 @@
     gap: 10px;
     background: #EBF7F0;
     border: 2px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 5px;
     cursor: pointer;
-    transition: all .2s;font-size: 13.5px;
+    transition: all .2s;
+    font-size: 13.5px;
   }
   .pills:hover, .pills.active { background: #fff; border-color: var(--color-primary); }
 
@@ -657,6 +658,22 @@
   .badge-red    { color: var(--color-error); }
   .badge-blue   { color: var(--color-info); }
   .badge-orange { color: #e89940; }
+  .notif-badge { 
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    width: 18px; 
+    height: 18px; 
+    background: #e05c5c; 
+    border-radius: 50%; 
+    border: 2px solid #fff; 
+    font-size: 10px; 
+    font-weight: 700; 
+    color: #fff; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+  }
 
   /* ── Support card ── */
   .sup-card {

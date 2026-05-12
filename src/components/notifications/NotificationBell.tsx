@@ -88,7 +88,7 @@ export default function NotificationBell() {
       {showNotifs && (
         <div className="dropdown notif-panel open">
           <div className="notif-head">
-            <h4>Notifications</h4>
+            <h3><strong>Notifications</strong></h3>
             {notifs.length > 0 && (
               <button className="clear-btn" onClick={handleClearNotifs}>
                 Clear All
@@ -138,7 +138,6 @@ export default function NotificationBell() {
       <style>{`
         .action-btn { position: relative; background: #EBF7F0; border: none; border-radius: 10px; width: 40px; height: 40px; cursor: pointer; transition: background .2s; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #1B5E35; }
         .action-btn:hover { background: #D6EDE1; }
-        .notif-badge { position: absolute; top: 0; right: 0; width: 18px; height: 18px; background: #e05c5c; border-radius: 50%; border: 2px solid #fff; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; }
         .dropdown { position: absolute; top: 60px; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 16px 48px rgba(27,94,53,.12); border: 1px solid #C3DDD0; z-index: 60; overflow: hidden; animation: fadeUp .2s ease both; min-width: 260px; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
         .notif-panel { width: 340px; }

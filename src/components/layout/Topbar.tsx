@@ -76,29 +76,51 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
     };
 
     fetchUnread();
-    const interval = setInterval(fetchUnread, 3000);
-    return () => clearInterval(interval);
+
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/events`);
+
+    eventSource.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === "new_message" && data.sender_role?.toLowerCase() === "student") {
+        setOpenTickets(prev => prev + 1);
+      }
+    };
+
+    eventSource.onerror = () => fetchUnread();
+
+    return () => eventSource.close();
   }, [role]);
 
   useEffect(() => {
-    if (role !== "Student" || !school_id) return;
+  if (role !== "Student" || !school_id) return;
 
-    const fetchUnread = async () => {
-      try {
-        const data = await api.get(`/api/chat/student/${school_id}`);
-        if (data.isSuccess && data.data.messages) {
-          const unreadCount = data.data.messages.filter((m: any) =>
-            m.sender_role.toLowerCase() === "admin" && !(m.is_read || m.IsRead)
-          ).length;
-          setStudentUnread(unreadCount);
-        }
-      } catch (e) {}
-    };
+  const fetchStudentUnread = async () => {
+    try {
+      const data = await api.get(`/api/chat/student/${school_id}`);
+      if (data.isSuccess && data.data.messages) {
+        const unreadCount = data.data.messages.filter((m: any) =>
+          m.sender_role.toLowerCase() === "admin" && !(m.is_read || m.IsRead)
+        ).length;
+        setStudentUnread(unreadCount);
+      }
+    } catch {}
+  };
 
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 3000);
-    return () => clearInterval(interval);
-  }, [role, school_id]);
+  fetchStudentUnread();
+
+  const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/events`);
+
+  eventSource.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.type === "new_message" && data.sender_role?.toLowerCase() === "admin") {
+      setStudentUnread(prev => prev + 1);
+    }
+  };
+
+  eventSource.onerror = () => fetchStudentUnread();
+
+  return () => eventSource.close();
+}, [role, school_id]);
 
   useEffect(() => {
     setInfoForm_({
@@ -293,40 +315,20 @@ export default function Topbar({ isSidebarOpen, toggleSidebar }: TopbarProps) {
             <button className="action-btn" onClick={() => setShowId(true)} title="Digital ID" aria-label="Digital ID">
               <IconID />
             </button>
-            
-            <button className="action-btn" onClick={() => setShowSupport(true)} title="Support" aria-label="Support" style={{ position: "relative" }}>
+            <button className="action-btn" onClick={() => { setShowSupport(true); setStudentUnread(0); }} title="Support" aria-label="Support" style={{ position: "relative" }}>
               <IconSupport />
               {studentUnread > 0 && (
-                <span style={{
-                  position: "absolute", top: "4px", right: "4px",
-                  background: "#ef4444", color: "white",
-                  fontSize: "9px", fontWeight: "bold",
-                  minWidth: "16px", height: "16px",
-                  borderRadius: "50%", display: "flex",
-                  alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
-                }}>
-                </span>
+                  <span className="notif-badge w-3 h-3"></span>
               )}
             </button>
             </>
           )}
 
           {(role === 'Staff') && (
-            <button className="action-btn" onClick={() => setShowAdminSupport(true)} title="Support" aria-label="Support" style={{ position: "relative" }}>
+            <button className="action-btn" onClick={() => { setShowAdminSupport(true); setOpenTickets(0); }} title="Support" aria-label="Support" style={{ position: "relative" }}>
               <IconSupport />
               {openTickets > 0 && (
-                <span style={{
-                  position: "absolute", top: "4px", right: "4px",
-                  background: "#ef4444", color: "white",
-                  fontSize: "9px", fontWeight: "bold",
-                  minWidth: "16px", height: "16px",
-                  borderRadius: "50%", display: "flex",
-                  alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
-                }}>
-                  {openTickets}
-                </span>
+                <span className="notif-badge w-3 h-3"></span>
               )}
             </button>
           )}

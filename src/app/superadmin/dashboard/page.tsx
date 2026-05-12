@@ -15,7 +15,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 export default function SuperAdminDashboard() {
     const router = useRouter();
-    const { firstName, school_id, program } = useUser();
+    const { firstName } = useUser();
 
     const [registrations, setRegistrations] = useState(0);
     const [accounts, setAccounts] = useState(0);
@@ -25,17 +25,15 @@ export default function SuperAdminDashboard() {
     const [historyData, setHistoryData] = useState([]);
     const [bookData, setBookData] = useState([]);
     const [userData, setUserData] = useState([]);
-    const [categoryByBorrow, setCategoryByBorrow] = useState({});
-    const [deptByBorrow, setDeptByBorrow] = useState({});
 
-    const [viewMode, setViewMode] = useState<"daily" | "monthly" | "yearly">("daily");
+    const [viewMode, setViewMode] = useState<"daily" | "monthly" | "yearly">("monthly");
     const [fromTimeRange, setFromTimeRange] = useState(() => {
         const now = new Date();
-        return new Date(now.getFullYear(), now.getMonth(), 1);
+        return new Date(now.getFullYear(), 0, 1);
     });
     const [toTimeRange, setToTimeRange] = useState(() => {
         const now = new Date();
-        return new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        return new Date(now.getFullYear(), 11, 31);
     });
     const formatDate = (date) => {
         if (!date) return "";
@@ -45,12 +43,7 @@ export default function SuperAdminDashboard() {
         const day = String(d.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
     };
-
     const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingOpen, setIsLoadingOpen] = useState(false);
-    const [loadingMessage, setLoadingMessage] = useState("Processing...");
-    const [isSystemResponseOpen, setSystemResponseOpen] = useState(false);
-    const [systemResponse, setSystemResponse] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -58,7 +51,7 @@ export default function SuperAdminDashboard() {
                 try {
                     const [registrationRes, accountsRes, bookRes, historyRes] = await Promise.all([
                         api.get(`/api/admin/pendingUsers`),
-                        api.get("/api/admin/wholeUsers"),
+                        api.get("/api/admin/studentUsers"),
                         api.get("/api/books/getBooks"),
                         api.get(`/api/transactions/getWholeHistory`),
                     ]);
@@ -313,7 +306,7 @@ export default function SuperAdminDashboard() {
                             </div>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
-                            <div style={{ width: "100%", height: "300px", backgroundColor: "var(--color-surface)", borderRadius: "10px" }}>
+                            <div style={{ width: "100%", height: "300px", backgroundColor: "#fff", border: "1px solid var(--color-border)", borderRadius: "10px", padding: "24px" }}>
                                 {isLoading ? <Spinner /> : ( <Line data={borrowLineData} options={{
                                     responsive: true,
                                     maintainAspectRatio: false,
@@ -323,7 +316,7 @@ export default function SuperAdminDashboard() {
                             </div>
 
                             <div style={{ display: "flex", gap: "16px", width: "100%", flexWrap: "wrap" }}>
-                                <div style={{ flex: "1 1 300px", minWidth: 0, borderRadius: "10px", backgroundColor: "var(--color-surface)", padding: "5px" }}>
+                                <div style={{ flex: "1 1 300px", minWidth: 0, borderRadius: "10px", backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)", padding: "5px" }}>
                                     <p style={{ textAlign: "center", margin: "10px" }}>College Department Distribution of Borrows</p>
                                     <div style={{ maxHeight: "250px" }}>
                                         {isLoading ? <Spinner /> : deptDonutData.labels.length === 0 ? (
@@ -341,7 +334,7 @@ export default function SuperAdminDashboard() {
                                         )}
                                     </div>
                                 </div>
-                                <div style={{ flex: "1 1 300px", minWidth: 0, borderRadius: "10px", backgroundColor: "var(--color-surface)", padding: "5px" }}>
+                                <div style={{ flex: "1 1 300px", minWidth: 0, borderRadius: "10px", backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)", padding: "5px" }}>
                                     <p style={{ textAlign: "center", margin: "10px" }}>Book Categories Distribution of Borrows</p>
                                     <div style={{ maxHeight: "250px" }}>
                                         {isLoading ? <Spinner /> : categoryDonutData.labels.length === 0 ? (

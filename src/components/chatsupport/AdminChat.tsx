@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { IconSend, IconSendPhoto, IconX } from "@/components/icons";
 import { api } from "@/lib/api";
 
@@ -24,7 +24,7 @@ export default function AdminChat({ onClose }: { onClose?: () => void }) {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [unreadSet, setUnreadSet] = useState<Set<string>>(new Set());
 
-const fetchConversations = async () => {
+const fetchConversations = useCallback(async () => {
   try {
     setIsLoadingConvos(true);
     const data = await api.get("/api/chat/admin/all");
@@ -59,7 +59,9 @@ const fetchConversations = async () => {
   } finally {
     setIsLoadingConvos(false);
   }
-};
+}, []);
+
+  useEffect(() => { fetchConversations(); }, []);
 
   const markAsRead = async (convoId: any, studentId: string) => {
     if (!convoId) return;
@@ -75,42 +77,40 @@ const fetchConversations = async () => {
     }
   };
 
-  useEffect(() => { fetchConversations(); }, []);
+  const fetchActiveChat = useCallback(async () => {
+    if (!activeStudent) return;
+    try {
+      const data = await api.get(`/api/chat/student/${activeStudent.student_id}`);
+      if (data.isSuccess) {
+        setMessages(data.data.messages || []);
+        markAsRead(activeStudent.id || activeStudent.ID, activeStudent.student_id);
+        setIsInitialLoad(false);
+      }
+    } catch (error) {
+      console.error("Failed to load active chat");
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  }, [activeStudent]);
 
   useEffect(() => {
     if (!activeStudent) return;
     setIsInitialLoad(true);
-    setIsLoadingMessages(true); 
-
-    const fetchActiveChat = async () => {
-      try {
-        const data = await api.get(`/api/chat/student/${activeStudent.student_id}`);
-        if (data.isSuccess) {
-          setMessages(data.data.messages || []);
-          markAsRead(activeStudent.id || activeStudent.ID, activeStudent.student_id);
-          setIsInitialLoad(false);
-        }
-      } catch (error) {
-        console.error("Failed to load active chat");
-      } finally {
-        setIsLoadingMessages(false);
-      }
-    };
+    setIsLoadingMessages(true);
 
     fetchActiveChat();
-    const interval = setInterval(() => {
-      api.get(`/api/chat/student/${activeStudent.student_id}`)
-        .then(data => {
-          if (data.isSuccess) {
-            setMessages(data.data.messages || []);
-            markAsRead(activeStudent.id || activeStudent.ID, activeStudent.student_id);
-          }
-        })
-        .catch(() => {});
-    }, 3000);
 
-    return () => clearInterval(interval);
-  }, [activeStudent]);
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/chat/events`);
+    eventSource.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+  console.log("role value:", JSON.stringify(data.sender_role));
+      if (data.type === "new_message" && data.sender_role?.toLowerCase() === "student") {
+        fetchActiveChat();
+      }
+    };
+    eventSource.onerror = () => fetchConversations();
+    return () => eventSource.close();
+  }, [activeStudent, fetchActiveChat, fetchConversations]);
 
   useEffect(() => {
     if (isInitialLoad) return;
@@ -288,22 +288,39 @@ const fetchConversations = async () => {
                     ))
                   ) : (
                     messages.map((msg, i) => {
-                    const isAdmin = msg.sender_role === "admin";
-                    const time = formatTime(msg.created_at || msg.CreatedAt);
-                    const status = msg.is_read || msg.IsRead ? "Seen" : "Sent";
+                      const isAdmin = msg.sender_role === "admin";
+                      const time = formatTime(msg.created_at || msg.CreatedAt);
+                      const status = msg.is_read || msg.IsRead ? "Seen" : "Sent";
+                      const date = new Date(msg.created_at || msg.CreatedAt).toLocaleDateString([], {
+                        month: "short", day: "numeric", year: "numeric"
+                      });
+                      const prevMsg = messages[i - 1];
+                      const prevDate = prevMsg
+                        ? new Date(prevMsg.created_at || prevMsg.CreatedAt).toLocaleDateString([], {
+                            month: "short", day: "numeric", year: "numeric"
+                          })
+                        : null;
+                      const showDate = date !== prevDate;
 
-                    return (
-                      <div key={i} style={{ display: "flex", justifyContent: isAdmin ? "flex-end" : "flex-start" }}>
-                        <div style={{ maxWidth: "70%" }}>
-                          <div style={{ padding: "10px 14px", fontSize: "13.5px", background: isAdmin ? GREEN_DARK : "#fff", color: isAdmin ? "#fff" : "#1e293b", border: isAdmin ? "none" : `1px solid ${GREEN_BORDER}`, borderRadius: isAdmin ? "14px 14px 2px 14px" : "14px 14px 14px 2px", boxShadow: "0 1px 2px rgba(0,0,0,0.05)", wordBreak: "break-word" }}>
-                            {renderMessage(msg.content)}
-                          </div>
-                          <div style={{ fontSize: '10px', marginTop: '4px', textAlign: isAdmin ? 'right' : 'left', color: '#9ca3af', fontWeight: '500' }}>
-                            {time} {isAdmin && ` • ${status}`}
+                      return (
+                        <div key={i}>
+                          {showDate && (
+                            <div style={{ textAlign: "center", fontSize: "11px", color: "#9ca3af", margin: "8px 0" }}>
+                              {date}
+                            </div>
+                          )}
+                          <div style={{ display: "flex", justifyContent: isAdmin ? "flex-end" : "flex-start" }}>
+                            <div style={{ maxWidth: "70%" }}>
+                              <div style={{ padding: "10px 14px", fontSize: "13.5px", background: isAdmin ? GREEN_DARK : "#fff", color: isAdmin ? "#fff" : "#1e293b", border: isAdmin ? "none" : `1px solid ${GREEN_BORDER}`, borderRadius: isAdmin ? "14px 14px 2px 14px" : "14px 14px 14px 2px", boxShadow: "0 1px 2px rgba(0,0,0,0.05)", wordBreak: "break-word" }}>
+                                {renderMessage(msg.content)}
+                              </div>
+                              <div style={{ fontSize: '10px', marginTop: '4px', textAlign: isAdmin ? 'right' : 'left', color: '#9ca3af', fontWeight: '500' }}>
+                                {time} {isAdmin && ` • ${status}`}
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
+                      );
                     })
                   )}
                   <div ref={messagesEndRef} />

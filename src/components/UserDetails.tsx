@@ -48,7 +48,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
 
         <div className="bd-scroll">
           <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <h3 className="page-header">User Information</h3>
+            <h3 className="page-header text-xl">User Information</h3>
           </div>
           
           {[

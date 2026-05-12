@@ -54,7 +54,6 @@ export default function LibraryPage() {
     }
   };
   useEffect(() => {
-  console.log("school_id is:", school_id);
     if (!school_id) return;
     fetchWishlist();
   }, [school_id]);
@@ -64,7 +63,7 @@ export default function LibraryPage() {
       const json = await api.get(`/api/transactions/getRequests/${school_id}`);
       if (json.isSuccess) {
         setRequestedBooks(json.data);
-      }console.log(json.data)
+      }
     } catch (err) {
       console.error("Failed to fetch requests", err);
     }

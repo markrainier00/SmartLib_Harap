@@ -3,7 +3,7 @@ import {api} from "@/lib/api";
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { IconEye, IconEyeOff, IconBack, IconMail, IconID, IconImage } from "@/components/icons";
+import { IconEye, IconEyeOff, IconBack, IconMail, IconID, IconImage, IconLogo } from "@/components/icons";
 import FloatingInput from "@/components/ui/FloatingInput";
 import PasswordStrength from "@/components/ui/PasswordStrength";
 
@@ -357,6 +357,7 @@ export default function AuthPage() {
       <div className="card">
 
         {/* Brand */}
+        <div style={{ display:"flex", justifyContent:"center" }}><IconLogo className="text-primary"/></div>
         <div className="smartlib-logo text-center">SmartLib</div>
         <div className="smartlib-sub text-center mb-5">School Library Management Portal</div>
 
