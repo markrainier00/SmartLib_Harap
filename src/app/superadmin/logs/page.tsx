@@ -76,8 +76,6 @@ export default function SigninHistoryPage() {
     },
     {
       header: "Reason",
-      thStyle: { textAlign: "center" as const },
-      tdStyle: { textAlign: "center" as const },
       render: (r: any) => r.reason || "—",
     },
     {
